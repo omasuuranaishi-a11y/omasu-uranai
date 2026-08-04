@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>おますの無料占い｜ホロスコープで占うあなたの性質とこれからの転機</title>
+<style>
+:root{
+  --deep:#3e4b43;        /* 地色・濃いくすみグリーン */
+  --deep2:#36423b;
+  --deep3:#4a584f;
+  --paper:#f1eee4;       /* クリーム */
+  --paper2:#e6e2d5;
+  --text:#ebe8de;
+  --dim:#aeb6ab;
+  --gold:#c3a96c;
+  --gold-d:#8e7c4e;
+  --sage:#9ab0a0;
+  --hl:#dde5da;          /* テーブル強調 */
+  --hl2:#cfdccb;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--deep);
+  color:var(--text);
+  font-family:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP",serif;
+  line-height:1.95;font-size:15.5px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:600px;margin:0 auto;padding:0 18px}
+strong{font-weight:600}
+
+/* ---------- 装飾 ---------- */
+.orn{display:flex;align-items:center;gap:8px;margin:26px 0 14px}
+.orn::before,.orn::after{
+  content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold-d) 12%,var(--gold-d) 88%,transparent);
+}
+.orn i{color:var(--gold);font-style:normal;font-size:9px;letter-spacing:.3em}
+.sec-title{
+  text-align:center;color:var(--gold);font-size:16.5px;letter-spacing:.09em;
+  line-height:1.75;
+}
+.orn.tight{margin:10px 0 22px}
+
+/* 白帯の小見出し */
+.band{
+  text-align:center;font-size:16px;letter-spacing:.05em;
+  border-top:2px solid var(--text);border-bottom:2px solid var(--text);
+  padding:9px 4px;margin:34px 0 18px;line-height:1.6;
+}
+
+/* ---------- hero ---------- */
+.hero{
+  text-align:center;padding:60px 0 52px;position:relative;overflow:hidden;
+  background:radial-gradient(120% 90% at 50% 0%,#4a584f 0%,var(--deep) 62%);
+  border-bottom:1px solid var(--gold-d);
+}
+.hero .wrap{position:relative;z-index:2}
+/* 背景のホロスコープ盤。ゆっくり回る */
+#wheel{
+  position:absolute;left:50%;top:33%;transform:translate(-50%,-50%);
+  width:min(126vw,700px);aspect-ratio:1;z-index:0;pointer-events:none;
+  opacity:.52;animation:spin 240s linear infinite;
+}
+#wheel .fix{animation:spin 240s linear infinite reverse;transform-origin:250px 250px}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+/* 中央を少し暗くして文字を読みやすくする */
+.hero::after{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(52% 34% at 50% 30%,rgba(62,75,67,.86) 0%,rgba(62,75,67,.42) 60%,rgba(62,75,67,0) 100%);
+}
+@media(prefers-reduced-motion:reduce){#wheel,#wheel .fix{animation:none}}
+/* 金の四隅飾り */
+.corner{position:absolute;width:26px;height:26px;z-index:3;border:0 solid var(--gold);opacity:.75}
+.corner.tl{top:11px;left:11px;border-top-width:1px;border-left-width:1px}
+.corner.tr{top:11px;right:11px;border-top-width:1px;border-right-width:1px}
+.corner.bl{bottom:11px;left:11px;border-bottom-width:1px;border-left-width:1px}
+.corner.br{bottom:11px;right:11px;border-bottom-width:1px;border-right-width:1px}
+.hero .brand{
+  font-family:system-ui,sans-serif;font-size:10.5px;letter-spacing:.34em;
+  color:var(--gold);margin-bottom:26px;
+}
+.hero h1{font-size:29px;font-weight:400;line-height:1.7;letter-spacing:.05em}
+.hero h1 em{
+  font-style:normal;
+  background:linear-gradient(180deg,#f0dda8 0%,#c3a96c 55%,#9d8144 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero .sub{margin-top:20px;font-size:14px;color:var(--dim);line-height:2.05}
+.stars{color:var(--gold);letter-spacing:.5em;font-size:11px;margin:15px 0 0;opacity:.85}
+/* ---- バナー風タイトル ---- */
+.banner{
+  position:relative;margin:8px auto 22px;padding:30px 18px 22px;max-width:470px;
+  background:linear-gradient(180deg,rgba(74,88,79,.86),rgba(48,59,52,.9));
+  border:1px solid var(--gold);
+  box-shadow:0 0 0 4px rgba(62,75,67,.55),0 0 0 5px rgba(195,169,108,.45),
+             0 14px 40px rgba(0,0,0,.35);
+}
+.bn-c{position:absolute;width:13px;height:13px;border:0 solid var(--gold)}
+.bn-c.tl{top:5px;left:5px;border-top-width:2px;border-left-width:2px}
+.bn-c.tr{top:5px;right:5px;border-top-width:2px;border-right-width:2px}
+.bn-c.bl{bottom:5px;left:5px;border-bottom-width:2px;border-left-width:2px}
+.bn-c.br{bottom:5px;right:5px;border-bottom-width:2px;border-right-width:2px}
+/* リボン */
+.ribbon{
+  position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(180deg,#d9bd78,#b3954f);color:#2f3a33;
+  font-family:system-ui,sans-serif;font-size:11.5px;font-weight:700;
+  letter-spacing:.2em;padding:5px 22px;white-space:nowrap;
+  box-shadow:0 3px 10px rgba(0,0,0,.32);
+}
+.ribbon::before,.ribbon::after{
+  content:"";position:absolute;top:0;border:13px solid transparent;
+}
+.ribbon::before{left:-10px;border-right-color:#8e7c4e;border-left:0}
+.ribbon::after{right:-10px;border-left-color:#8e7c4e;border-right:0}
+.bn-sub{
+  margin-top:14px;font-size:13px;color:var(--gold);line-height:1.85;letter-spacing:.03em;
+}
+/* ---- 権威づけ ---- */
+.cred{
+  margin-top:24px;padding:14px 12px;
+  border-top:1px solid rgba(195,169,108,.35);
+  border-bottom:1px solid rgba(195,169,108,.35);
+}
+.cred-line{font-size:14.5px;color:var(--text);letter-spacing:.03em;line-height:1.9}
+.cred-line em{
+  font-style:normal;color:var(--gold);
+  border-bottom:1px solid rgba(195,169,108,.6);padding-bottom:2px;
+}
+.cred-sub{
+  font-family:system-ui,sans-serif;font-size:11px;color:var(--dim);
+  margin-top:10px;line-height:1.9;
+}
+.cred-at{color:var(--gold)}
+/* 無料で読めることの一覧 */
+.gets{
+  background:rgba(48,59,52,.93);border:1px solid var(--gold-d);
+  border-radius:3px;padding:20px 18px 16px;margin-top:30px;text-align:left;
+  box-shadow:0 10px 34px rgba(0,0,0,.28);
+}
+.gets-h{
+  text-align:center;font-size:14px;color:var(--gold);letter-spacing:.04em;
+  padding-bottom:13px;margin-bottom:13px;border-bottom:1px dotted rgba(195,169,108,.4);
+}
+.gets ul{list-style:none}
+.gets li{
+  font-family:system-ui,sans-serif;font-size:12.5px;color:var(--text);
+  line-height:1.75;padding:6px 0 6px 18px;position:relative;
+}
+.gets li::before{content:"◇";position:absolute;left:0;color:var(--gold);font-size:9px;top:9px}
+.gets li strong{color:var(--gold)}
+.gets-f{
+  text-align:center;font-family:system-ui,sans-serif;font-size:11px;
+  color:var(--dim);margin-top:12px;
+}
+/* テーマ選択 */
+.theme-note{
+  font-family:system-ui,sans-serif;font-size:11px;color:#8a8578;
+  margin-top:6px;line-height:1.75;
+}
+
+/* ---------- 手紙ボックス（本家の吹き出しの代わり） ---------- */
+.speak{
+  background:var(--paper);color:#3b4239;border-radius:3px;
+  padding:18px 18px 16px;margin:30px 0;font-size:13.5px;line-height:1.95;
+  position:relative;box-shadow:0 6px 20px rgba(0,0,0,.18);
+}
+.speak::before{
+  content:"";position:absolute;left:26px;bottom:-9px;
+  border:9px solid transparent;border-top-color:var(--paper);border-bottom:0;
+}
+.speak .from{
+  font-family:system-ui,sans-serif;font-size:10px;letter-spacing:.22em;
+  color:var(--gold-d);margin-bottom:8px;
+}
+.speak b{color:#2f6b4f;font-weight:600}
+
+/* ---------- form ---------- */
+.card{background:var(--paper);color:#3b4239;padding:30px 22px;border-radius:2px}
+.card h2{font-size:16px;font-weight:400;letter-spacing:.08em;text-align:center}
+.card .note{
+  font-family:system-ui,sans-serif;font-size:11.5px;color:#6f756c;
+  text-align:center;margin:10px 0 26px;line-height:1.9;
+}
+label{
+  display:block;font-family:system-ui,sans-serif;font-size:11.5px;
+  color:#6f756c;margin-bottom:6px;letter-spacing:.05em;
+}
+label .opt{color:#a09a8d;font-size:10.5px}
+.field{margin-bottom:18px}
+input,select{
+  width:100%;padding:10px 11px;border:1px solid #cfcabb;background:#fff;
+  font-family:system-ui,sans-serif;font-size:15px;color:#3b4239;border-radius:2px;
+}
+input:focus,select:focus{outline:none;border-color:var(--deep)}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.submit{
+  width:100%;margin-top:6px;padding:15px;border:none;border-radius:2px;
+  background:var(--deep);color:var(--paper);cursor:pointer;
+  font-family:system-ui,sans-serif;font-size:14.5px;letter-spacing:.14em;
+}
+.submit:hover{background:var(--deep2)}
+.form-foot{
+  font-family:system-ui,sans-serif;font-size:11px;color:#a09a8d;
+  text-align:center;margin-top:12px;
+}
+/* 任意項目の折りたたみ */
+.more{margin:2px 0 20px;border-top:1px solid #ddd8c9;border-bottom:1px solid #ddd8c9}
+.more summary{
+  cursor:pointer;list-style:none;padding:11px 2px;text-align:center;
+  font-family:system-ui,sans-serif;font-size:12.5px;color:#4a584f;letter-spacing:.03em;
+}
+.more summary::-webkit-details-marker{display:none}
+.more summary::before{content:"▼ ";font-size:9px;color:#8e7c4e}
+.more[open] summary::before{content:"▲ "}
+.more-in{padding:4px 0 14px}
+.note2{
+  font-family:system-ui,sans-serif;font-size:11px;color:#8a8578;
+  margin-bottom:14px;line-height:1.8;
+}
+/* 無料で読めることリスト */
+.freelist{border-top:1px solid #ddd8c9;margin-top:24px;padding-top:18px}
+.fl-head{
+  text-align:center;font-size:13.5px;color:#4a584f;letter-spacing:.05em;margin-bottom:12px;
+}
+.freelist ul{list-style:none}
+.freelist li{
+  font-family:system-ui,sans-serif;font-size:12.5px;color:#5c6a60;
+  line-height:1.75;padding:5px 0 5px 17px;position:relative;
+}
+.freelist li::before{
+  content:"・";position:absolute;left:2px;color:#8e7c4e;
+}
+.freelist li strong{color:#33403a}
+
+/* ---------- 結果ヘッダ ---------- */
+#result{display:none;padding-bottom:40px}
+.result-head{padding-top:34px}
+.result-head h2{
+  font-size:21px;font-weight:400;text-align:center;line-height:1.8;
+  letter-spacing:.05em;color:var(--text);
+}
+.subject{
+  background:var(--hl);color:#33403a;text-align:center;
+  padding:13px 10px;margin:22px 0;font-size:14px;line-height:1.9;border-radius:2px;
+}
+.subject b{font-weight:600}
+.subject .now{font-size:12.5px;color:#5c6a60}
+
+/* ---------- ホロスコープ ---------- */
+.chartbox{text-align:center;margin:10px 0 6px}
+.chartbox svg{width:100%;max-width:360px;height:auto}
+.legend{
+  font-family:system-ui,sans-serif;font-size:10.5px;color:var(--dim);
+  text-align:center;line-height:1.9;margin-top:4px;
+}
+.legend span{display:inline-block;margin:0 7px}
+.legend i{font-style:normal;color:var(--gold)}
+
+/* ---------- 天体テーブル ---------- */
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{
+  width:100%;min-width:430px;border-collapse:collapse;
+  background:var(--paper);color:#3b4239;
+  font-family:system-ui,sans-serif;font-size:11.5px;
+}
+th{background:var(--sage);color:#2c352e;font-weight:500;padding:8px 4px;letter-spacing:.04em}
+td{border:1px solid #d8d3c4;padding:7px 5px;text-align:center;line-height:1.5}
+td.nm{text-align:left;padding-left:10px;white-space:nowrap}
+tr.on td{background:var(--hl2)}
+td.mark{background:var(--hl2);font-weight:600}
+.glyph{font-size:13px;color:#46584c;margin-right:4px}
+/* 5度前ルールで繰り上がった天体の印 */
+.r5{
+  display:inline-block;margin-left:4px;padding:1px 4px;border-radius:2px;
+  background:#8e7c4e;color:#f1eee4;font-size:8.5px;letter-spacing:.02em;vertical-align:1px;
+}
+
+/* 抜き出し帯 */
+.pick{
+  display:flex;background:var(--paper);color:#3b4239;border-radius:2px;overflow:hidden;
+  font-family:system-ui,sans-serif;font-size:11.5px;margin:16px 0 18px;
+}
+.pick div{flex:1;padding:9px 4px;text-align:center;border-right:1px solid #d8d3c4}
+.pick div:last-child{border-right:none}
+.pick div.k{background:var(--hl2);font-weight:600;flex:1.1}
+
+/* ---------- 本文 ---------- */
+.body p{margin-bottom:17px;line-height:2.15;font-size:15.5px}
+.body p:last-child{margin-bottom:0}
+.mk{color:var(--gold);font-weight:600}
+.uline{border-bottom:1px solid var(--gold-d);padding-bottom:1px}
+
+/* アスペクトカード */
+.asp{
+  border:1px solid var(--gold-d);border-radius:2px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 14px;margin:12px 0;background:rgba(255,255,255,.03);
+}
+.asp .p{font-size:17px;letter-spacing:.03em;white-space:nowrap}
+.asp .p sup{font-family:system-ui,sans-serif;font-size:9px;color:var(--gold);margin-right:3px;vertical-align:super}
+.asp .mid{text-align:center;font-family:system-ui,sans-serif;line-height:1.5}
+.asp .mid .g{display:block;font-size:19px;color:var(--text);font-family:serif}
+.asp .mid .n{font-size:10px;color:var(--dim)}
+.asp .mid .o{font-size:10px;color:var(--gold)}
+
+/* 日付ドカン */
+.bigdate{
+  border:1px solid var(--gold);padding:22px 14px;text-align:center;margin:20px 0;
+  background:rgba(195,169,108,.07);
+}
+.bigdate span{display:block;font-size:26px;color:var(--gold);letter-spacing:.05em;line-height:1.5}
+.bigdate .bd-lead,.bigdate .bd-note{
+  font-family:system-ui,sans-serif;font-size:11.5px;color:var(--dim);line-height:1.85;
+}
+.bigdate .bd-lead{margin-bottom:10px}
+.bigdate .bd-note{margin-top:10px}
+
+/* 2つ目のゲート */
+.gate2{
+  position:absolute;left:0;right:0;bottom:24px;z-index:2;
+  background:var(--paper);color:#3b4239;border:1px solid var(--gold);
+  padding:20px 18px;text-align:center;box-shadow:0 14px 40px rgba(0,0,0,.4);
+}
+.gate2 .g2-lead{font-size:14px;line-height:1.9;margin-bottom:14px}
+.gate2 .g2-lead strong{color:#4a584f}
+.buy2{
+  display:block;width:100%;padding:14px;border:none;border-radius:2px;
+  background:var(--deep);color:var(--paper);cursor:pointer;
+  font-family:system-ui,sans-serif;font-size:14px;letter-spacing:.1em;
+}
+.buy2:hover{background:var(--deep2)}
+body.unlocked .gate2{display:none}
+
+/* ---------- paywall ---------- */
+.cut{position:relative}
+.cut .fade{
+  position:absolute;left:0;right:0;bottom:0;height:130px;
+  background:linear-gradient(180deg,rgba(62,75,67,0),var(--deep) 92%);
+}
+.locked{position:relative;margin-top:6px}
+.locked .veil{
+  filter:blur(4.5px);opacity:.5;user-select:none;pointer-events:none;
+  position:relative;z-index:1;
+}
+.gate{
+  position:absolute;left:0;right:0;top:70px;z-index:2;
+  background:var(--paper);color:#3b4239;
+  border:1px solid var(--gold);padding:30px 22px;text-align:center;
+  box-shadow:0 18px 50px rgba(0,0,0,.45);
+}
+.gate .price{font-family:system-ui,sans-serif;font-size:12.5px;color:#6f756c}
+.gate .price strong{font-size:28px;color:#33403a;font-weight:500;letter-spacing:0}
+.gate .lead{font-size:16px;line-height:2.0;margin:14px 0 0}
+.gate .sub{
+  font-family:system-ui,sans-serif;font-size:12.5px;color:#6f756c;
+  line-height:2.0;margin:14px 0 20px;
+}
+.gate .buy{
+  display:block;width:100%;padding:16px;border:none;border-radius:2px;
+  background:var(--deep);color:var(--paper);cursor:pointer;
+  font-family:system-ui,sans-serif;font-size:14.5px;letter-spacing:.12em;
+}
+.gate .buy:hover{background:var(--deep2)}
+/* PayPalボタンまわり */
+#paypal-btn{min-height:0;margin-bottom:10px}
+.paynote{
+  font-family:system-ui,sans-serif;font-size:11px;color:#8a8578;
+  text-align:center;margin-top:9px;line-height:1.7;
+}
+.gate .buy{background:#7a8a7f}
+.gate .buy:hover{background:var(--deep)}
+.gate .contents{
+  border-top:1px solid #d8d3c4;margin-top:20px;padding-top:16px;text-align:left;
+  font-family:system-ui,sans-serif;font-size:12px;color:#5c6a60;line-height:2.05;
+}
+.gate .contents b{
+  display:block;font-weight:400;color:#33403a;font-size:10.5px;
+  letter-spacing:.2em;margin-bottom:8px;
+}
+.gate .terms{
+  font-family:system-ui,sans-serif;font-size:10.5px;color:#a09a8d;
+  margin-top:12px;line-height:1.9;
+}
+.gate .terms a{color:#6f756c}
+footer a{color:var(--gold);text-decoration:none;border-bottom:1px solid var(--gold-d)}
+body.unlocked .locked .veil{filter:none;opacity:1;user-select:auto;pointer-events:auto}
+body.unlocked .gate,body.unlocked .cut .fade{display:none}
+
+/* 目次 */
+.toc{background:rgba(255,255,255,.04);border:1px solid var(--gold-d);padding:20px 18px}
+.toc ol{list-style:none;counter-reset:t}
+.toc li{
+  counter-increment:t;font-size:14px;padding:8px 0 8px 30px;position:relative;
+  border-bottom:1px dotted rgba(195,169,108,.35);
+}
+.toc li:last-child{border-bottom:none}
+.toc li::before{
+  content:counter(t);position:absolute;left:6px;top:9px;
+  font-family:system-ui,sans-serif;font-size:10.5px;color:var(--gold);
+}
+.toc li.lk{color:var(--dim)}
+.toc li.lk::after{
+  content:"　鍵";font-family:system-ui,sans-serif;font-size:9.5px;color:var(--gold-d);
+}
+
+footer{
+  border-top:1px solid var(--gold-d);margin-top:46px;padding:28px 0 92px;
+  text-align:center;font-family:system-ui,sans-serif;
+  font-size:11px;color:var(--dim);line-height:2.0;
+}
+
+/* ---------- demo bar ---------- */
+#demobar{
+  position:fixed;bottom:0;left:0;right:0;z-index:900;
+  background:rgba(20,26,22,.95);color:#fff;
+  font-family:system-ui,sans-serif;font-size:12px;
+  padding:9px 14px;display:flex;gap:9px;align-items:center;justify-content:center;flex-wrap:wrap;
+}
+#demobar span{opacity:.65;letter-spacing:.1em}
+#demobar button{
+  font:inherit;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4);
+  border-radius:3px;padding:5px 11px;cursor:pointer;
+}
+#demobar button:hover{background:rgba(255,255,255,.14)}
+
+@media(max-width:420px){
+  .hero h1{font-size:22px}
+  .sec-title{font-size:15px}
+  .asp .p{font-size:15px}
+  .gate{top:54px;padding:26px 18px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ ファーストビュー ============ -->
+<div class="hero" id="hero">
+  <div id="wheel"></div>
+  <span class="corner tl"></span><span class="corner tr"></span>
+  <span class="corner bl"></span><span class="corner br"></span>
+  <div class="wrap">
+    <div class="brand">星 よ み　お ま す</div>
+
+    <!-- バナー風のタイトル塊 -->
+    <div class="banner">
+      <span class="bn-c tl"></span><span class="bn-c tr"></span>
+      <span class="bn-c bl"></span><span class="bn-c br"></span>
+      <div class="ribbon">無 料 占 い</div>
+      <h1>おますの<em>無料占い</em></h1>
+      <div class="bn-sub">ホロスコープで占う、<br>あなたの性質とこれからの転機</div>
+      <div class="stars">✦　✧　✦</div>
+    </div>
+
+    <div class="sub">
+      生まれた瞬間の星の配置は、一生変わりません。<br>
+      変わるのは、その上を通っていく星のほうです。
+    </div>
+
+    <div class="cred">
+      <div class="cred-line">この鑑定は、星よみ専門家 おます が<br><em>ひとりで読み解いています</em></div>
+      <div class="cred-sub">
+        毎日の星よみを Voicy・stand.fm で配信中<br>
+        Instagram <span class="cred-at">@omasu_horoscope</span>
+      </div>
+    </div>
+
+    <div class="gets">
+      <div class="gets-h">生年月日だけで、ここまで無料で読めます</div>
+      <ul>
+        <li>あなたの出生図と、いまの空を重ねた<strong>ホロスコープ</strong></li>
+        <li>10天体それぞれのサインとハウスの<strong>一覧表</strong></li>
+        <li>あなたという人の、もともとの形</li>
+        <li>いま動いている星が、何を持ってきているか</li>
+        <li>この先いちばん近い<strong>転機の日付</strong></li>
+      </ul>
+      <div class="gets-f">登録もメールアドレスも要りません</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 入力フォーム ============ -->
+<section id="formsec" style="padding:44px 0">
+  <div class="wrap">
+    <div class="card">
+      <h2>あなたのことを教えてください</h2>
+      <div class="note">生年月日だけでも読みはじめられます。<br>出生時間と出生地がわかると、ハウスまで見られます。</div>
+
+      <div class="field">
+        <label>何について読みますか <span class="opt">（必須）</span></label>
+        <select id="theme"></select>
+        <div class="theme-note">前半に読める内容はどれも同じです。<br>後半の切り口だけが変わります。</div>
+      </div>
+
+      <div class="field">
+        <label>お名前 <span class="opt">（任意・8文字まで）</span></label>
+        <input type="text" id="name" maxlength="8" placeholder="おます">
+      </div>
+      <div class="field">
+        <label>生年月日 <span class="opt">（必須）</span></label>
+        <div class="row"><select id="y"></select><select id="m"></select><select id="d"></select></div>
+      </div>
+      <details class="more">
+        <summary>生まれた時間と場所も入れる（任意）</summary>
+        <div class="more-in">
+          <div class="note2">入れていただくと、ハウスと転機の日付まで見られます。</div>
+          <div class="field">
+            <label>出生時間</label>
+            <div class="row"><select id="h"></select><select id="mi"></select></div>
+          </div>
+          <div class="field" style="margin-bottom:4px">
+            <label>出生地</label>
+            <select id="pref"></select>
+          </div>
+        </div>
+      </details>
+
+      <button class="submit" id="go">無料で占う</button>
+      <div class="form-foot">※ 入力された内容は保存されません</div>
+
+      <div class="freelist">
+        <div class="fl-head">ここまでは無料でお読みいただけます</div>
+        <ul>
+          <li>あなたの出生図（ネイタル）と、いまの空を重ねた一枚</li>
+          <li>10天体それぞれのサインとハウスの一覧</li>
+          <li>太陽のサインからわかる、仕事で立っている場所</li>
+          <li>水星のサインからわかる、考え方と伝え方</li>
+          <li>いまあなたの上を動いている星</li>
+          <li><strong>この先いちばん近い転機の日付</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 結果 ============ -->
+<section id="result">
+  <div class="wrap">
+
+    <div class="result-head">
+      <h2 id="resultTitle"></h2>
+      <div class="orn tight"><i>◆</i></div>
+    </div>
+
+    <div class="speak">
+      <div class="from">O M A S U</div>
+      <span id="greet"></span>
+      ここから、<b>生まれたときの空</b>と<b>いま動いている空</b>を重ねて見ていきます。
+      まずは、その二つを一枚に描いたところから。
+    </div>
+
+    <div class="subject" id="subject"></div>
+
+    <div class="chartbox" id="chart"></div>
+    <div class="legend">
+      <span><b style="color:#2f3a33;background:#f1eee4;padding:1px 5px;border-radius:2px">内側</b>　生まれたときの空（ネイタル）</span>
+      <span><b style="color:#a07a3c;background:#f1eee4;padding:1px 5px;border-radius:2px">外側</b>　いまの空（トランジット）</span>
+    </div>
+
+    <div class="orn"><i>◆</i></div>
+    <div class="sec-title">生まれたときの、天体の位置</div>
+    <div class="orn tight"><i>◆</i></div>
+    <div class="tbl-scroll" id="table"></div>
+
+    <div class="orn"><i>◆</i></div>
+    <div class="sec-title">この鑑定でお伝えすること</div>
+    <div class="orn tight"><i>◆</i></div>
+    <div class="toc">
+      <ol>
+        <li>太陽のサイン ― あなたが仕事で立っている場所</li>
+        <li>水星のサイン ― あなたの考え方と伝え方</li>
+        <li>いま、あなたの上を動いている星</li>
+        <li>この先いちばん近い転機の<strong>日付</strong></li>
+        <li class="lk">その日、何が起きるか</li>
+        <li class="lk">月のサイン ― ひとりのときのあなた</li>
+        <li class="lk">いま効いているアスペクト</li>
+        <li class="lk">その日までに、しておくといいこと</li>
+        <li class="lk">おますから、あなたへ</li>
+      </ol>
+    </div>
+
+    <!-- ---------- 無料ゾーン ---------- -->
+    <div class="orn"><i>◆</i></div>
+    <div class="sec-title">太陽のサインが教えてくれる、<br>あなたが仕事で立っている場所</div>
+    <div class="orn tight"><i>◆</i></div>
+    <div class="pick" id="pickSun"></div>
+    <div class="body" id="ch1"></div>
+
+    <div class="orn"><i>◆</i></div>
+    <div class="sec-title">水星のサインからわかる、<br>あなたの考え方と伝え方</div>
+    <div class="orn tight"><i>◆</i></div>
+    <div class="pick" id="pickMer"></div>
+    <div class="body" id="ch2"></div>
+
+    <div class="speak" style="margin-top:34px">
+      <div class="from">O M A S U</div>
+      ここまでが、<b>変わらないほうのあなた</b>です。
+      ここから、いま空を動いている星の話に移ります。
+    </div>
+
+    <div class="orn"><i>◆</i></div>
+    <div class="sec-title">いま、あなたの上を動いている星</div>
+    <div class="orn tight"><i>◆</i></div>
+    <div class="body" id="ch3"></div>
+
+    <!-- ---------- 転機の日付（無料で出す） ---------- -->
+    <div class="orn"><i>◆</i></div>
+    <div class="sec-title">この先いちばん近い、<br>あなたの転機の日</div>
+    <div class="orn tight"><i>◆</i></div>
+    <div class="bigdate">
+      <div class="bd-lead" id="bigdateLead"></div>
+      <span id="bigdate"></span>
+      <div class="bd-note" id="bigdateNote"></div>
+    </div>
+    <div class="body" id="ch4"></div>
+
+    <!-- ---------- 切れ目 ---------- -->
+    <div class="cut">
+      <div class="band" id="cutBand"></div>
+      <div class="body" id="ch5"></div>
+      <div class="fade"></div>
+    </div>
+
+    <!-- ---------- 有料ゾーン ---------- -->
+    <div class="locked">
+      <div class="gate">
+        <div class="price">続きをすべて読む　<strong>¥500</strong>　(税込)</div>
+        <div class="lead">日付は、もうお伝えしました。<br>ここから先は、<span class="uline" style="border-color:#8e7c4e">その日をどう迎えるか</span>の話です。</div>
+        <div class="sub">
+          転機は、来ると分かっていても<br>
+          何をすればいいかが分からないと通り過ぎます。<br>
+          そこはあなたの月を使って読みます。
+        </div>
+        <!-- PayPalのノーコード決済ボタン。ここで完結し、ページは移動しない -->
+        <div id="paypal-btn"></div>
+        <button class="buy" id="buy">続きを読む（デモ用・決済なしで解除）</button>
+        <div class="paynote">お支払い後、このページのまま続きが表示されます</div>
+        <div class="contents">
+          <b>ここから先の内容</b>
+          ・その日、具体的に何が起きるか<br>
+          ・あなたの月のサインと、その扱い方<br>
+          ・いま効いているアスペクト（全件）<br>
+          ・<strong>その日までにしておくといいこと</strong><br>
+          ・おますから、あなたへの手紙
+        </div>
+        <div class="terms">
+          一度お読みいただいたあとは、いつでも読み返していただけます。<br>
+          <a href="tokushoho.html" target="_blank" rel="noopener">特定商取引法に基づく表記</a>
+        </div>
+      </div>
+
+      <div class="veil" aria-hidden="true">
+        <div class="orn"><i>◆</i></div>
+        <div class="sec-title">月のサイン ― ひとりのときのあなた</div>
+        <div class="orn tight"><i>◆</i></div>
+        <div class="pick" id="pickMoon"></div>
+        <div class="body" id="ch6"></div>
+
+        <div class="orn"><i>◆</i></div>
+        <div class="sec-title">いま効いているアスペクト</div>
+        <div class="orn tight"><i>◆</i></div>
+        <div id="aspects"></div>
+        <div class="body" id="ch7"></div>
+
+        <div class="band">その日までに、しておくといいこと</div>
+        <div class="body" id="ch8"></div>
+
+        <div class="orn"><i>◆</i></div>
+        <div class="sec-title">おますから、あなたへ</div>
+        <div class="orn tight"><i>◆</i></div>
+        <div class="body" id="ch9"></div>
+      </div>
+
+      <!-- 2つ目のゲート（鏡リュウジ型に、下でもう一度出す） -->
+      <div class="gate2" id="gate2">
+        <div class="g2-lead">続きは、<strong id="g2date"></strong>を迎えるための話です。</div>
+        <button class="buy2" id="buy2">続きを読む　¥500</button>
+      </div>
+    </div>
+
+    <footer>
+      <a href="tokushoho.html">特定商取引法に基づく表記</a><br>
+      星よみ専門家　おます<br>
+      ※ このページは構成確認用のプロトタイプです
+    </footer>
+  </div>
+</section>
+
+<div id="demobar">
+  <span>プロトタイプ</span>
+  <button id="toggle">有料版の見え方を確認</button>
+  <button id="reset">入力に戻る</button>
+  <button id="clearPaid">購入状態をリセット</button>
+</div>
+
+<!-- PayPal ノーコード決済（本番／Liveアプリ「星見」のクライアントID）
+     ※ クライアントIDはページのHTMLに出る前提のもので、公開して問題ない。
+        秘密鍵（Secret）のほうは絶対にここへ書かないこと。 -->
+<script src="https://www.paypal.com/sdk/js?client-id=AQDu2ocvL4sCh-hR5MdQGbhjOK2oS-cQJOFJbivdcCOM_q_q_jprsxPoJ9Ro6V2pZy6bbL-xRDTZwdjF&currency=JPY&intent=capture"></script>
+<script src="astro.js?v=6"></script>
+<script>
+/* ===========================================================
+   解釈文テンプレート
+   ルートA（テンプレート方式）を採るなら、この表を天体×12ぶん
+   書き溜めることになる。ここでは太陽・水星・月の3つを実装。
+   =========================================================== */
+const SUN={
+牡羊座:{k:"先に体が動く",a:"考えがまとまる前に、もう手をつけている",b:"始めるのは速いのに、途中で熱が切れる"},
+牡牛座:{k:"自分の速度を守る",a:"急かされない場所でこそ、いちばんいい仕事をする",b:"納得がいくまで動かないので、機を逃すことがある"},
+双子座:{k:"複数を同時に持つ",a:"ひとつに絞らず、いくつも抱えているほうが調子がいい",b:"深く掘る前に、次のものへ興味が移る"},
+蟹座:{k:"人を抱えこむ",a:"自分のためより、誰かのためのほうが力が出る",b:"引き受けすぎて、自分のぶんが後回しになる"},
+獅子座:{k:"見られて伸びる",a:"人の目があるところで、実力以上のものが出る",b:"手応えのない場所では、急に力が抜ける"},
+乙女座:{k:"細部で品質を上げる",a:"人が見落とすところに気づいて、静かに直している",b:"直しきれない不完全さを、自分の責任にしてしまう"},
+天秤座:{k:"間に立って整える",a:"人と人のあいだの空気を、無意識に調整している",b:"角が立つ判断を、最後まで先延ばしにする"},
+蠍座:{k:"ひとつを深く掘る",a:"決めたら、他が見えなくなるくらい深く入っていける",b:"手放すべきものを、手放すのに時間がかかる"},
+射手座:{k:"外へ出て広げる",a:"知らない場所・知らない人から、いちばん多くを持ち帰る",b:"見通しが立った瞬間に、興味が薄れる"},
+山羊座:{k:"積んで形にする",a:"時間のかかることを、途中でやめずに積み上げられる",b:"休むことにまで、罪悪感を持ってしまう"},
+水瓶座:{k:"距離をとって見る",a:"渦中にいても、一歩引いた場所から全体を見られる",b:"熱が入るべき場面で、冷静すぎるように見える"},
+魚座:{k:"境界がやわらかい",a:"相手の状態が、説明される前にわかってしまう",b:"人の感情まで背負って、消耗していることに気づかない"}};
+
+const MER={
+牡羊座:{k:"結論から言う",a:"話が短い。要点だけ置いて、あとは相手に任せる"},
+牡牛座:{k:"確かめてから話す",a:"曖昧なまま口に出さない。そのぶん言葉が重い"},
+双子座:{k:"言い換えが速い",a:"相手が分かる言葉に、その場で翻訳できる"},
+蟹座:{k:"相手を見て選ぶ",a:"同じ内容でも、相手によって言い方を変えている"},
+獅子座:{k:"熱を乗せて話す",a:"内容より先に、まず気持ちが伝わってしまう"},
+乙女座:{k:"正確さを優先する",a:"ずれた言葉が気になって、細かく直したくなる"},
+天秤座:{k:"角を丸めて話す",a:"きつい内容でも、受け取れる形にして渡せる"},
+蠍座:{k:"本音を探りながら話す",a:"表面の言葉より、その下にあるものを聞いている"},
+射手座:{k:"大きくつかんで話す",a:"細部より、全体の意味のほうを先に伝える"},
+山羊座:{k:"構造にして話す",a:"散らかった話を、順序立てて組み直せる"},
+水瓶座:{k:"前提から疑う",a:"みんなが当たり前としていることに、先に引っかかる"},
+魚座:{k:"言葉にする前に感じる",a:"うまく言えないが、方向は先に分かっている"}};
+
+/* 月＝ひとりのときの自分。k:出方 / a:満たされる条件 / b:消耗するパターン */
+const MOON={
+牡羊座:{k:"じっとしていられなくなる",a:"体を動かしているとき",b:"待たされる、決まらない状況が続くとき"},
+牡牛座:{k:"まず身体を落ち着けたくなる",a:"いつもの場所で、いつもの手順を踏んでいるとき",b:"急な変更が続くとき"},
+双子座:{k:"頭のなかで会話が続いている",a:"考えを言葉にして外に出せたとき",b:"情報が入りすぎて処理が追いつかないとき"},
+蟹座:{k:"人のことを思い出している",a:"気を張らずにいられる相手といるとき",b:"誰かの機嫌を自分の責任のように感じているとき"},
+獅子座:{k:"急に自信が細くなる",a:"やったことに反応が返ってきたとき",b:"手応えのない場所に置かれ続けたとき"},
+乙女座:{k:"その日の反省点を数えはじめる",a:"やることの輪郭がはっきりしているとき",b:"詰めきれない仕事を抱えたままのとき"},
+天秤座:{k:"自分の言い方が気になりだす",a:"まわりとの関係が穏やかなとき",b:"対立のある場に居続けたとき"},
+蠍座:{k:"感じたことを反芻し続ける",a:"深く関われる相手か仕事があるとき",b:"表面的なやり取りばかりが続いたとき"},
+射手座:{k:"ここではない場所のことを考える",a:"先の見通しが立っているとき",b:"同じ景色が続いて先が見えないとき"},
+山羊座:{k:"まだ足りないところを探してしまう",a:"積み上がった実感があるとき",b:"成果が形にならない時期が続いたとき"},
+水瓶座:{k:"いちばん自分に戻れる",a:"ひとりの時間が確保できているとき",b:"常に誰かといる環境に置かれたとき"},
+魚座:{k:"日中に受け取ったものが遅れて効いてくる",a:"感じたことを外に出せる場があるとき",b:"感情の強い人のそばに長くいたとき"}};
+
+/* トランジット天体が与えている刺激 */
+const TR={
+太陽:{soft:"物事が見えやすくなり、動かすなら今という時期です",hard:"自分のやり方そのものが試されています"},
+月:{soft:"気持ちが動きやすく、決めるのが速くなります",hard:"感情が揺れて、判断がぶれやすくなっています"},
+水星:{soft:"話が通りやすく、伝わり方が良くなっています",hard:"行き違いが起きやすいので、確認を一つ多めに"},
+金星:{soft:"人や好機のほうから近づいてきます",hard:"楽なほうへ流れやすいので、選ぶ基準を決めておくこと"},
+火星:{soft:"行動に勢いがつき、始めたことが進みます",hard:"急ぎすぎて、まわりとの摩擦が出やすい時期です"},
+木星:{soft:"枠が広がり、これまで入らなかったものが入ってきます",hard:"広げすぎて手が回らなくなりやすい時期です"},
+土星:{soft:"やってきたことが形になって固まります",hard:"制限がかかり、思ったより時間がかかります"},
+天王星:{soft:"考えていなかった選択肢が出てきます",hard:"予定が急に崩れることがあります"},
+海王星:{soft:"直感が働きやすく、言葉になる前に方向が見えます",hard:"境界が曖昧になり、気づかないうちに消耗します"},
+冥王星:{soft:"深いところから力が出て、限界が一段上がります",hard:"手放すことを迫られます。抵抗するほど長引きます"}};
+
+/* 転機：ゆっくり動く星が、ネイタルのどこに当たるか */
+const TURN={
+木星:{
+ 太陽:"認められる形で機会が来ます。声がかかったら、いったん受けておくほうがいい時期です。",
+ 月:"生活のほうから楽になります。住む場所、暮らし方、近しい人との関係が動きます。",
+ 水星:"話が広がります。情報や依頼が、人づてに入ってくる形をとります。",
+ 金星:"人が近づいてきます。関係の面でも、お金の面でも入口が増えます。",
+ 火星:"動きたい気持ちが強くなります。始めるなら、この時期が最も軽く動けます。",
+ ASC:"見え方が変わります。同じことをしていても、人からの扱いが変わってきます。",
+ MC:"立場が動きます。仕事の看板そのものが変わる可能性があります。"},
+土星:{
+ 太陽:"責任が増えます。重く感じますが、ここで引き受けたものが後から効いてきます。",
+ 月:"生活を締め直す時期です。無理をしてきた部分が、続かなくなります。",
+ 水星:"言葉が慎重になります。決めるのに時間がかかりますが、それでいい時期です。",
+ 金星:"関係とお金に整理が入ります。減るように見えて、実際は選別されています。",
+ 火星:"動きが鈍ります。焦って動くより、準備に充てたほうが結果が出ます。",
+ ASC:"人からの見え方が硬くなります。とっつきにくく見えるぶん、信頼が積まれます。",
+ MC:"仕事の土台を作る時期です。結果はこの時期ではなく、少し先に出ます。"}};
+
+/* ===========================================================
+   ホロスコープ描画
+   =========================================================== */
+function drawChart(natal,transit){
+  const C=170,R1=166,R2=146,rT=132,rN=104,rIn=88;
+  const pt=(lon,r)=>{
+    const a=rad(180+(lon-natal.asc));
+    return [C+r*Math.cos(a), C-r*Math.sin(a)];
+  };
+  let s=`<svg viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg">`;
+  s+=`<circle cx="${C}" cy="${C}" r="${R1}" fill="#4a584f" stroke="#c3a96c" stroke-width="1"/>`;
+  s+=`<circle cx="${C}" cy="${C}" r="${R2}" fill="#f1eee4" stroke="#c3a96c" stroke-width="1"/>`;
+  s+=`<circle cx="${C}" cy="${C}" r="${rIn}" fill="none" stroke="#cfcabb" stroke-width="1"/>`;
+  s+=`<circle cx="${C}" cy="${C}" r="${(rT+rN)/2}" fill="none" stroke="#dcd7c8" stroke-width="1"/>`;
+
+  // サイン境界とグリフ
+  for(let i=0;i<12;i++){
+    const b=i*30, [x1,y1]=pt(b,R2), [x2,y2]=pt(b,R1);
+    s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#c3a96c" stroke-width=".7" opacity=".8"/>`;
+    const [gx,gy]=pt(b+15,(R1+R2)/2);
+    s+=`<text x="${gx}" y="${gy+5}" font-size="14" fill="#e8dfc4" text-anchor="middle">${SIGN_GLYPH[i]}</text>`;
+  }
+  // ハウス境界（イコールハウス）＋番号
+  for(let i=0;i<12;i++){
+    const b=natal.asc+i*30, [x1,y1]=pt(b,0), [x2,y2]=pt(b,R2);
+    s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ddd8c9" stroke-width=".7"/>`;
+    const [nx,ny]=pt(b+15,32);
+    s+=`<text x="${nx}" y="${ny+3}" font-size="8" fill="#9a9484" text-anchor="middle">${i+1}</text>`;
+  }
+  // ASC / MC
+  const mark=(lon,lab)=>{
+    const [x1,y1]=pt(lon,rIn), [x2,y2]=pt(lon,R2);
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#7e8f80" stroke-width="1.6"/>`;
+  };
+  s+=mark(natal.asc)+mark(natal.mc);
+
+  // 天体（重なりを避けて少しずらす）
+  const place=(list,r,fill)=>{
+    const used=[];
+    return list.map(p=>{
+      let rr=r;
+      while(used.some(u=>Math.abs(norm(u.lon-p.lon+180)-180)<9 && Math.abs(u.r-rr)<11)) rr-=12;
+      used.push({lon:p.lon,r:rr});
+      const [x,y]=pt(p.lon,rr);
+      return `<text x="${x}" y="${y+5}" font-size="14" fill="${fill}" text-anchor="middle">${p.glyph}</text>`;
+    }).join("");
+  };
+  s+=place(transit.bodies,rT,"#a07a3c");   // トランジット＝金茶
+  s+=place(natal.bodies,rN,"#2f3a33");     // ネイタル＝濃緑
+  s+=`<circle cx="${C}" cy="${C}" r="3" fill="#c3a96c"/></svg>`;
+  return s;
+}
+
+/* ===========================================================
+   組み立て
+   =========================================================== */
+/* テーマ。前半は共通で、後半（有料）の切り口だけが変わる */
+const THEMES={
+ shigoto:{label:"【仕事】ホロスコープで読む、この先の働き方と転機",
+   title:"この先、あなたの仕事はどう動くか",
+   band:"その日、仕事に何が起きるか",
+   field:"仕事", place:"働き方や役割"},
+ seishitsu:{label:"【人生】ホロスコープで読む、あなたの性質と生き方",
+   title:"あなたは、どういう人か",
+   band:"その日、あなた自身に何が起きるか",
+   field:"生き方", place:"自分の扱い方"},
+ renai:{label:"【恋愛・結婚】ネイタルチャートで読む、人との関係の行方",
+   title:"この先、人との関係はどう動くか",
+   band:"その日、人との関係に何が起きるか",
+   field:"人との関係", place:"距離の取り方"},
+ jiki:{label:"【2026年下半期】あなたの運勢と、次の転機が来る日",
+   title:"あなたの次の転機は、いつ来るか",
+   band:"その日、何が起きるか",
+   field:"これからの流れ", place:"動きどき"}
+};
+
+const PREFS={
+ "北海道（札幌）":[43.06,141.35],"宮城（仙台）":[38.27,140.87],"東京":[35.69,139.69],
+ "神奈川（横浜）":[35.44,139.64],"埼玉（さいたま）":[35.86,139.65],"愛知（名古屋）":[35.18,136.91],
+ "京都":[35.02,135.76],"大阪":[34.69,135.50],"広島":[34.40,132.46],
+ "福岡":[33.59,130.40],"沖縄（那覇）":[26.21,127.68]};
+
+function fmt(x){return x.toFixed(2);}
+
+function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
+  const TH=THEMES[themeKey]||THEMES.shigoto;
+  document.getElementById("resultTitle").textContent=TH.title;
+  document.getElementById("cutBand").textContent=TH.band;
+  const [lat,lon]=PREFS[prefName]||PREFS["東京"];
+  const natal=buildChart(y,m,d,hasTime?h:12,hasTime?mi:0,lat,lon);
+  const now=new Date();
+  const transit=buildChart(now.getFullYear(),now.getMonth()+1,now.getDate(),
+                           now.getHours(),now.getMinutes(),lat,lon);
+  const you=name?name+"さん":"あなた";
+  const B=Object.fromEntries(natal.bodies.map(b=>[b.name,b]));
+  const sun=B.太陽,mer=B.水星,moon=B.月;
+
+  /* --- 冒頭の呼びかけ：過去に土星が来ていた時期を計算して当てにいく --- */
+  const todayN=jdays(now.getFullYear(),now.getMonth()+1,now.getDate(),now.getHours(),now.getMinutes());
+  const past=pastHardTime(natal,todayN);
+  let intro="";
+  if(past){
+    const ago=Math.max(1,Math.round((now-past.date)/(365.25*86400000)));
+    const ageThen=Math.floor((past.date-new Date(y,m-1,d))/(365.25*86400000));
+    intro=`${ago}年前、${ageThen}歳の頃。あのとき${you}の上には土星が来ていました。`
+         +`思うように進まない、時間ばかりかかると感じた時期だったと思います。`
+         +`その土星は、もう抜けています。`;
+  }
+  document.getElementById("greet").innerHTML=
+    (name?name+"さん、こんにちは。":"こんにちは。")+"<br>"+intro;
+  document.getElementById("subject").innerHTML=
+    `<b>${name||"あなた"}</b>　${y}年${m}月${d}日生まれ`
+    +(hasTime?`　${h}時${String(mi).padStart(2,"0")}分`:"　（出生時間 不明）")
+    +`　${prefName||"東京"}<br><span class="now">現在時：${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 `
+    +`${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}</span>`;
+
+  document.getElementById("chart").innerHTML=drawChart(natal,transit);
+
+  /* --- 天体テーブル --- */
+  const hot=["太陽","水星","月"];
+  document.getElementById("table").innerHTML=
+    `<table><thead><tr><th>天体</th><th>サイン</th><th>黄経</th><th>ハウス</th></tr></thead><tbody>`
+    +natal.bodies.map(b=>
+      `<tr class="${hot.includes(b.name)?"on":""}">`
+      +`<td class="nm"><span class="glyph">${b.glyph}</span>${b.name}</td>`
+      +`<td><span class="glyph">${b.signGlyph}</span>${b.sign}</td>`
+      +`<td>${fmt(b.deg)}</td><td>${hasTime
+          ? b.house+"ハウス"+(b.houseMoved?`<span class="r5">5°前</span>`:"")
+          : "—"}</td></tr>`).join("")
+    +`<tr><td class="nm"><span class="glyph">Asc</span>ASC</td><td><span class="glyph">${SIGN_GLYPH[Math.floor(natal.asc/30)]}</span>${SIGNS[Math.floor(natal.asc/30)]}</td><td>${fmt(natal.asc%30)}</td><td>1ハウス</td></tr>`
+    +`<tr><td class="nm"><span class="glyph">MC</span>MC</td><td><span class="glyph">${SIGN_GLYPH[Math.floor(natal.mc/30)]}</span>${SIGNS[Math.floor(natal.mc/30)]}</td><td>${fmt(natal.mc%30)}</td><td>—</td></tr>`
+    +`</tbody></table>`;
+
+  const pick=(el,b)=>document.getElementById(el).innerHTML=
+    `<div class="k">${b.glyph} ${b.name}</div><div class="k">${b.signGlyph} ${b.sign}</div>`
+    +`<div>${fmt(b.deg)}</div><div>${hasTime
+        ? b.house+"ハウス"+(b.houseMoved?`<span class="r5">5°前</span>`:"")
+        : "—"}</div>`;
+  pick("pickSun",sun); pick("pickMer",mer); pick("pickMoon",moon);
+
+  /* --- 無料ゾーン --- */
+  const s=SUN[sun.sign],mm=MER[mer.sign];
+  document.getElementById("ch1").innerHTML=`
+    <p>${you}の太陽は<span class="mk">${sun.sign}</span>にあります。太陽は、その人が何をしているときにいちばん自然でいられるかを示すところです。${sun.sign}の場合、それは<span class="uline">「${s.k}」</span>という形をとります。</p>
+    <p>${s.a}。これは長所でも短所でもなく、単に${you}の初期設定です。うまくいっているときは、この設定のまま動いています。反対にしんどくなっているときはたいてい、この設定と違うやり方を自分に強いています。</p>
+    <p>同じ設定の裏側として、${s.b}という癖があります。ここは直すところではありません。ただ、自分にその傾向があると知っているかどうかで、対処の速さが変わります。</p>`;
+
+  document.getElementById("ch2").innerHTML=`
+    <p>水星は、${you}の考え方と、それをどう外に出すかを示します。${you}の水星は<span class="mk">${mer.sign}</span>。ここは<span class="uline">「${mm.k}」</span>という形です。</p>
+    <p>${mm.a}。太陽（${sun.sign}）が「何をしているときが自然か」だとすれば、水星は「どう伝えるか」。この二つがずれている人は多いのですが、${you}の場合はそこまで遠くありません。</p>
+    <p>仕事で評価されにくいと感じるとき、原因は能力ではなく、この伝え方が相手の受け取り方と噛み合っていないだけ、ということがよくあります。</p>`;
+
+  document.getElementById("ch3").innerHTML=`
+    <p>ここからは、いま空を動いている星の話です。2026年後半、${you}の上には大きく二つの流れが来ています。ひとつは広げる方向に働く星、もうひとつは削る方向に働く星。</p>
+    <p>この二つは同時に来ます。だからこの時期は「調子がいいのか悪いのかよくわからない」という感覚になりやすい。実際、両方本当です。増えているところと減っているところが、並行して起きています。</p>
+    <p>削るほうの星は、${you}が<span class="uline">「もう必要ないのに、続けてしまっているもの」</span>に触れてきます。仕事のやり方、付き合い、引き受けている役割。手放すと決めたわけでもないのに、向こうから離れていくような形をとることもあります。</p>
+    <p>そして広げるほうの星は、その空いたところにだけ入ってきます。<strong>先に空けないと、入る場所がない。</strong>この順番が、2026年後半のいちばん大事なところです。</p>`;
+
+  /* --- 転機の日付（無料で出す） --- */
+  const turn=nextTurning(natal,hasTime,todayN);
+  if(turn){
+    const t=turn.date, days=Math.round((t-now)/86400000);
+    document.getElementById("bigdateLead").textContent=
+      `トランジットの${turn.slow}が、あなたの${turn.point}に${turn.aspect}を取る日`;
+    document.getElementById("bigdate").textContent=
+      `${t.getFullYear()}年${t.getMonth()+1}月${t.getDate()}日`;
+    document.getElementById("bigdateNote").textContent=`今日から${days}日後`;
+    document.getElementById("g2date").textContent=
+      `${t.getFullYear()}年${t.getMonth()+1}月${t.getDate()}日`;
+    document.getElementById("ch4").innerHTML=`
+      <p>この日を覚えておいてください。${you}のネイタルの<span class="mk">${turn.point}</span>に対して、いま空を動いている<span class="mk">${turn.slow}</span>がぴったり重なる日です。</p>
+      <p>${turn.slow==="木星"
+        ?"木星は、広げる方向に働く星です。この日の前後、それまで閉じていたところが開きます。"
+        :"土星は、形にする方向に働く星です。この日の前後、曖昧にしていたものに輪郭がつきます。"}</p>
+      <p>ただし、その日に何かが降ってくるわけではありません。星は<strong>きっかけを置いていくだけ</strong>で、動くのは${you}です。だから、その日までに何をしておくかで結果が変わります。</p>`;
+  }else{
+    document.getElementById("bigdateLead").textContent="";
+    document.getElementById("bigdate").textContent="——";
+    document.getElementById("bigdateNote").textContent=
+      "出生時間を入れていただくと、日付まで出せます";
+    document.getElementById("ch4").innerHTML=
+      `<p>転機の日付は、出生時間がわかると計算できます。フォームの「生まれた時間と場所も入れる」から入力してみてください。</p>`;
+  }
+
+  /* --- 切れ目 ---
+     前半は最後まで書き切って、読み終えた人が満足して帰れるようにする。
+     切るのは「${you}固有の話」が始まった直後。 */
+  document.getElementById("ch5").innerHTML=`
+    <p>では、その日、${you}に何が起きるか。</p>
+    <p>まず知っておいてほしいのは、<strong>転機は仕事の場面からは始まらない</strong>ということです。最初に出るのは、もっと手前の些細なところ。今まで平気だったことが急に面倒になる、続けていた習慣がなんとなく途切れる、行き慣れた場所に足が向かなくなる。そういう小さな違和感が先に来ます。</p>
+    <p>ですから、その日を過ぎても何も起きなかったと感じたなら、たぶん見る場所が違っています。仕事ではなく、<span class="uline">生活のほうを見てください</span>。ここまでが、どなたにも共通する話です。</p>
+    <p>そのうえで、${sun.sign}の太陽と${moon.sign}の月を持つ${you}の場合、それがいちばん最初に出てくるのは</p>`;
+
+  /* --- 有料ゾーン（本番はサーバー側で出し分ける） --- */
+  const mo=MOON[moon.sign];
+  document.getElementById("ch6").innerHTML=`
+    <p>${you}の月は<span class="mk">${moon.sign}</span>にあります。太陽が人から見えるあなただとすれば、月はひとりでいるときのあなたです。<strong>仕事の悩みは、ほとんどがこちら側から出てきます。</strong></p>
+    <p>${moon.sign}の月を持つ${you}は、ひとりになると<span class="uline">${mo.k}</span>人です。人前ではそう見えないかもしれません。太陽（${sun.sign}）が外向きの顔なので、まわりが知っているのはそちらのほうです。</p>
+    <p>この月が満たされるのは、<strong>${mo.a}</strong>。反対に消耗するのは、<strong>${mo.b}</strong>です。</p>
+    <p>ここが大事なところで、${you}が「仕事がしんどい」と感じるとき、原因は仕事の内容ではなく<span class="uline">この月の条件が満たされていないこと</span>のほうにあります。だから職場を変えても同じことが起きる、ということが起こります。</p>
+    <p>逆に言えば、${mo.a}という条件さえ確保できていれば、${you}は多少きつい仕事でも保ちます。転機を迎えるときに見るべきなのは、新しい仕事の中身より先に、ここです。</p>`;
+
+  const allAsp=findAspects(natal.bodies,transit.bodies,false).sort((a,b)=>a.orb-b.orb);
+  const asp=allAsp.slice(0,5);   // 表示はオーブの近い順に5本まで
+  document.getElementById("aspects").innerHTML=asp.map(a=>
+    `<div class="asp">
+      <div class="p"><sup>N</sup>${a.a.glyph} ${a.a.name}</div>
+      <div class="mid"><span class="g">${a.glyph}</span>
+        <span class="n">${a.name}</span><br><span class="o">${a.orb.toFixed(2)}°</span></div>
+      <div class="p"><sup>T</sup>${a.b.glyph} ${a.b.name}</div>
+    </div>`).join("")||`<p style="text-align:center;color:var(--dim)">いま強く効いているアスペクトはありません。</p>`;
+
+  // アスペクトの種類から、いま効いている刺激を説明する
+  const readAsp=a=>{
+    const t=TR[a.b.name];                       // b＝トランジット側の天体
+    const body=a.type==="hard"?t.hard:t.soft;
+    const head=a.type==="hard"
+      ? `${a.b.name}が${a.a.name}に${a.name}で当たっています。負荷のかかる形です。`
+      : a.type==="neutral"
+        ? `${a.b.name}が${a.a.name}にぴったり重なっています。いちばん強く出る形です。`
+        : `${a.b.name}が${a.a.name}に${a.name}で当たっています。流れやすい形です。`;
+    return `<p><strong>${head}</strong>${body}。</p>`;
+  };
+  document.getElementById("ch7").innerHTML=`
+    <p>いま${you}のネイタルに対して、トランジットの天体が全部で<strong>${allAsp.length}本</strong>のアスペクトを取っています。上に出したのは、そのうちオーブの近い5本です。オーブとは「ぴったりの角度からどれだけずれているか」で、<span class="uline">数字が小さいほど強く効いています</span>。</p>
+    ${asp.slice(0,3).map(readAsp).join("")}
+    <p>これらは、${you}が意識していないところで受けている刺激です。「なんとなく調子がいい」「理由はわからないが疲れる」といった感覚の正体は、たいていこのあたりにあります。</p>
+    <p>${asp[0]?`いま最も強いのは、オーブ${asp[0].orb.toFixed(2)}°の${asp[0].a.name}と${asp[0].b.name}です。${asp[0].orb<1?"1度を切っているので、体感としてもはっきり出ているはずです。":"まだ少し距離があるので、これから濃くなっていきます。"}`:""}</p>`;
+
+  const md=turn?`${turn.date.getMonth()+1}月${turn.date.getDate()}日`:"その日";
+  const turnText=turn&&TURN[turn.slow]&&TURN[turn.slow][turn.point]
+    ? TURN[turn.slow][turn.point] : "";
+  document.getElementById("ch8").innerHTML=`
+    <p>${md}に${you}の${turn?turn.point:""}へ当たるのは<span class="mk">${turn?turn.slow:""}</span>です。この組み合わせが示しているのは、こういうことです。</p>
+    <p class="pull">${turnText}</p>
+    <p>そのうえで、その日までにしておくといいことが<strong>ひとつ</strong>あります。</p>
+    <p>${turn&&turn.slow==="木星"
+      ? `<strong>空きを作っておくことです。</strong>木星は広げる星ですが、広がるのは空いている場所だけです。予定が埋まりきったところに機会が来ても、${you}はそれを断ることになります。実際、${md}前後に来るものを逃す人のほとんどは、内容が合わなかったのではなく<span class="uline">単に手が空いていなかった</span>だけです。`
+      : `<strong>捨てるものを先に決めておくことです。</strong>土星は形にする星ですが、そのために不要なものを削ります。自分で選ばなければ、向こうが勝手に決めます。どちらにしても減るなら、${you}が選んだほうがいい。`}</p>
+    <p>そしてここで、さっきの月の話が効いてきます。${you}の月は${moon.sign}。<span class="uline">${mo.b}</span>と消耗する人です。判断に迷ったら、「これは月の条件を守るほうか、壊すほうか」で決めてください。仕事として正しいかどうかより、こちらのほうが外しません。</p>
+    <p>${sun.sign}の${you}は、${SUN[sun.sign].b}という癖があります。${md}の前後は、そこが一度出ます。出たときに「ああ、これか」と気づけるだけで、対処の速さがまるで変わります。</p>`;
+
+  document.getElementById("ch9").innerHTML=`
+    <p>ここまで読んでくださって、ありがとうございました。</p>
+    <p>星を読んでいると、「この時期に何が起きるか」より「その人がもともとどういう形をしているか」のほうが、ずっと大事だと感じます。同じ星が同じように来ても、出方は人によってまったく違うからです。</p>
+    <p>${you}は、外では<span class="uline">${SUN[sun.sign].k}</span>人として見られていて、ひとりになると<span class="uline">${mo.k}</span>人です。この二つはよく食い違います。食い違っていること自体は、直すところではありません。ただ、外向きのほうばかりを使い続けると、${mo.b}という形で先に月のほうが音を上げます。</p>
+    <p>${md}のことをお伝えしましたが、日付そのものにはあまり意味がありません。大事なのは、その前後で${you}が<strong>何を手放して、何を空けておくか</strong>のほうです。星は席を用意するだけで、座るかどうかを決めるのは${you}です。</p>
+    <p>もしその日が過ぎて、何も起きなかったように感じても、気にしないでください。表に出るまでに時間がかかるだけで、動きはもう始まっています。半年ほど経ってから振り返ると、あのあたりだったな、と分かる形をとることのほうが多いです。</p>
+    <p>${you}のこの先が、${you}の形のままで進んでいきますように。</p>
+    <p style="text-align:right;color:var(--gold)">おます</p>`;
+}
+
+/* ===========================================================
+   ヒーロー背景のホロスコープ盤
+   =========================================================== */
+function drawWheel(){
+  const C=250,g="#c3a96c";
+  const pt=(a,r)=>[C+r*Math.cos(rad(a-90)),C+r*Math.sin(rad(a-90))];
+  let s=`<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">`;
+  // 同心円
+  [242,214,196,150,132,64,40].forEach((r,i)=>{
+    s+=`<circle cx="${C}" cy="${C}" r="${r}" fill="none" stroke="${g}" `
+      +`stroke-width="${i===1||i===3?1.1:.6}" opacity="${i%2?.5:.8}"/>`;
+  });
+  // 外周の細かい目盛り（1度ごと、5度ごとに長く）
+  for(let a=0;a<360;a++){
+    const long=a%5===0, [x1,y1]=pt(a,242), [x2,y2]=pt(a,long?232:237);
+    s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${g}" `
+      +`stroke-width=".5" opacity="${long?.75:.35}"/>`;
+  }
+  // 12サインの区切りと記号
+  for(let i=0;i<12;i++){
+    const a=i*30, [x1,y1]=pt(a,132), [x2,y2]=pt(a,214);
+    s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${g}" stroke-width=".7" opacity=".65"/>`;
+    const [gx,gy]=pt(a+15,173);
+    s+=`<text x="${gx}" y="${gy+8}" font-size="22" fill="${g}" opacity=".95" `
+      +`text-anchor="middle" class="fix">${SIGN_GLYPH[i]}</text>`;
+  }
+  // 内側のハウス区切り
+  for(let i=0;i<12;i++){
+    const a=i*30+15, [x1,y1]=pt(a,40), [x2,y2]=pt(a,132);
+    s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${g}" stroke-width=".5" opacity=".3"/>`;
+  }
+  // 中心のアスペクト線らしき模様
+  const nodes=[0,72,144,216,288].map(a=>pt(a,132));
+  nodes.forEach((p,i)=>nodes.forEach((q,j)=>{
+    if(j<=i)return;
+    s+=`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${g}" stroke-width=".5" opacity=".28"/>`;
+  }));
+  // 小さな星
+  for(let i=0;i<38;i++){
+    const a=i*(360/38)+7, r=196+((i*37)%44);
+    const [x,y]=pt(a,r);
+    s+=`<circle cx="${x}" cy="${y}" r="${i%4===0?1.5:.9}" fill="${g}" opacity="${i%3?.4:.75}"/>`;
+  }
+  s+=`<circle cx="${C}" cy="${C}" r="4" fill="${g}" opacity=".9"/></svg>`;
+  document.getElementById("wheel").innerHTML=s;
+}
+drawWheel();
+
+/* ---------- フォーム ---------- */
+const put=(id,arr,sel)=>{
+  document.getElementById(id).innerHTML=
+    arr.map(o=>`<option value="${o[0]}"${o[0]==sel?" selected":""}>${o[1]}</option>`).join("");
+};
+const range=(a,b,suf)=>{const r=[];for(let i=a;i<=b;i++)r.push([i,i+suf]);return r;};
+put("y",[["","年"]].concat(range(1940,2015,"年")),1988);
+put("m",[["","月"]].concat(range(1,12,"月")),7);
+put("d",[["","日"]].concat(range(1,31,"日")),18);
+put("h",[["","時（不明）"]].concat(range(0,23,"時")));
+put("mi",[["","分"]].concat(range(0,59,"分")));
+put("pref",[["","出生地（不明）"]].concat(Object.keys(PREFS).map(p=>[p,p])));
+put("theme",Object.keys(THEMES).map(k=>[k,THEMES[k].label]),"shigoto");
+
+let last=null;
+function run(){
+  const y=+document.getElementById("y").value,
+        m=+document.getElementById("m").value,
+        d=+document.getElementById("d").value;
+  if(!y||!m||!d){alert("生年月日を選んでください");return false;}
+  const hv=document.getElementById("h").value;
+  last=[document.getElementById("name").value.trim(),y,m,d,+hv||0,
+        +document.getElementById("mi").value||0,hv!=="",
+        document.getElementById("pref").value,
+        document.getElementById("theme").value];
+  render.apply(null,last);
+  return true;
+}
+document.getElementById("go").onclick=()=>{
+  if(!run())return;
+  document.getElementById("hero").style.display="none";
+  document.getElementById("formsec").style.display="none";
+  document.getElementById("result").style.display="block";
+  window.scrollTo(0,0);
+};
+document.getElementById("toggle").onclick=e=>{
+  document.body.classList.toggle("unlocked");
+  e.target.textContent=document.body.classList.contains("unlocked")
+    ? "無料版の見え方に戻す" : "有料版の見え方を確認";
+};
+/* ===========================================================
+   決済（PayPal ノーコード決済 / 旧 Smart Payment Buttons）
+   ポップアップで完結するので、ページを離れずに解除できる。
+   本番では client-id を自分のものに差し替えること。
+   =========================================================== */
+const PRICE="500";
+
+function unlock(){
+  document.body.classList.add("unlocked");
+  const t=document.getElementById("toggle");
+  if(t)t.textContent="無料版の見え方に戻す";
+  try{ localStorage.setItem("omasu_paid","1"); }catch(e){}
+  document.querySelector(".locked").scrollIntoView({block:"start"});
+}
+// 一度買った人は、次に来たときそのまま読める
+try{ if(localStorage.getItem("omasu_paid")==="1") document.body.classList.add("unlocked"); }catch(e){}
+
+function renderPayPal(){
+  if(!window.paypal||!paypal.Buttons){
+    document.getElementById("paypal-btn").innerHTML=
+      '<div class="paynote">※ PayPalボタンはネット接続時に表示されます</div>';
+    return;
+  }
+  paypal.Buttons({
+    style:{layout:"vertical",color:"gold",shape:"rect",label:"pay",height:46},
+    createOrder:(data,actions)=>actions.order.create({
+      purchase_units:[{
+        description:"星よみ専門家 おます｜自動鑑定（続き）",
+        amount:{value:PRICE,currency_code:"JPY"}
+      }]
+    }),
+    // 決済が承認された瞬間に呼ばれる。ここでぼかしを外す
+    onApprove:(data,actions)=>actions.order.capture().then(()=>unlock()),
+    onError:err=>{
+      document.getElementById("paypal-btn").insertAdjacentHTML("beforeend",
+        '<div class="paynote" style="color:#b04a3a">決済でエラーが出ました。時間をおいてお試しください。</div>');
+    }
+  }).render("#paypal-btn");
+}
+window.addEventListener("load",renderPayPal);
+
+/* デモ用：決済せずに解除するボタン */
+document.getElementById("buy2").onclick=()=>document.getElementById("buy").click();
+document.getElementById("buy").onclick=()=>unlock();
+document.getElementById("clearPaid").onclick=()=>{
+  try{ localStorage.removeItem("omasu_paid"); }catch(e){}
+  document.body.classList.remove("unlocked");
+  document.getElementById("toggle").textContent="有料版の見え方を確認";
+  alert("未購入の状態に戻しました。");
+};
+document.getElementById("reset").onclick=()=>{
+  document.getElementById("result").style.display="none";
+  document.getElementById("hero").style.display="block";
+  document.getElementById("formsec").style.display="block";
+  window.scrollTo(0,0);
+};
+</script>
+</body>
+</html>
