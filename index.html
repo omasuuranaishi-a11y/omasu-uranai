@@ -147,13 +147,23 @@ strong{font-weight:600}
 .gets ul{list-style:none}
 .gets li{
   font-family:system-ui,sans-serif;font-size:12.5px;color:var(--text);
-  line-height:1.75;padding:6px 0 6px 18px;position:relative;
+  line-height:1.75;padding:5px 0 5px 44px;position:relative;
 }
-.gets li::before{content:"◇";position:absolute;left:0;color:var(--gold);font-size:9px;top:9px}
 .gets li strong{color:var(--gold)}
+/* 無料／続き のしるし */
+.gets i{position:absolute;left:0;top:6px}
+.gets i,.gets-f span{
+  display:inline-block;font-style:normal;font-size:9.5px;
+  letter-spacing:.06em;padding:2px 6px;border-radius:2px;
+}
+.gets i.f,.gets-f .f{background:var(--gold);color:#33403a;font-weight:700}
+.gets i.p,.gets-f .p{background:transparent;color:var(--dim);border:1px solid rgba(174,182,171,.5)}
+.gets li:has(i.p){color:var(--dim)}
+.gets li:has(i.p) strong{color:var(--dim)}
 .gets-f{
   text-align:center;font-family:system-ui,sans-serif;font-size:11px;
-  color:var(--dim);margin-top:12px;
+  color:var(--dim);margin-top:14px;padding-top:12px;line-height:2.1;
+  border-top:1px dotted rgba(195,169,108,.4);
 }
 /* テーマ選択 */
 .theme-note{
@@ -474,15 +484,26 @@ body.demo #demobar{display:flex !important}
     </div>
 
     <div class="gets">
-      <div class="gets-h">生年月日だけで、ここまで無料で読めます</div>
+      <div class="gets-h">この鑑定でわかること</div>
       <ul>
-        <li>あなたの出生図と、いまの空を重ねた<strong>ホロスコープ</strong></li>
-        <li>10天体それぞれのサインとハウスの<strong>一覧表</strong></li>
-        <li>あなたという人の、もともとの形</li>
-        <li>いま動いている星が、何を持ってきているか</li>
-        <li>この先いちばん近い<strong>転機の日付</strong></li>
+        <li><i class="f">無料</i>生まれた瞬間の空を写した、あなただけの<strong>ホロスコープ</strong></li>
+        <li><i class="f">無料</i>あなたが生まれ持った性質と、いちばん力が出る場所</li>
+        <li><i class="f">無料</i>まわりから見えているあなたと、その伝わり方</li>
+        <li><i class="f">無料</i>いま、あなたの上で何が起きているか</li>
+        <li><i class="f">無料</i>手放すべきものと、これから入ってくるもの</li>
+        <li><i class="f">無料</i>近いうちに訪れる、あなたの<strong>転機の日付</strong></li>
+        <li><i class="p">続き</i>その日、あなたの生活のどこから動きはじめるか</li>
+        <li><i class="p">続き</i>人には見せていない、ひとりのときのあなた</li>
+        <li><i class="p">続き</i>あなたが満たされる条件と、消耗してしまうパターン</li>
+        <li><i class="p">続き</i>いまあなたが受けている、目に見えない影響のすべて</li>
+        <li><i class="p">続き</i>転機を活かすために、<strong>その日までにしておくこと</strong></li>
+        <li><i class="p">続き</i>おますから、あなたへの手紙</li>
       </ul>
-      <div class="gets-f">登録もメールアドレスも要りません</div>
+      <div class="gets-f">
+        <span class="f">無料</span>の6項目は、登録もメールアドレスも要りません<br>
+        天体の一覧表とハウスも、無料でご覧いただけます<br>
+        <span class="p">続き</span>は ¥500（税込）
+      </div>
     </div>
   </div>
 </div>
