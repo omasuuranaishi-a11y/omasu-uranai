@@ -324,8 +324,6 @@ td.mark{background:var(--hl2);font-weight:600}
   background:var(--paper);color:#3b4239;border:1px solid var(--gold);
   padding:20px 18px;text-align:center;box-shadow:0 14px 40px rgba(0,0,0,.4);
 }
-.gate2 .g2-lead{font-size:14px;line-height:1.9;margin-bottom:14px}
-.gate2 .g2-lead strong{color:#4a584f}
 .buy2{
   display:block;width:100%;padding:14px;border:none;border-radius:2px;
   background:var(--deep);color:var(--paper);cursor:pointer;
@@ -413,11 +411,17 @@ footer{
 }
 
 /* ---------- demo bar ---------- */
+/* 確認用の要素は、URLに ?demo が付いているときだけ表示する */
+.demo-only{display:none !important}
+body.demo .demo-only{display:block !important}
+body.demo #demobar{display:flex !important}
+
 #demobar{
+  display:none;
   position:fixed;bottom:0;left:0;right:0;z-index:900;
   background:rgba(20,26,22,.95);color:#fff;
   font-family:system-ui,sans-serif;font-size:12px;
-  padding:9px 14px;display:flex;gap:9px;align-items:center;justify-content:center;flex-wrap:wrap;
+  padding:9px 14px;gap:9px;align-items:center;justify-content:center;flex-wrap:wrap;
 }
 #demobar span{opacity:.65;letter-spacing:.1em}
 #demobar button{
@@ -635,8 +639,9 @@ footer{
         </div>
         <!-- PayPalのノーコード決済ボタン。ここで完結し、ページは移動しない -->
         <div id="paypal-btn"></div>
-        <button class="buy" id="buy">続きを読む（デモ用・決済なしで解除）</button>
         <div class="paynote">お支払い後、このページのまま続きが表示されます</div>
+        <!-- 確認用。URLに ?demo が付いているときだけ出る -->
+        <button class="buy demo-only" id="buy">［確認用］決済せずに解除</button>
         <div class="contents">
           <b>ここから先の内容</b>
           ・その日、具体的に何が起きるか<br>
@@ -675,8 +680,7 @@ footer{
 
       <!-- 2つ目のゲート（鏡リュウジ型に、下でもう一度出す） -->
       <div class="gate2" id="gate2">
-        <div class="g2-lead">続きは、<strong id="g2date"></strong>を迎えるための話です。</div>
-        <button class="buy2" id="buy2">続きを読む　¥500</button>
+        <button class="buy2" id="buy2">続きを読む</button>
       </div>
     </div>
 
@@ -948,8 +952,6 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     document.getElementById("bigdate").textContent=
       `${t.getFullYear()}年${t.getMonth()+1}月${t.getDate()}日`;
     document.getElementById("bigdateNote").textContent=`今日から${days}日後`;
-    document.getElementById("g2date").textContent=
-      `${t.getFullYear()}年${t.getMonth()+1}月${t.getDate()}日`;
     document.getElementById("ch4").innerHTML=`
       <p>この日を覚えておいてください。${you}のネイタルの<span class="mk">${turn.point}</span>に対して、いま空を動いている<span class="mk">${turn.slow}</span>がぴったり重なる日です。</p>
       <p>${turn.slow==="木星"
@@ -1162,9 +1164,16 @@ function renderPayPal(){
 }
 window.addEventListener("load",renderPayPal);
 
-/* デモ用：決済せずに解除するボタン */
-document.getElementById("buy2").onclick=()=>document.getElementById("buy").click();
-document.getElementById("buy").onclick=()=>unlock();
+/* URLに ?demo が付いているときだけ、確認用の操作を有効にする */
+const DEMO=/[?&]demo\b/.test(location.search);
+if(DEMO)document.body.classList.add("demo");
+
+// 下のゲートのボタンは、決済ボタンのある場所まで連れていくだけ
+document.getElementById("buy2").onclick=()=>{
+  document.querySelector(".gate").scrollIntoView({block:"center",behavior:"smooth"});
+};
+// 決済を通さない解除は、確認モードのときだけ
+document.getElementById("buy").onclick=()=>{ if(DEMO)unlock(); };
 document.getElementById("clearPaid").onclick=()=>{
   try{ localStorage.removeItem("omasu_paid"); }catch(e){}
   document.body.classList.remove("unlocked");
