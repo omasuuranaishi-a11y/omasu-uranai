@@ -288,6 +288,24 @@ td.mark{background:var(--hl2);font-weight:600}
   background:#8e7c4e;color:#f1eee4;font-size:8.5px;letter-spacing:.02em;vertical-align:1px;
 }
 
+/* ハウスのカード */
+.hcard{
+  background:rgba(255,255,255,.04);border:1px solid var(--gold-d);
+  border-radius:2px;padding:14px 15px;margin-bottom:12px;
+}
+.hcard .hh{
+  font-family:system-ui,sans-serif;font-size:11px;letter-spacing:.1em;
+  color:var(--gold);padding-bottom:8px;margin-bottom:9px;
+  border-bottom:1px dotted rgba(195,169,108,.35);
+}
+.hcard .hh b{font-size:14px;font-weight:600;margin-right:6px}
+.hcard dl{display:grid;grid-template-columns:5.2em 1fr;gap:5px 8px;
+  font-family:system-ui,sans-serif;font-size:12px;line-height:1.7}
+.hcard dt{color:var(--dim)}
+.hcard dd{color:var(--text)}
+.hcard dd em{font-style:normal;color:var(--gold)}
+.hcard dd .none{color:var(--dim)}
+
 /* 抜き出し帯 */
 .pick{
   display:flex;background:var(--paper);color:#3b4239;border-radius:2px;overflow:hidden;
@@ -621,6 +639,12 @@ body.demo #demobar{display:flex !important}
     <div class="pick" id="pickMer"></div>
     <div class="body" id="ch2"></div>
 
+    <div class="orn"><i>◆</i></div>
+    <div class="sec-title" id="secTitle3"></div>
+    <div class="orn tight"><i>◆</i></div>
+    <div id="houseCards"></div>
+    <div class="body" id="ch2b"></div>
+
     <div class="speak" style="margin-top:34px">
       <div class="from">O M A S U</div>
       ここまでが、<b>変わらないほうのあなた</b>です。
@@ -712,7 +736,7 @@ body.demo #demobar{display:flex !important}
      ※ クライアントIDはページのHTMLに出る前提のもので、公開して問題ない。
         秘密鍵（Secret）のほうは絶対にここへ書かないこと。 -->
 <script src="https://www.paypal.com/sdk/js?client-id=AQDu2ocvL4sCh-hR5MdQGbhjOK2oS-cQJOFJbivdcCOM_q_q_jprsxPoJ9Ro6V2pZy6bbL-xRDTZwdjF&currency=JPY&intent=capture"></script>
-<script src="astro.js?v=6"></script>
+<script src="astro.js?v=7"></script>
 <script>
 /* ===========================================================
    解釈文テンプレート
@@ -746,6 +770,22 @@ const MER={
 山羊座:{k:"構造にして話す",a:"散らかった話を、順序立てて組み直せる"},
 水瓶座:{k:"前提から疑う",a:"みんなが当たり前としていることに、先に引っかかる"},
 魚座:{k:"言葉にする前に感じる",a:"うまく言えないが、方向は先に分かっている"}};
+
+/* サインの基本的な出方。ハウスのカスプを読むときに使う */
+const SIGNKEY={
+牡羊座:"勢いよく踏み出す",牡牛座:"時間をかけて確かなものにする",双子座:"複数を同時に動かす",
+蟹座:"身内として抱えこむ",獅子座:"表に出して惜しみなく出す",乙女座:"細部を整えて質を上げる",
+天秤座:"間に立って釣り合いを取る",蠍座:"ひとつに深く入りこむ",射手座:"外へ広げて意味を探す",
+山羊座:"積み上げて形にする",水瓶座:"距離を置いて全体を見る",魚座:"境界をなくして受け取る"};
+
+/* ハウスが扱う領域 */
+const HOUSEMEAN={
+1:"あなた自身の見え方と、人生の入口",2:"収入と、あなたが手放したくないもの",
+3:"身近な人とのやりとりと、学び方",4:"家庭と、心が帰る場所",
+5:"恋愛と、楽しみの作り方",6:"日々の仕事と、体の使い方",
+7:"パートナーや、一対一の相手との関係",8:"深い関わりと、人から受け取るもの",
+9:"遠くへ行くことと、信じているもの",10:"社会での立場と、向かう先",
+11:"人との縁と、望んでいる未来",12:"ひとりの時間と、意識していない領域"};
 
 /* 金星＝人との距離のとり方。恋愛・結婚テーマで主役になる */
 const VEN={
@@ -886,22 +926,30 @@ const THEMES={
    title:"この先、あなたの仕事はどう動くか",
    band:"その日、仕事に何が起きるか",
    field:"仕事", place:"働き方や役割",
-   sec2:"あなたが社会でどう見られ、<br>どこへ向かっていくか", use:"MC"},
+   sec2:"あなたが社会でどう見られ、<br>どこへ向かっていくか", use:"MC",
+   houses:[10,6,2], sec3:"仕事の場が、あなたに<br>どう働きかけているか",
+   focus:["太陽","水星","火星","土星","木星"]},
  seishitsu:{label:"【人生】ホロスコープで読む、あなたの性質と生き方",
    title:"あなたは、どういう人か",
    band:"その日、あなた自身に何が起きるか",
    field:"生き方", place:"自分の扱い方",
-   sec2:"あなたの考え方の癖と、<br>それが人にどう伝わっているか", use:"水星"},
+   sec2:"あなたの考え方の癖と、<br>それが人にどう伝わっているか", use:"水星",
+   houses:[1,4,9], sec3:"あなたの人生が、<br>どこへ向かって流れているか",
+   focus:["太陽","月","水星","木星","土星"]},
  renai:{label:"【恋愛・結婚】ネイタルチャートで読む、人との関係の行方",
    title:"この先、人との関係はどう動くか",
    band:"その日、人との関係に何が起きるか",
    field:"人との関係", place:"距離の取り方",
-   sec2:"あなたが人との距離を、<br>どうやって縮める人か", use:"金星"},
+   sec2:"あなたが人との距離を、<br>どうやって縮める人か", use:"金星",
+   houses:[7,5,11], sec3:"あなたと相手のあいだに<br>何が置かれているか",
+   focus:["金星","火星","月","木星","天王星"]},
  jiki:{label:"【2026年下半期】あなたの運勢と、次の転機が来る日",
    title:"あなたの次の転機は、いつ来るか",
    band:"その日、何が起きるか",
    field:"これからの流れ", place:"動きどき",
-   sec2:"この半年、あなたに<br>枠を作っている星", use:"時期"}
+   sec2:"この半年、あなたに<br>枠を作っている星", use:"時期",
+   houses:[], sec3:"いま、あなたのどこに<br>星が入ってきているか",
+   focus:["木星","土星","天王星","海王星","冥王星"]}
 };
 
 const PREFS={
@@ -973,7 +1021,8 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   document.getElementById("ch1").innerHTML=`
     <p>${you}の太陽は<span class="mk">${sun.sign}</span>にあります。太陽は、その人が何をしているときにいちばん自然でいられるかを示すところです。${sun.sign}の場合、それは<span class="uline">「${s.k}」</span>という形をとります。</p>
     <p>${s.a}。これは長所でも短所でもなく、単に${you}の初期設定です。うまくいっているときは、この設定のまま動いています。反対にしんどくなっているときはたいてい、この設定と違うやり方を自分に強いています。</p>
-    <p>同じ設定の裏側として、${s.b}という癖があります。ここは直すところではありません。ただ、自分にその傾向があると知っているかどうかで、対処の速さが変わります。</p>`;
+    <p>同じ設定の裏側として、${s.b}という癖があります。ここは直すところではありません。ただ、自分にその傾向があると知っているかどうかで、対処の速さが変わります。</p>
+    <p>この鑑定では<strong>${TH.field}</strong>を見ていきますが、そこでも土台になるのはこの形です。${TH.place}を考えるとき、まずここから外れていないかを確かめてください。</p>`;
 
   /* --- 第2章はテーマごとに主役の天体を変える --- */
   document.getElementById("secTitle2").innerHTML=TH.sec2;
@@ -1020,6 +1069,74 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       <p>人に理解されにくいと感じるとき、原因は中身ではなく、この伝え方が相手の受け取り方と噛み合っていないだけ、ということがよくあります。</p>`;
   }
 
+  /* ===== 第3章：テーマのハウスを、チャートから読む ===== */
+  document.getElementById("secTitle3").innerHTML=TH.sec3;
+  const hc=document.getElementById("houseCards");
+
+  if(!hasTime){
+    hc.innerHTML=`<p style="color:var(--dim);font-family:system-ui,sans-serif;font-size:12.5px;line-height:1.9">
+      ハウスは出生時間から計算します。フォームの「生まれた時間と場所も入れる」にご記入いただくと、この章が読めるようになります。</p>`;
+    document.getElementById("ch2b").innerHTML="";
+  }else if(TH.houses.length){
+    const infos=TH.houses.map(n=>houseInfo(natal,transit,n));
+    hc.innerHTML=infos.map(h=>`
+      <div class="hcard">
+        <div class="hh"><b>${h.n}ハウス</b>${HOUSEMEAN[h.n]}</div>
+        <dl>
+          <dt>入口のサイン</dt>
+          <dd><em>${h.cuspGlyph} ${h.cuspSign} ${fmt(h.cuspDeg)}</em>　― ${SIGNKEY[h.cuspSign]}</dd>
+          <dt>この部屋の鍵</dt>
+          <dd>${h.ruler
+              ? `<em>${h.ruler.glyph} ${h.rulerName}</em> が ${h.ruler.signGlyph} ${h.ruler.sign} の <em>${h.ruler.house}ハウス</em>`
+              : `${h.rulerName}`}</dd>
+          <dt>在住の天体</dt>
+          <dd>${h.occupants.length
+              ? h.occupants.map(o=>`${o.glyph} ${o.name}（${o.sign}）`).join("、")
+              : `<span class="none">なし</span>`}</dd>
+          <dt>いま来ている星</dt>
+          <dd>${h.transits.length
+              ? h.transits.map(o=>`${o.glyph} ${o.name}`).join("、")
+              : `<span class="none">なし</span>`}</dd>
+        </dl>
+      </div>`).join("");
+
+    const main=infos[0], sub=infos[1];
+    const slowIn=infos.flatMap(h=>h.transits.filter(t=>["木星","土星","天王星","海王星","冥王星"].includes(t.name))
+                                  .map(t=>({h:h.n,t:t.name})));
+    document.getElementById("ch2b").innerHTML=`
+      <p>${you}の<strong>${main.n}ハウス</strong>――${HOUSEMEAN[main.n]}を扱う部屋です。入口には<span class="mk">${main.cuspSign}</span>がかかっていて、ここは<span class="uline">「${SIGNKEY[main.cuspSign]}」</span>という形で働きます。${TH.field}のことを考えるとき、${you}はまずこのやり方を取ります。</p>
+      <p>${main.ruler
+        ? `そしてこの部屋の鍵を握っているのが<span class="mk">${main.rulerName}</span>で、それが実際にいるのは<strong>${main.ruler.house}ハウス</strong>（${HOUSEMEAN[main.ruler.house]}）です。つまり${you}の${TH.field}は、<span class="uline">${HOUSEMEAN[main.ruler.house]}を通って動く</span>ということになります。ここが人によっていちばん違うところで、${TH.field}の相談を受けても、答えが同じにならない理由がこれです。`
+        : `この部屋の鍵は${main.rulerName}が握っています。`}</p>
+      <p>${main.occupants.length
+        ? `${main.n}ハウスには${main.occupants.map(o=>o.name).join("と")}が入っています。${TH.field}のことが、${you}にとって放っておけない領域になりやすい配置です。`
+        : `${main.n}ハウスに天体は入っていません。これは${TH.field}に縁がないという意味ではなく、<strong>この部屋そのものより、鍵を握る${main.rulerName}のいる場所のほうが効く</strong>ということです。天体が入っていないハウスのほうが、かえって素直に動くこともあります。`}</p>
+      ${sub?`<p>あわせて見ておきたいのが<strong>${sub.n}ハウス</strong>（${HOUSEMEAN[sub.n]}）です。入口は${sub.cuspSign}で、${SIGNKEY[sub.cuspSign]}という形。${sub.occupants.length?`${sub.occupants.map(o=>o.name).join("と")}が在住しています。`:`天体は入っていません。`}${main.n}ハウスで起きたことは、たいていこちらに影響が出ます。</p>`:""}
+      <p>${slowIn.length
+        ? `そしていま、<span class="mk">${slowIn.map(s=>`${s.h}ハウスに${s.t}`).join("、")}</span>が入ってきています。ゆっくり動く星なので、しばらくこの部屋に居座ります。${TH.field}まわりで感じている変化の出どころは、ここです。`
+        : `いまのところ、この部屋にゆっくり動く星は入っていません。${TH.field}については、大きく揺れるより現状が続く時期です。動かすなら、向こうから来るのを待つより<strong>${you}から動いたほうが早い</strong>時期でもあります。`}</p>`;
+  }else{
+    /* 2026年下半期テーマ：木星・土星がいまどのハウスに来ているかを読む */
+    const slow=transit.bodies.filter(b=>["木星","土星"].includes(b.name))
+                 .map(b=>({b,h:houseOfLon(b.lon,natal)}));
+    hc.innerHTML=slow.map(s=>{
+      const inf=houseInfo(natal,transit,s.h);
+      return `<div class="hcard">
+        <div class="hh"><b>${s.b.name}</b>いま ${s.h}ハウス ― ${HOUSEMEAN[s.h]}</div>
+        <dl>
+          <dt>いまのサイン</dt><dd><em>${s.b.signGlyph} ${s.b.sign} ${fmt(s.b.deg)}</em></dd>
+          <dt>入口のサイン</dt><dd>${inf.cuspGlyph} ${inf.cuspSign} ― ${SIGNKEY[inf.cuspSign]}</dd>
+          <dt>在住の天体</dt>
+          <dd>${inf.occupants.length?inf.occupants.map(o=>`${o.glyph} ${o.name}`).join("、"):`<span class="none">なし</span>`}</dd>
+        </dl></div>`;}).join("");
+    const j=slow.find(s=>s.b.name==="木星"), s2=slow.find(s=>s.b.name==="土星");
+    document.getElementById("ch2b").innerHTML=`
+      <p>この半年、${you}にとっていちばん効いているのは<strong>星がどのサインにいるか</strong>ではなく、<strong>${you}の出生図のどの部屋に入ってきているか</strong>です。同じ星が空を回っていても、当たる場所が人によって違うので、体感がまるで変わります。</p>
+      <p>${j?`広げる星である<span class="mk">木星</span>は、いま${you}の<strong>${j.h}ハウス</strong>にいます。${HOUSEMEAN[j.h]}を扱う部屋です。この領域が、いま${you}にとって<span class="uline">いちばん開きやすい場所</span>になっています。`:""}</p>
+      <p>${s2?`一方、形にする星である<span class="mk">土星</span>は<strong>${s2.h}ハウス</strong>――${HOUSEMEAN[s2.h]}のところにいます。ここは締まります。うまくいかないと感じるなら、それは${you}の力の問題ではなく、<strong>いまこの部屋が絞られている時期</strong>だからです。`:""}</p>
+      <p>${j&&s2?`${j.h}ハウスで広げて、${s2.h}ハウスで締める。この半年、${you}の生活はこの二方向で動きます。両方に同じだけ力を入れようとすると、どちらも中途半端になります。<strong>広がるほうに乗って、締まるほうは守りに徹する</strong>のが、この配置での正解です。`:""}</p>`;
+  }
+
   document.getElementById("ch3").innerHTML=`
     <p>ここからは、いま空を動いている星の話です。2026年後半、${you}の上には大きく二つの流れが来ています。ひとつは広げる方向に働く星、もうひとつは削る方向に働く星。</p>
     <p>この二つは同時に来ます。だからこの時期は「調子がいいのか悪いのかよくわからない」という感覚になりやすい。実際、両方本当です。増えているところと減っているところが、並行して起きています。</p>
@@ -1040,7 +1157,8 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       <p>${turn.slow==="木星"
         ?"木星は、広げる方向に働く星です。この日の前後、それまで閉じていたところが開きます。"
         :"土星は、形にする方向に働く星です。この日の前後、曖昧にしていたものに輪郭がつきます。"}</p>
-      <p>ただし、その日に何かが降ってくるわけではありません。星は<strong>きっかけを置いていくだけ</strong>で、動くのは${you}です。だから、その日までに何をしておくかで結果が変わります。</p>`;
+      <p>ただし、その日に何かが降ってくるわけではありません。星は<strong>きっかけを置いていくだけ</strong>で、動くのは${you}です。だから、その日までに何をしておくかで結果が変わります。</p>
+      <p>この転機が<strong>${TH.field}</strong>にどう出るかは、${you}の${TH.houses.length?`${TH.houses[0]}ハウス`:"出生図"}との関係で決まります。そこを次に見ていきます。</p>`;
   }else{
     document.getElementById("bigdateLead").textContent="";
     document.getElementById("bigdate").textContent="——";
@@ -1065,11 +1183,13 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     <p>${you}の月は<span class="mk">${moon.sign}</span>にあります。太陽が人から見えるあなただとすれば、月はひとりでいるときのあなたです。<strong>仕事の悩みは、ほとんどがこちら側から出てきます。</strong></p>
     <p>${moon.sign}の月を持つ${you}は、ひとりになると<span class="uline">${mo.k}</span>人です。人前ではそう見えないかもしれません。太陽（${sun.sign}）が外向きの顔なので、まわりが知っているのはそちらのほうです。</p>
     <p>この月が満たされるのは、<strong>${mo.a}</strong>。反対に消耗するのは、<strong>${mo.b}</strong>です。</p>
-    <p>ここが大事なところで、${you}が「仕事がしんどい」と感じるとき、原因は仕事の内容ではなく<span class="uline">この月の条件が満たされていないこと</span>のほうにあります。だから職場を変えても同じことが起きる、ということが起こります。</p>
-    <p>逆に言えば、${mo.a}という条件さえ確保できていれば、${you}は多少きつい仕事でも保ちます。転機を迎えるときに見るべきなのは、新しい仕事の中身より先に、ここです。</p>`;
+    <p>ここが大事なところで、${you}が${TH.field}について「しんどい」と感じるとき、原因は${TH.field}そのものではなく<span class="uline">この月の条件が満たされていないこと</span>のほうにあります。だから相手や場所を変えても、同じことが起きる、ということが起こります。</p>
+    <p>逆に言えば、${mo.a}という条件さえ確保できていれば、${you}は多少きつい状況でも保ちます。転機を迎えるときに見るべきなのは、新しい${TH.field}の中身より先に、ここです。</p>`;
 
   const allAsp=findAspects(natal.bodies,transit.bodies,false).sort((a,b)=>a.orb-b.orb);
-  const asp=allAsp.slice(0,5);   // 表示はオーブの近い順に5本まで
+  // テーマに関係する天体が絡むものを優先して拾う
+  const rel=allAsp.filter(a=>TH.focus.includes(a.a.name)||TH.focus.includes(a.b.name));
+  const asp=(rel.length>=3?rel:allAsp).slice(0,5);
   document.getElementById("aspects").innerHTML=asp.map(a=>
     `<div class="asp">
       <div class="p"><sup>N</sup>${a.a.glyph} ${a.a.name}</div>
@@ -1090,7 +1210,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     return `<p><strong>${head}</strong>${body}。</p>`;
   };
   document.getElementById("ch7").innerHTML=`
-    <p>いま${you}のネイタルに対して、トランジットの天体が全部で<strong>${allAsp.length}本</strong>のアスペクトを取っています。上に出したのは、そのうちオーブの近い5本です。オーブとは「ぴったりの角度からどれだけずれているか」で、<span class="uline">数字が小さいほど強く効いています</span>。</p>
+    <p>いま${you}のネイタルに対して、トランジットの天体が全部で<strong>${allAsp.length}本</strong>のアスペクトを取っています。そのうち<strong>${TH.field}</strong>に関わるものは<strong>${rel.length}本</strong>。上に出したのは、その中でもオーブの近いものです。オーブとは「ぴったりの角度からどれだけずれているか」で、<span class="uline">数字が小さいほど強く効いています</span>。</p>
     ${asp.slice(0,3).map(readAsp).join("")}
     <p>これらは、${you}が意識していないところで受けている刺激です。「なんとなく調子がいい」「理由はわからないが疲れる」といった感覚の正体は、たいていこのあたりにあります。</p>
     <p>${asp[0]?`いま最も強いのは、オーブ${asp[0].orb.toFixed(2)}°の${asp[0].a.name}と${asp[0].b.name}です。${asp[0].orb<1?"1度を切っているので、体感としてもはっきり出ているはずです。":"まだ少し距離があるので、これから濃くなっていきます。"}`:""}</p>`;

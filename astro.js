@@ -166,6 +166,40 @@ function buildChart(y, m, d, h, mi, lat, lon) {
   return { n, asc, mc, bodies };
 }
 
+/* ===========================================================
+   ハウスを読むための道具
+   カスプのサイン → その支配星 → 支配星が実際どこにいるか、
+   というホロスコープの基本の読み筋をチャートから算出する。
+   =========================================================== */
+const RULER = {
+  牡羊座:"火星", 牡牛座:"金星", 双子座:"水星", 蟹座:"月",
+  獅子座:"太陽", 乙女座:"水星", 天秤座:"金星", 蠍座:"冥王星",
+  射手座:"木星", 山羊座:"土星", 水瓶座:"天王星", 魚座:"海王星"
+};
+
+/* イコールハウスなので、n室のカスプは ASC から 30°ずつ */
+function cuspLon(natal, n) { return norm(natal.asc + 30 * (n - 1)); }
+
+/* ネイタルの ASC を基準に、任意の黄経がどのハウスに入るか（5度前ルール込み） */
+function houseOfLon(lon, natal) { return houseOf(lon, natal.asc).house; }
+
+/* n室について、チャートから読み取れることを全部集める */
+function houseInfo(natal, transit, n) {
+  const cusp = cuspLon(natal, n);
+  const cuspSign = SIGNS[Math.floor(cusp / 30)];
+  const rulerName = RULER[cuspSign];
+  const ruler = natal.bodies.find(b => b.name === rulerName) || null;
+
+  return {
+    n, cusp, cuspSign,
+    cuspGlyph: SIGN_GLYPH[Math.floor(cusp / 30)],
+    cuspDeg: cusp % 30,
+    rulerName, ruler,                                   // 支配星と、その実際の位置
+    occupants: natal.bodies.filter(b => b.house === n), // 在住天体
+    transits:  transit.bodies.filter(b => houseOfLon(b.lon, natal) === n)
+  };
+}
+
 /* ---- アスペクト ---- */
 const ASPECTS = [
   { name:"コンジャンクション", glyph:"☌"+VS, angle:  0, orb:8, type:"neutral" },
