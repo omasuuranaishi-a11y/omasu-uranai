@@ -613,17 +613,7 @@ body.demo #demobar{display:flex !important}
     <div class="sec-title">この鑑定でお伝えすること</div>
     <div class="orn tight"><i>◆</i></div>
     <div class="toc">
-      <ol>
-        <li>太陽のサイン ― あなたが仕事で立っている場所</li>
-        <li>水星のサイン ― あなたの考え方と伝え方</li>
-        <li>いま、あなたの上を動いている星</li>
-        <li>この先いちばん近い転機の<strong>日付</strong></li>
-        <li class="lk">その日、何が起きるか</li>
-        <li class="lk">月のサイン ― ひとりのときのあなた</li>
-        <li class="lk">いま効いているアスペクト</li>
-        <li class="lk">その日までに、しておくといいこと</li>
-        <li class="lk">おますから、あなたへ</li>
-      </ol>
+      <ol id="tocList"></ol>
     </div>
 
     <!-- ---------- 無料ゾーン ---------- -->
@@ -691,13 +681,13 @@ body.demo #demobar{display:flex !important}
 
       <div class="veil" aria-hidden="true">
         <div class="orn"><i>◆</i></div>
-        <div class="sec-title">月のサイン ― ひとりのときのあなた</div>
+        <div class="sec-title">人には見せていない、<br>ひとりのときのあなた</div>
         <div class="orn tight"><i>◆</i></div>
         <div class="pick" id="pickMoon"></div>
         <div class="body" id="ch6"></div>
 
         <div class="orn"><i>◆</i></div>
-        <div class="sec-title">いま効いているアスペクト</div>
+        <div class="sec-title">いまあなたが受けている、<br>目に見えない影響</div>
         <div class="orn tight"><i>◆</i></div>
         <div id="aspects"></div>
         <div class="body" id="ch7"></div>
@@ -968,6 +958,23 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   const TH=THEMES[themeKey]||THEMES.shigoto;
   document.getElementById("resultTitle").textContent=TH.title;
   document.getElementById("secTitle1").innerHTML=TH.sec1;
+
+  /* 目次は、実際に出す章からそのまま組み立てる */
+  const flat=s=>s.replace(/<br>/g,"");
+  const toc=[
+    [flat(TH.sec1),                              1],
+    [flat(TH.sec2),                              1],
+    [flat(TH.sec3),                              1],
+    ["いま、あなたの上を動いている星",              1],
+    ["この先いちばん近い、あなたの<strong>転機の日</strong>", 1],
+    [TH.band,                                    0],
+    ["人には見せていない、ひとりのときのあなた",     0],
+    ["いまあなたが受けている、目に見えない影響",     0],
+    ["その日までに、しておくといいこと",            0],
+    ["おますから、あなたへ",                       0]
+  ];
+  document.getElementById("tocList").innerHTML=
+    toc.map(([t,free])=>`<li class="${free?"":"lk"}">${t}</li>`).join("");
   document.getElementById("cutBand").textContent=TH.band;
   const [lat,lon]=PREFS[prefName]||PREFS["東京"];
   const natal=buildChart(y,m,d,hasTime?h:12,hasTime?mi:0,lat,lon);
