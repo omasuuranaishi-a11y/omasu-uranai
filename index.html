@@ -349,7 +349,9 @@ body.unlocked .gate2{display:none}
   border:1px solid var(--gold);padding:30px 22px;text-align:center;
   box-shadow:0 18px 50px rgba(0,0,0,.45);
 }
-.gate .price{font-family:system-ui,sans-serif;font-size:12.5px;color:#6f756c}
+.gate .price{
+  font-family:system-ui,sans-serif;font-size:12.5px;color:#6f756c;margin-bottom:18px;
+}
 .gate .price strong{font-size:28px;color:#33403a;font-weight:500;letter-spacing:0}
 .gate .lead{font-size:16px;line-height:2.0;margin:14px 0 0}
 .gate .sub{
@@ -631,25 +633,11 @@ body.demo #demobar{display:flex !important}
     <div class="locked">
       <div class="gate">
         <div class="price">続きをすべて読む　<strong>¥500</strong>　(税込)</div>
-        <div class="lead">日付は、もうお伝えしました。<br>ここから先は、<span class="uline" style="border-color:#8e7c4e">その日をどう迎えるか</span>の話です。</div>
-        <div class="sub">
-          転機は、来ると分かっていても<br>
-          何をすればいいかが分からないと通り過ぎます。<br>
-          そこはあなたの月を使って読みます。
-        </div>
         <!-- PayPalのノーコード決済ボタン。ここで完結し、ページは移動しない -->
         <div id="paypal-btn"></div>
         <div class="paynote">お支払い後、このページのまま続きが表示されます</div>
         <!-- 確認用。URLに ?demo が付いているときだけ出る -->
         <button class="buy demo-only" id="buy">［確認用］決済せずに解除</button>
-        <div class="contents">
-          <b>ここから先の内容</b>
-          ・その日、具体的に何が起きるか<br>
-          ・あなたの月のサインと、その扱い方<br>
-          ・いま効いているアスペクト（全件）<br>
-          ・<strong>その日までにしておくといいこと</strong><br>
-          ・おますから、あなたへの手紙
-        </div>
         <div class="terms">
           一度お読みいただいたあとは、いつでも読み返していただけます。<br>
           <a href="tokushoho.html" target="_blank" rel="noopener">特定商取引法に基づく表記</a>
