@@ -654,6 +654,12 @@ body.demo #demobar{display:flex !important}
     <div id="houseCards"></div>
     <div class="body" id="ch2b"></div>
 
+    <div class="orn"><i>◆</i></div>
+    <div class="sec-title">あなたの人生を区切る、<br>心のテーマの移り変わり</div>
+    <div class="orn tight"><i>◆</i></div>
+    <div class="tbl-scroll" id="progTable"></div>
+    <div class="body" id="ch2c"></div>
+
     <div class="speak" style="margin-top:34px">
       <div class="from">O M A S U</div>
       ここまでが、<b>変わらないほうのあなた</b>です。
@@ -839,6 +845,21 @@ const HOUSEMEAN={
 7:"パートナーや、一対一の相手との関係",8:"深い関わりと、人から受け取るもの",
 9:"遠くへ行くことと、信じているもの",10:"社会での立場と、向かう先",
 11:"人との縁と、望んでいる未来",12:"ひとりの時間と、意識していない領域"};
+
+/* 進行の月が通るハウス＝その時期に心が向かうテーマ */
+const PROGTHEME={
+1:"自分が主語に戻る。新しい章がはじまる",
+2:"手元を固める。稼ぎ方と、手放したくないもの",
+3:"動きが増える。学びと、近い人とのやりとり",
+4:"帰る場所を作り直す。家族と、暮らしの土台",
+5:"表に出す。楽しみと、好きだと言えるもの",
+6:"日々の型を整える。働き方と、体の使い方",
+7:"相手が現れる。一対一の関係が主題になる",
+8:"深く関わる。受け取るものと、手放すもの",
+9:"遠くを見る。知らない世界と、価値観の入れ替え",
+10:"役割が決まる。社会での立場と、背負うもの",
+11:"縁が広がる。仲間と、これから望むもの",
+12:"内側に沈む。整理と、次への準備"};
 
 /* 金星＝人との距離のとり方。恋愛・結婚テーマで主役になる */
 const VEN={
@@ -1028,6 +1049,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     [flat(TH.sec1),                              1],
     [flat(TH.sec2),                              1],
     [flat(TH.sec3),                              1],
+    ["あなたの人生を区切る、心のテーマの移り変わり", 1],
     ["いま、あなたの上を動いている星",              1],
     ["この先いちばん近い、あなたの<strong>転機の日</strong>", 1],
     [TH.band,                                    0],
@@ -1143,6 +1165,36 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       <p>${you}の考え方と、それをどう外に出すかを示すのが<span class="mk">${mer.sign}</span>の位置です。ここは<span class="uline">「${mm.k}」</span>という形をとります。</p>
       <p>${mm.a}。太陽（${sun.sign}）が「何をしているときが自然か」だとすれば、こちらは「どう伝えるか」。この二つがずれている人は多いのですが、${you}の場合はそこまで遠くありません。</p>
       <p>人に理解されにくいと感じるとき、原因は中身ではなく、この伝え方が相手の受け取り方と噛み合っていないだけ、ということがよくあります。</p>`;
+  }
+
+  /* ===== 進行の月：人生をハウスごとの時期に区切る ===== */
+  const ageNow=(now-new Date(y,m-1,d))/(365.2422*86400000);
+  const pt=document.getElementById("progTable");
+  if(hasTime){
+    const periods=progressedMoonPeriods(natal,y,m,d,h,mi,78);
+    const cur=currentProgPeriod(periods,ageNow);
+    const ci=periods.indexOf(cur);
+    const view=periods.slice(Math.max(0,ci-2),Math.max(0,ci-2)+12);
+    const ymd=dd=>`${dd.getFullYear()}/${dd.getMonth()+1}/${dd.getDate()}`;
+
+    pt.innerHTML=`<table><thead><tr>`
+      +`<th>ハウス</th><th>年齢</th><th>この時期のテーマ</th><th>期間</th></tr></thead><tbody>`
+      +view.map(p=>`<tr class="${p===cur?"on":""}">`
+        +`<td class="nm">${p.house}ハウス</td>`
+        +`<td>${Math.floor(p.fromAge)}〜${Math.floor(p.toAge)}歳</td>`
+        +`<td style="text-align:left;padding-left:10px">${PROGTHEME[p.house]}</td>`
+        +`<td style="white-space:nowrap">${ymd(p.from)}<br>〜${ymd(p.to)}</td></tr>`).join("")
+      +`</tbody></table>`;
+
+    document.getElementById("ch2c").innerHTML=`
+      <p>生まれたときの月は、そのあとも<strong>ゆっくり動き続けています</strong>。1周するのに27年半ほどかかり、2年半おきに部屋を移ります。この移動が、${you}の心がそのとき何に向くかを決めています。</p>
+      <p>いま${you}は<span class="mk">${cur.house}ハウス</span>の時期です。<span class="uline">${PROGTHEME[cur.house]}</span>――${Math.floor(cur.fromAge)}歳から${Math.floor(cur.toAge)}歳まで、期間でいうと${ymd(cur.from)}から${ymd(cur.to)}までがこの時期にあたります。</p>
+      <p>ここ最近、${HOUSEMEAN[cur.house]}のことが気になる場面が増えていませんか。仕事や環境が変わったからではなく、<strong>${you}の内側の関心そのものが移っている</strong>時期です。理由がわからないまま気持ちが動くのは、たいていこれが原因です。</p>
+      <p>次に部屋が変わるのは<strong>${ymd(cur.to)}</strong>。そこから${PROGTHEME[periods[ci+1]?periods[ci+1].house:cur.house]}という段階に入ります。いまの時期にやり残したことは、そこから先はやりにくくなります。</p>`;
+  }else{
+    pt.innerHTML=`<p style="color:var(--dim);font-family:system-ui,sans-serif;font-size:12.5px;line-height:1.9">
+      この表は出生時間から計算します。フォームの「生まれた時間と場所も入れる」にご記入ください。</p>`;
+    document.getElementById("ch2c").innerHTML="";
   }
 
   /* ===== 第3章：テーマのハウスを、チャートから読む ===== */
