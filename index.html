@@ -385,7 +385,7 @@ body.unlocked .gate2{display:none}
   box-shadow:0 6px 18px rgba(0,0,0,.3);
 }
 .more-btn:hover{background:#fff}
-/* 2つ目の日付は伏せる */
+/* 1つ目の日付は公開。2つ目だけ伏せる */
 .bigdate.second span{filter:blur(7px);user-select:none}
 body.unlocked .bigdate.second span{filter:none;user-select:auto}
 .gate{
@@ -1291,6 +1291,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     const t=turn.date, days=Math.round((t-now)/86400000);
     document.getElementById("bigdateLead").textContent=
       `トランジットの${turn.slow}が、あなたの${turn.point}に${turn.aspect}を取る日`;
+    // 1つ目の日付は完全に公開する（2つ目だけ伏せる）
     document.getElementById("bigdate").textContent=
       `${t.getFullYear()}年${t.getMonth()+1}月${t.getDate()}日`;
     document.getElementById("bigdateNote").textContent=`今日から${days}日後`;
