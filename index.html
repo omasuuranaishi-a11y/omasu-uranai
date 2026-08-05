@@ -795,7 +795,7 @@ body.demo #demobar{display:flex !important}
      ※ クライアントIDはページのHTMLに出る前提のもので、公開して問題ない。
         秘密鍵（Secret）のほうは絶対にここへ書かないこと。 -->
 <script src="https://www.paypal.com/sdk/js?client-id=AQDu2ocvL4sCh-hR5MdQGbhjOK2oS-cQJOFJbivdcCOM_q_q_jprsxPoJ9Ro6V2pZy6bbL-xRDTZwdjF&currency=JPY&intent=capture"></script>
-<script src="astro.js?v=8"></script>
+<script src="astro.js?v=10"></script>
 <script>
 /* ===========================================================
    解釈文テンプレート
@@ -1115,7 +1115,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       +`<td class="nm"><span class="glyph">${b.glyph}</span>${b.name}</td>`
       +`<td><span class="glyph">${b.signGlyph}</span>${b.sign}</td>`
       +`<td>${fmt(b.deg)}</td><td>${hasTime
-          ? b.house+"ハウス"+(b.houseMoved?`<span class="r5">5°前</span>`:"")
+          ? b.house+"ハウス"+(b.houseMoved?`<span class="r5">${b.houseNext}室寄り</span>`:"")
           : "—"}</td></tr>`).join("")
     +`<tr><td class="nm"><span class="glyph">Asc</span>ASC</td><td><span class="glyph">${SIGN_GLYPH[Math.floor(natal.asc/30)]}</span>${SIGNS[Math.floor(natal.asc/30)]}</td><td>${fmt(natal.asc%30)}</td><td>1ハウス</td></tr>`
     +`<tr><td class="nm"><span class="glyph">MC</span>MC</td><td><span class="glyph">${SIGN_GLYPH[Math.floor(natal.mc/30)]}</span>${SIGNS[Math.floor(natal.mc/30)]}</td><td>${fmt(natal.mc%30)}</td><td>—</td></tr>`
@@ -1124,7 +1124,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   const pick=(el,b)=>document.getElementById(el).innerHTML=
     `<div class="k">${b.glyph} ${b.name}</div><div class="k">${b.signGlyph} ${b.sign}</div>`
     +`<div>${fmt(b.deg)}</div><div>${hasTime
-        ? b.house+"ハウス"+(b.houseMoved?`<span class="r5">5°前</span>`:"")
+        ? b.house+"ハウス"+(b.houseMoved?`<span class="r5">${b.houseNext}室寄り</span>`:"")
         : "—"}</div>`;
   pick("pickSun",sun); pick("pickMer",mer); pick("pickMoon",moon);
 

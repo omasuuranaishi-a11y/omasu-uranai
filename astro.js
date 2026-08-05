@@ -127,11 +127,30 @@ function ascmc(n, lat, lon) {
 const RULE_5DEG   = true;   // 5度前ルールを使うか
 const ORB_5DEG    = 5;      // 何度前から次のハウスとみなすか
 
-function houseOf(lon, asc) {
-  const shift = RULE_5DEG ? ORB_5DEG : 0;
-  const plain = Math.floor(norm(lon - asc) / 30) + 1;              // ルールなしの場合
-  const ruled = Math.floor(norm(lon - asc + shift) / 30) + 1;      // ルールありの場合
-  return { house: ruled, moved: ruled !== plain, plain };
+/* カスプ表（1〜12の黄経）の中で、ある黄経がどの部屋に入るか */
+function inWhichHouse(lon, cusps) {
+  for (let n = 1; n <= 12; n++) {
+    const a = cusps[n], b = cusps[n === 12 ? 1 : n + 1];
+    if (norm(lon - a) < norm(b - a)) return n;
+  }
+  return 1;
+}
+
+/* cusps は 12室のカスプ黄経。
+   ハウスは標準どおり（カスプで区切る）を正とする。
+   5度前ルールは「次の部屋の入口が5度以内に迫っている」という
+   注記として持たせ、置き場所そのものは動かさない。 */
+function houseOf(lon, cusps) {
+  const plain = inWhichHouse(lon, cusps);
+  const ruled = RULE_5DEG ? inWhichHouse(norm(lon + ORB_5DEG), cusps) : plain;
+  return { house: plain, moved: ruled !== plain, next: ruled, plain };
+}
+
+/* イコールハウスのカスプ表を作る */
+function equalCusps(asc) {
+  const c = {};
+  for (let n = 1; n <= 12; n++) c[n] = norm(asc + 30 * (n - 1));
+  return c;
 }
 
 /* ---- チャート一式を組み立てる ---- */
@@ -149,21 +168,34 @@ function buildChart(y, m, d, h, mi, lat, lon) {
   const n = jdays(y, m, d, h, mi);
   const { asc, mc } = ascmc(n, lat, lon);
 
+  // カスプ表を先に作る。プラシーダスなら 11/12/2/3 を反復で求め、残りは向かい側
+  let cusps;
+  if (HOUSE_SYS === "placidus") {
+    const gmst = norm(280.46061837 + 360.98564736629 * n);
+    const ramc = norm(gmst + lon);
+    const eps  = rad(23.4393 - 0.0000004 * n);
+    const p = placidusCusps(ramc, eps, lat);
+    cusps = { 1: asc, 10: mc, 11: p[11], 12: p[12], 2: p[2], 3: p[3] };
+    for (const k of [1, 2, 3, 10, 11, 12]) cusps[k > 6 ? k - 6 : k + 6] = norm(cusps[k] + 180);
+  } else {
+    cusps = equalCusps(asc);
+  }
+
   const bodies = PLANETS.map(name => {
     const L = lonOf(name, n);
-    const h = houseOf(L, asc);
+    const h = houseOf(L, cusps);
     return {
       name, lon: L,
       sign: SIGNS[Math.floor(L / 30)],
       glyph: GLYPH[name],
       signGlyph: SIGN_GLYPH[Math.floor(L / 30)],
       deg: (L % 30),
-      house: h.house,          // 5度前ルール適用後
-      houseMoved: h.moved,     // このルールで1つ繰り上がったか
-      housePlain: h.plain      // ルールを使わない場合のハウス
+      house: h.house,          // カスプで区切った本来のハウス
+      houseMoved: h.moved,     // 次の部屋の入口が5度以内に迫っているか
+      houseNext: h.next        // その場合の「寄っている先」
     };
   });
-  return { n, asc, mc, bodies };
+  return { n, asc, mc, cusps, bodies };
 }
 
 /* ===========================================================
@@ -177,11 +209,53 @@ const RULER = {
   射手座:"木星", 山羊座:"土星", 水瓶座:"天王星", 魚座:"海王星"
 };
 
-/* イコールハウスなので、n室のカスプは ASC から 30°ずつ */
-function cuspLon(natal, n) { return norm(natal.asc + 30 * (n - 1)); }
+/* ===========================================================
+   ハウス分割
+   HOUSE_SYS = "placidus" でプラシーダス、"equal" でイコールハウス。
+   プラシーダスは 11・12・2・3 室を半弧の3分割から反復で求め、
+   残りは向かい側（+180°）を取る。
+   =========================================================== */
+const HOUSE_SYS = "placidus";
+
+function placidusCusps(ramcDeg, epsRad, latDeg) {
+  const phi = rad(latDeg), ramc = ramcDeg;
+  const lonOfRA = ra => norm(deg(Math.atan2(Math.sin(rad(ra)), Math.cos(rad(ra)) * Math.cos(epsRad))));
+
+  // 11・12・2・3 室。offset は RAMC からの初期値、fn が半弧の取り方
+  const spec = {
+    11: r => ramc + (90 + r) / 3,
+    12: r => ramc + 2 * (90 + r) / 3,
+     2: r => ramc + 180 - 2 * (90 - r) / 3,
+     3: r => ramc + 180 - (90 - r) / 3
+  };
+  const init = { 11: ramc + 30, 12: ramc + 60, 2: ramc + 120, 3: ramc + 150 };
+
+  const out = {};
+  for (const h of [11, 12, 2, 3]) {
+    let ra = init[h];
+    for (let i = 0; i < 40; i++) {
+      const lam = rad(lonOfRA(ra));
+      const dec = Math.asin(Math.sin(epsRad) * Math.sin(lam));
+      let x = Math.tan(phi) * Math.tan(dec);
+      x = Math.max(-1, Math.min(1, x));          // 高緯度で発散しないよう抑える
+      const ad = deg(Math.asin(x));
+      const next = spec[h](ad);
+      if (Math.abs(next - ra) < 1e-9) { ra = next; break; }
+      ra = next;
+    }
+    out[h] = lonOfRA(ra);
+  }
+  return out;
+}
+
+/* n室のカスプ黄経 */
+function cuspLon(natal, n) {
+  if (HOUSE_SYS !== "placidus" || !natal.cusps) return norm(natal.asc + 30 * (n - 1));
+  return natal.cusps[n];
+}
 
 /* ネイタルの ASC を基準に、任意の黄経がどのハウスに入るか（5度前ルール込み） */
-function houseOfLon(lon, natal) { return houseOf(lon, natal.asc).house; }
+function houseOfLon(lon, natal) { return houseOf(lon, natal.cusps).house; }
 
 /* n室について、チャートから読み取れることを全部集める */
 function houseInfo(natal, transit, n) {
@@ -214,7 +288,7 @@ function progressedMoonPeriods(natal, birthY, birthM, birthD, birthH, birthMi, m
   const YEAR = 365.2422;
 
   const ageToDate = a => new Date(birthMs + a * YEAR * 86400000 + 9 * 3600 * 1000);
-  const houseAt   = a => houseOf(moonLon(n0 + a), natal.asc).house;
+  const houseAt   = a => houseOf(moonLon(n0 + a), natal.cusps).house;
 
   const out = [];
   let cur = houseAt(0), start = 0;
