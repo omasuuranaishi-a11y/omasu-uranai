@@ -124,8 +124,14 @@ function ascmc(n, lat, lon) {
    イコールハウスなので「位置に5度足してから割る」だけで済む。
    プラシーダスに切り替えるときは、カスプごとに個別判定が要る。
    =========================================================== */
-const RULE_5DEG   = true;   // 5度前ルールを使うか
-const ORB_5DEG    = 5;      // 何度前から次のハウスとみなすか
+const RULE_5DEG = true;   // 5度前ルールを使うか
+const ORB_5DEG  = 5;      // 何度前から次のハウスとみなすか
+
+/* "apply" … ルールどおり次のハウスに入れる（おますの流儀・既定）
+   "note"  … 配置は標準のまま、「◯室寄り」の注記だけ付ける
+   ※ "note" は真木あかり等の一般的な占いサイトと一致する。
+     切り替えると鑑定書との整合が崩れるので、変更は本人裁定で。 */
+const RULE_5DEG_MODE = "apply";
 
 /* カスプ表（1〜12の黄経）の中で、ある黄経がどの部屋に入るか */
 function inWhichHouse(lon, cusps) {
@@ -143,7 +149,10 @@ function inWhichHouse(lon, cusps) {
 function houseOf(lon, cusps) {
   const plain = inWhichHouse(lon, cusps);
   const ruled = RULE_5DEG ? inWhichHouse(norm(lon + ORB_5DEG), cusps) : plain;
-  return { house: plain, moved: ruled !== plain, next: ruled, plain };
+  const moved = ruled !== plain;
+  return RULE_5DEG_MODE === "apply"
+    ? { house: ruled, moved, next: ruled, plain }   // 繰り上げて確定
+    : { house: plain, moved, next: ruled, plain };  // 標準のまま注記だけ
 }
 
 /* イコールハウスのカスプ表を作る */

@@ -282,6 +282,11 @@ td.nm{text-align:left;padding-left:10px;white-space:nowrap}
 tr.on td{background:var(--hl2)}
 td.mark{background:var(--hl2);font-weight:600}
 .glyph{font-size:13px;color:#46584c;margin-right:4px}
+/* 月のサインなど、有料の領域は表の中でも伏せる */
+.lockcell{filter:blur(5px);user-select:none}
+body.unlocked .lockcell{filter:none;user-select:auto}
+#pickMoon{filter:blur(5px);user-select:none}
+body.unlocked #pickMoon{filter:none;user-select:auto}
 /* 5度前ルールで繰り上がった天体の印 */
 .r5{
   display:inline-block;margin-left:4px;padding:1px 4px;border-radius:2px;
@@ -795,7 +800,7 @@ body.demo #demobar{display:flex !important}
      ※ クライアントIDはページのHTMLに出る前提のもので、公開して問題ない。
         秘密鍵（Secret）のほうは絶対にここへ書かないこと。 -->
 <script src="https://www.paypal.com/sdk/js?client-id=AQDu2ocvL4sCh-hR5MdQGbhjOK2oS-cQJOFJbivdcCOM_q_q_jprsxPoJ9Ro6V2pZy6bbL-xRDTZwdjF&currency=JPY&intent=capture"></script>
-<script src="astro.js?v=10"></script>
+<script src="astro.js?v=11"></script>
 <script>
 /* ===========================================================
    解釈文テンプレート
@@ -1110,13 +1115,16 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   const hot=["太陽","水星","月"];
   document.getElementById("table").innerHTML=
     `<table><thead><tr><th>天体</th><th>サイン</th><th>黄経</th><th>ハウス</th></tr></thead><tbody>`
-    +natal.bodies.map(b=>
-      `<tr class="${hot.includes(b.name)?"on":""}">`
+    +natal.bodies.map(b=>{
+      // 月のサインは有料の領域。表では伏せる
+      const lock=(b.name==="月");
+      const cell=s=>lock?`<span class="lockcell">${s}</span>`:s;
+      return `<tr class="${hot.includes(b.name)?"on":""}">`
       +`<td class="nm"><span class="glyph">${b.glyph}</span>${b.name}</td>`
-      +`<td><span class="glyph">${b.signGlyph}</span>${b.sign}</td>`
-      +`<td>${fmt(b.deg)}</td><td>${hasTime
-          ? b.house+"ハウス"+(b.houseMoved?`<span class="r5">${b.houseNext}室寄り</span>`:"")
-          : "—"}</td></tr>`).join("")
+      +`<td>${cell(`<span class="glyph">${b.signGlyph}</span>${b.sign}`)}</td>`
+      +`<td>${cell(fmt(b.deg))}</td><td>${hasTime
+          ? cell(b.house+"ハウス"+(b.houseMoved?`<span class="r5">5°前</span>`:""))
+          : "—"}</td></tr>`;}).join("")
     +`<tr><td class="nm"><span class="glyph">Asc</span>ASC</td><td><span class="glyph">${SIGN_GLYPH[Math.floor(natal.asc/30)]}</span>${SIGNS[Math.floor(natal.asc/30)]}</td><td>${fmt(natal.asc%30)}</td><td>1ハウス</td></tr>`
     +`<tr><td class="nm"><span class="glyph">MC</span>MC</td><td><span class="glyph">${SIGN_GLYPH[Math.floor(natal.mc/30)]}</span>${SIGNS[Math.floor(natal.mc/30)]}</td><td>${fmt(natal.mc%30)}</td><td>—</td></tr>`
     +`</tbody></table>`;
@@ -1124,7 +1132,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   const pick=(el,b)=>document.getElementById(el).innerHTML=
     `<div class="k">${b.glyph} ${b.name}</div><div class="k">${b.signGlyph} ${b.sign}</div>`
     +`<div>${fmt(b.deg)}</div><div>${hasTime
-        ? b.house+"ハウス"+(b.houseMoved?`<span class="r5">${b.houseNext}室寄り</span>`:"")
+        ? b.house+"ハウス"+(b.houseMoved?`<span class="r5">5°前</span>`:"")
         : "—"}</div>`;
   pick("pickSun",sun); pick("pickMer",mer); pick("pickMoon",moon);
 
@@ -1221,6 +1229,8 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     document.getElementById("ch2b").innerHTML="";
   }else if(TH.houses.length){
     const infos=TH.houses.map(n=>houseInfo(natal,transit,n));
+    // 月のサインは有料の領域。ハウスカードの中でも伏せる
+    const sgn=(o,txt)=>o.name==="月"?`<span class="lockcell">${txt}</span>`:txt;
     hc.innerHTML=infos.map(h=>`
       <div class="hcard">
         <div class="hh"><b>${h.n}ハウス</b>${HOUSEMEAN[h.n]}</div>
@@ -1229,11 +1239,11 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
           <dd><em>${h.cuspGlyph} ${h.cuspSign} ${fmt(h.cuspDeg)}</em>　― ${SIGNKEY[h.cuspSign]}</dd>
           <dt>この部屋の鍵</dt>
           <dd>${h.ruler
-              ? `<em>${h.ruler.glyph} ${h.rulerName}</em> が ${h.ruler.signGlyph} ${h.ruler.sign} の <em>${h.ruler.house}ハウス</em>`
+              ? `<em>${h.ruler.glyph} ${h.rulerName}</em> が ${sgn(h.ruler,`${h.ruler.signGlyph} ${h.ruler.sign}`)} の <em>${h.ruler.house}ハウス</em>`
               : `${h.rulerName}`}</dd>
           <dt>在住の天体</dt>
           <dd>${h.occupants.length
-              ? h.occupants.map(o=>`${o.glyph} ${o.name}（${o.sign}）`).join("、")
+              ? h.occupants.map(o=>`${o.glyph} ${o.name}（${sgn(o,o.sign)}）`).join("、")
               : `<span class="none">なし</span>`}</dd>
           <dt>いま来ている星</dt>
           <dd>${h.transits.length
@@ -1318,7 +1328,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     <p>では、その日、${you}に何が起きるか。</p>
     <p>まず知っておいてほしいのは、<strong>転機は仕事の場面からは始まらない</strong>ということです。最初に出るのは、もっと手前の些細なところ。今まで平気だったことが急に面倒になる、続けていた習慣がなんとなく途切れる、行き慣れた場所に足が向かなくなる。そういう小さな違和感が先に来ます。</p>
     <p>ですから、その日を過ぎても何も起きなかったと感じたなら、たぶん見る場所が違っています。仕事ではなく、<span class="uline">生活のほうを見てください</span>。ここまでが、どなたにも共通する話です。</p>
-    <p>そのうえで、${sun.sign}の太陽と${moon.sign}の月を持つ${you}の場合、それがいちばん最初に出てくるのは</p>`;
+    <p>そのうえで、${sun.sign}の太陽と、${you}の月の組み合わせで見ると、それがいちばん最初に出てくるのは</p>`;
 
   /* --- 有料ゾーン（本番はサーバー側で出し分ける） --- */
   /* 章を「読める冒頭」と「ぼかす続き」に割る */
@@ -1330,11 +1340,11 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
 
   const mo=MOON[moon.sign];
   split("ch6",`
-    <p>${you}の月は<span class="mk">${moon.sign}</span>にあります。太陽が人から見えるあなただとすれば、月はひとりでいるときのあなたです。<strong>仕事の悩みは、ほとんどがこちら側から出てきます。</strong></p>
-    <p>${moon.sign}の月を持つ${you}は、ひとりになると<span class="uline">${mo.k}</span>人です。人前ではそう見えないかもしれません。太陽（${sun.sign}）が外向きの顔なので、まわりが知っているのはそちらのほうです。</p>
+    <p>太陽が人から見えるあなただとすれば、月はひとりでいるときのあなたです。${TH.field}の悩みは、<strong>ほとんどがこちら側から出てきます。</strong>人前で見せている顔とは、たいてい食い違っています。</p>
+    <p>${you}の月は<span class="mk">${moon.sign}</span>にあります。ひとりになると<span class="uline">${mo.k}</span>人です。人前ではそう見えないかもしれません。太陽（${sun.sign}）が外向きの顔なので、まわりが知っているのはそちらのほうです。</p>
     <p>この月が満たされるのは、<strong>${mo.a}</strong>。反対に消耗するのは、<strong>${mo.b}</strong>です。</p>
     <p>ここが大事なところで、${you}が${TH.field}について「しんどい」と感じるとき、原因は${TH.field}そのものではなく<span class="uline">この月の条件が満たされていないこと</span>のほうにあります。だから相手や場所を変えても、同じことが起きる、ということが起こります。</p>
-    <p>逆に言えば、${mo.a}という条件さえ確保できていれば、${you}は多少きつい状況でも保ちます。転機を迎えるときに見るべきなのは、新しい${TH.field}の中身より先に、ここです。</p>`,2);
+    <p>逆に言えば、${mo.a}という条件さえ確保できていれば、${you}は多少きつい状況でも保ちます。転機を迎えるときに見るべきなのは、新しい${TH.field}の中身より先に、ここです。</p>`,1);
 
   const allAsp=findAspects(natal.bodies,transit.bodies,false).sort((a,b)=>a.orb-b.orb);
   // テーマに関係する天体が絡むものを優先して拾う
