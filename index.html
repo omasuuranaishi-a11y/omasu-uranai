@@ -367,12 +367,29 @@ body.unlocked .gate2{display:none}
   background:linear-gradient(180deg,rgba(62,75,67,0),var(--deep) 92%);
 }
 .locked{position:relative;margin-top:6px}
-.locked .veil{
+/* 章ごとの切れ目。冒頭（lead）は読めて、その先だけぼかす */
+.ch-teaser .lead{margin-bottom:2px}
+.hidepart{position:relative;max-height:190px;overflow:hidden;margin-bottom:26px}
+.hidepart .veil{
   filter:blur(4.5px);opacity:.5;user-select:none;pointer-events:none;
-  position:relative;z-index:1;
 }
+.fade2{
+  position:absolute;left:0;right:0;bottom:0;height:150px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(62,75,67,0),var(--deep) 78%);
+}
+.more-btn{
+  position:absolute;left:50%;bottom:4px;transform:translateX(-50%);
+  background:var(--paper);color:#3b4239;border:1px solid var(--gold);
+  border-radius:2px;padding:9px 30px;cursor:pointer;white-space:nowrap;
+  font-family:system-ui,sans-serif;font-size:13px;letter-spacing:.08em;
+  box-shadow:0 6px 18px rgba(0,0,0,.3);
+}
+.more-btn:hover{background:#fff}
+/* 2つ目の日付は伏せる */
+.bigdate.second span{filter:blur(7px);user-select:none}
+body.unlocked .bigdate.second span{filter:none;user-select:auto}
 .gate{
-  position:absolute;left:0;right:0;top:70px;z-index:2;
+  position:relative;z-index:2;margin:0 0 34px;
   background:var(--paper);color:#3b4239;
   border:1px solid var(--gold);padding:30px 22px;text-align:center;
   box-shadow:0 18px 50px rgba(0,0,0,.45);
@@ -414,7 +431,9 @@ body.unlocked .gate2{display:none}
 }
 .gate .terms a{color:#6f756c}
 footer a{color:var(--gold);text-decoration:none;border-bottom:1px solid var(--gold-d)}
-body.unlocked .locked .veil{filter:none;opacity:1;user-select:auto;pointer-events:auto}
+body.unlocked .hidepart{max-height:none;overflow:visible;margin-bottom:0}
+body.unlocked .hidepart .veil{filter:none;opacity:1;user-select:auto;pointer-events:auto}
+body.unlocked .fade2,body.unlocked .more-btn{display:none}
 body.unlocked .gate,body.unlocked .cut .fade{display:none}
 
 /* 目次 */
@@ -679,29 +698,73 @@ body.demo #demobar{display:flex !important}
         </div>
       </div>
 
-      <div class="veil" aria-hidden="true">
+      <!-- 各章、冒頭は読めて、そこから先がぼける -->
+      <div class="ch-teaser">
         <div class="orn"><i>◆</i></div>
         <div class="sec-title">人には見せていない、<br>ひとりのときのあなた</div>
         <div class="orn tight"><i>◆</i></div>
         <div class="pick" id="pickMoon"></div>
-        <div class="body" id="ch6"></div>
+        <div class="body lead" id="ch6lead"></div>
+        <div class="hidepart">
+          <div class="body veil" id="ch6"></div>
+          <div class="fade2"></div>
+          <button class="more-btn">続きを読む</button>
+        </div>
+      </div>
 
+      <div class="ch-teaser">
         <div class="orn"><i>◆</i></div>
         <div class="sec-title">いまあなたが受けている、<br>目に見えない影響</div>
         <div class="orn tight"><i>◆</i></div>
         <div id="aspects"></div>
-        <div class="body" id="ch7"></div>
+        <div class="body lead" id="ch7lead"></div>
+        <div class="hidepart">
+          <div class="body veil" id="ch7"></div>
+          <div class="fade2"></div>
+          <button class="more-btn">続きを読む</button>
+        </div>
+      </div>
 
+      <div class="ch-teaser">
         <div class="band">その日までに、しておくといいこと</div>
-        <div class="body" id="ch8"></div>
+        <div class="body lead" id="ch8lead"></div>
+        <div class="hidepart">
+          <div class="body veil" id="ch8"></div>
+          <div class="fade2"></div>
+          <button class="more-btn">続きを読む</button>
+        </div>
+      </div>
 
+      <!-- 2つ目の転機。日付そのものを伏せる -->
+      <div class="ch-teaser">
+        <div class="orn"><i>◆</i></div>
+        <div class="sec-title">その転機のあと、<br>もう一度大きく動く日</div>
+        <div class="orn tight"><i>◆</i></div>
+        <div class="body lead" id="ch85lead"></div>
+        <div class="bigdate second">
+          <div class="bd-lead">その日付は</div>
+          <span id="bigdate2">2026年◯◯月◯◯日</span>
+          <div class="bd-note" id="bigdate2note"></div>
+        </div>
+        <div class="hidepart">
+          <div class="body veil" id="ch85"></div>
+          <div class="fade2"></div>
+          <button class="more-btn">続きを読む</button>
+        </div>
+      </div>
+
+      <div class="ch-teaser">
         <div class="orn"><i>◆</i></div>
         <div class="sec-title">おますから、あなたへ</div>
         <div class="orn tight"><i>◆</i></div>
-        <div class="body" id="ch9"></div>
+        <div class="body lead" id="ch9lead"></div>
+        <div class="hidepart">
+          <div class="body veil" id="ch9"></div>
+          <div class="fade2"></div>
+          <button class="more-btn">続きを読む</button>
+        </div>
       </div>
 
-      <!-- 2つ目のゲート（鏡リュウジ型に、下でもう一度出す） -->
       <div class="gate2" id="gate2">
         <button class="buy2" id="buy2">続きを読む</button>
       </div>
@@ -726,7 +789,7 @@ body.demo #demobar{display:flex !important}
      ※ クライアントIDはページのHTMLに出る前提のもので、公開して問題ない。
         秘密鍵（Secret）のほうは絶対にここへ書かないこと。 -->
 <script src="https://www.paypal.com/sdk/js?client-id=AQDu2ocvL4sCh-hR5MdQGbhjOK2oS-cQJOFJbivdcCOM_q_q_jprsxPoJ9Ro6V2pZy6bbL-xRDTZwdjF&currency=JPY&intent=capture"></script>
-<script src="astro.js?v=7"></script>
+<script src="astro.js?v=8"></script>
 <script>
 /* ===========================================================
    解釈文テンプレート
@@ -971,6 +1034,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     ["人には見せていない、ひとりのときのあなた",     0],
     ["いまあなたが受けている、目に見えない影響",     0],
     ["その日までに、しておくといいこと",            0],
+    ["その転機のあと、もう一度大きく動く<strong>日</strong>", 0],
     ["おますから、あなたへ",                       0]
   ];
   document.getElementById("tocList").innerHTML=
@@ -1190,13 +1254,20 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     <p>そのうえで、${sun.sign}の太陽と${moon.sign}の月を持つ${you}の場合、それがいちばん最初に出てくるのは</p>`;
 
   /* --- 有料ゾーン（本番はサーバー側で出し分ける） --- */
+  /* 章を「読める冒頭」と「ぼかす続き」に割る */
+  const split=(id,html,leadCount)=>{
+    const paras=html.trim().split(/(?=<p)/).filter(s=>s.trim());
+    document.getElementById(id+"lead").innerHTML=paras.slice(0,leadCount).join("");
+    document.getElementById(id).innerHTML=paras.slice(leadCount).join("");
+  };
+
   const mo=MOON[moon.sign];
-  document.getElementById("ch6").innerHTML=`
+  split("ch6",`
     <p>${you}の月は<span class="mk">${moon.sign}</span>にあります。太陽が人から見えるあなただとすれば、月はひとりでいるときのあなたです。<strong>仕事の悩みは、ほとんどがこちら側から出てきます。</strong></p>
     <p>${moon.sign}の月を持つ${you}は、ひとりになると<span class="uline">${mo.k}</span>人です。人前ではそう見えないかもしれません。太陽（${sun.sign}）が外向きの顔なので、まわりが知っているのはそちらのほうです。</p>
     <p>この月が満たされるのは、<strong>${mo.a}</strong>。反対に消耗するのは、<strong>${mo.b}</strong>です。</p>
     <p>ここが大事なところで、${you}が${TH.field}について「しんどい」と感じるとき、原因は${TH.field}そのものではなく<span class="uline">この月の条件が満たされていないこと</span>のほうにあります。だから相手や場所を変えても、同じことが起きる、ということが起こります。</p>
-    <p>逆に言えば、${mo.a}という条件さえ確保できていれば、${you}は多少きつい状況でも保ちます。転機を迎えるときに見るべきなのは、新しい${TH.field}の中身より先に、ここです。</p>`;
+    <p>逆に言えば、${mo.a}という条件さえ確保できていれば、${you}は多少きつい状況でも保ちます。転機を迎えるときに見るべきなのは、新しい${TH.field}の中身より先に、ここです。</p>`,2);
 
   const allAsp=findAspects(natal.bodies,transit.bodies,false).sort((a,b)=>a.orb-b.orb);
   // テーマに関係する天体が絡むものを優先して拾う
@@ -1221,16 +1292,16 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
         : `${a.b.name}が${a.a.name}に${a.name}で当たっています。流れやすい形です。`;
     return `<p><strong>${head}</strong>${body}。</p>`;
   };
-  document.getElementById("ch7").innerHTML=`
+  split("ch7",`
     <p>いま${you}のネイタルに対して、トランジットの天体が全部で<strong>${allAsp.length}本</strong>のアスペクトを取っています。そのうち<strong>${TH.field}</strong>に関わるものは<strong>${rel.length}本</strong>。上に出したのは、その中でもオーブの近いものです。オーブとは「ぴったりの角度からどれだけずれているか」で、<span class="uline">数字が小さいほど強く効いています</span>。</p>
     ${asp.slice(0,3).map(readAsp).join("")}
     <p>これらは、${you}が意識していないところで受けている刺激です。「なんとなく調子がいい」「理由はわからないが疲れる」といった感覚の正体は、たいていこのあたりにあります。</p>
-    <p>${asp[0]?`いま最も強いのは、オーブ${asp[0].orb.toFixed(2)}°の${asp[0].a.name}と${asp[0].b.name}です。${asp[0].orb<1?"1度を切っているので、体感としてもはっきり出ているはずです。":"まだ少し距離があるので、これから濃くなっていきます。"}`:""}</p>`;
+    <p>${asp[0]?`いま最も強いのは、オーブ${asp[0].orb.toFixed(2)}°の${asp[0].a.name}と${asp[0].b.name}です。${asp[0].orb<1?"1度を切っているので、体感としてもはっきり出ているはずです。":"まだ少し距離があるので、これから濃くなっていきます。"}`:""}</p>`,2);
 
   const md=turn?`${turn.date.getMonth()+1}月${turn.date.getDate()}日`:"その日";
   const turnText=turn&&TURN[turn.slow]&&TURN[turn.slow][turn.point]
     ? TURN[turn.slow][turn.point] : "";
-  document.getElementById("ch8").innerHTML=`
+  split("ch8",`
     <p>${md}に${you}の${turn?turn.point:""}へ当たるのは<span class="mk">${turn?turn.slow:""}</span>です。この組み合わせが示しているのは、こういうことです。</p>
     <p class="pull">${turnText}</p>
     <p>そのうえで、その日までにしておくといいことが<strong>ひとつ</strong>あります。</p>
@@ -1238,16 +1309,37 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       ? `<strong>空きを作っておくことです。</strong>木星は広げる星ですが、広がるのは空いている場所だけです。予定が埋まりきったところに機会が来ても、${you}はそれを断ることになります。実際、${md}前後に来るものを逃す人のほとんどは、内容が合わなかったのではなく<span class="uline">単に手が空いていなかった</span>だけです。`
       : `<strong>捨てるものを先に決めておくことです。</strong>土星は形にする星ですが、そのために不要なものを削ります。自分で選ばなければ、向こうが勝手に決めます。どちらにしても減るなら、${you}が選んだほうがいい。`}</p>
     <p>そしてここで、さっきの月の話が効いてきます。${you}の月は${moon.sign}。<span class="uline">${mo.b}</span>と消耗する人です。判断に迷ったら、「これは月の条件を守るほうか、壊すほうか」で決めてください。仕事として正しいかどうかより、こちらのほうが外しません。</p>
-    <p>${sun.sign}の${you}は、${SUN[sun.sign].b}という癖があります。${md}の前後は、そこが一度出ます。出たときに「ああ、これか」と気づけるだけで、対処の速さがまるで変わります。</p>`;
+    <p>${sun.sign}の${you}は、${SUN[sun.sign].b}という癖があります。${md}の前後は、そこが一度出ます。出たときに「ああ、これか」と気づけるだけで、対処の速さがまるで変わります。</p>`,2);
 
-  document.getElementById("ch9").innerHTML=`
+  /* ===== 2つ目の転機。日付そのものを伏せる ===== */
+  const turns=nextTurnings(natal,hasTime,todayN,2);
+  const t2=turns[1]||null;
+  if(t2){
+    const d2=`${t2.date.getFullYear()}年${t2.date.getMonth()+1}月${t2.date.getDate()}日`;
+    document.getElementById("bigdate2").textContent=d2;
+    document.getElementById("bigdate2note").textContent=
+      `トランジットの${t2.slow}が、あなたの${t2.point}に${t2.aspect}を取る日`;
+    split("ch85",`
+      <p>${md}の転機は、${you}にとって入口です。<strong>そのあと、もう一度はっきり動く日が来ます。</strong>そちらのほうが、実は振れ幅は大きい。</p>
+      <p>今度は<span class="mk">${t2.slow}</span>が${you}の${t2.point}に当たります。1回目とは性質が違う星なので、出方も変わります。</p>
+      <p>この日は、1回目で${you}が何を選んだかによって意味が変わります。${md}に空きを作れていれば、この日は受け取る日になります。作れていなければ、同じことをもう一度やり直す日になります。</p>
+      <p>順番として、${md}が問いで、${d2}が答えです。</p>`,2);
+  }else{
+    document.getElementById("bigdate2").textContent="——";
+    document.getElementById("bigdate2note").textContent="";
+    split("ch85",`
+      <p>この先2年ほどを見たかぎり、${md}のあとに続く大きな転機は見当たりません。</p>
+      <p>裏を返せば、${md}の一度きりということです。ここを逃すと次までは間があきます。</p>`,1);
+  }
+
+  split("ch9",`
     <p>ここまで読んでくださって、ありがとうございました。</p>
     <p>星を読んでいると、「この時期に何が起きるか」より「その人がもともとどういう形をしているか」のほうが、ずっと大事だと感じます。同じ星が同じように来ても、出方は人によってまったく違うからです。</p>
     <p>${you}は、外では<span class="uline">${SUN[sun.sign].k}</span>人として見られていて、ひとりになると<span class="uline">${mo.k}</span>人です。この二つはよく食い違います。食い違っていること自体は、直すところではありません。ただ、外向きのほうばかりを使い続けると、${mo.b}という形で先に月のほうが音を上げます。</p>
     <p>${md}のことをお伝えしましたが、日付そのものにはあまり意味がありません。大事なのは、その前後で${you}が<strong>何を手放して、何を空けておくか</strong>のほうです。星は席を用意するだけで、座るかどうかを決めるのは${you}です。</p>
     <p>もしその日が過ぎて、何も起きなかったように感じても、気にしないでください。表に出るまでに時間がかかるだけで、動きはもう始まっています。半年ほど経ってから振り返ると、あのあたりだったな、と分かる形をとることのほうが多いです。</p>
     <p>${you}のこの先が、${you}の形のままで進んでいきますように。</p>
-    <p style="text-align:right;color:var(--gold)">おます</p>`;
+    <p style="text-align:right;color:var(--gold)">おます</p>`,2);
 }
 
 /* ===========================================================
@@ -1383,10 +1475,10 @@ window.addEventListener("load",renderPayPal);
 const DEMO=/[?&]demo\b/.test(location.search);
 if(DEMO)document.body.classList.add("demo");
 
-// 下のゲートのボタンは、決済ボタンのある場所まで連れていくだけ
-document.getElementById("buy2").onclick=()=>{
-  document.querySelector(".gate").scrollIntoView({block:"center",behavior:"smooth"});
-};
+// 「続きを読む」系のボタンは、決済ボタンのある場所まで連れていくだけ
+const toGate=()=>document.querySelector(".gate").scrollIntoView({block:"center",behavior:"smooth"});
+document.getElementById("buy2").onclick=toGate;
+[].forEach.call(document.querySelectorAll(".more-btn"),b=>b.onclick=toGate);
 // 決済を通さない解除は、確認モードのときだけ
 document.getElementById("buy").onclick=()=>{ if(DEMO)unlock(); };
 document.getElementById("clearPaid").onclick=()=>{

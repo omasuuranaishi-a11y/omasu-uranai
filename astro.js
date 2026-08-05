@@ -200,6 +200,50 @@ function houseInfo(natal, transit, n) {
   };
 }
 
+/* ===========================================================
+   進行（セカンダリ・プログレッション）の月
+   「出生から1日進む＝人生1年ぶん」という換算。
+   進行の月は約2年半で1ハウス、約27年半で一周する。
+   人生をハウスごとの時期に区切って見せられる。
+   =========================================================== */
+
+/* 進行の月がハウスを移った日を、出生から maxAge 歳まで拾う */
+function progressedMoonPeriods(natal, birthY, birthM, birthD, birthH, birthMi, maxAge) {
+  const n0 = jdays(birthY, birthM, birthD, birthH, birthMi);
+  const birthMs = Date.UTC(birthY, birthM - 1, birthD, birthH, birthMi) - 9 * 3600 * 1000;
+  const YEAR = 365.2422;
+
+  const ageToDate = a => new Date(birthMs + a * YEAR * 86400000 + 9 * 3600 * 1000);
+  const houseAt   = a => houseOf(moonLon(n0 + a), natal.asc).house;
+
+  const out = [];
+  let cur = houseAt(0), start = 0;
+  for (let a = 0.01; a <= maxAge; a += 0.01) {
+    const h = houseAt(a);
+    if (h !== cur) {
+      out.push({ house: cur, fromAge: start, toAge: a, from: ageToDate(start), to: ageToDate(a) });
+      cur = h; start = a;
+    }
+  }
+  out.push({ house: cur, fromAge: start, toAge: maxAge, from: ageToDate(start), to: ageToDate(maxAge) });
+  return out;
+}
+
+/* いまがどの期間かを返す */
+function currentProgPeriod(periods, ageNow) {
+  return periods.find(p => ageNow >= p.fromAge && ageNow < p.toAge) || null;
+}
+
+/* ある天体が、どのハウスのカスプを支配しているか（表の「支配するハウス」列） */
+function rulesHouses(planetName, natal) {
+  const out = [];
+  for (let n = 1; n <= 12; n++) {
+    const s = SIGNS[Math.floor(cuspLon(natal, n) / 30)];
+    if (RULER[s] === planetName) out.push(n);
+  }
+  return out;
+}
+
 /* ---- アスペクト ---- */
 const ASPECTS = [
   { name:"コンジャンクション", glyph:"☌"+VS, angle:  0, orb:8, type:"neutral" },
@@ -284,14 +328,25 @@ function daysToDate(n) {
   return new Date((n + 10957.5) * 86400000 + 9 * 3600 * 1000);
 }
 
-/* これから訪れる、いちばん近い転機 */
-function nextTurning(natal, hasTime, todayN) {
+/* これから訪れる転機を、近い順に並べて返す */
+function nextTurnings(natal, hasTime, todayN, count) {
   const pts = turningTargets(natal, hasTime);
-  const hits = scanHits(pts, Math.floor(todayN) + 1, Math.floor(todayN) + 900)
+  const hits = scanHits(pts, Math.floor(todayN) + 1, Math.floor(todayN) + 1400)
                  .sort((a, b) => a.n - b.n);
-  if (!hits.length) return null;
-  const h = hits[0];
-  return { date: daysToDate(h.n), slow: h.slow, point: h.point.name, aspect: h.aspect.name };
+  const out = [];
+  for (const h of hits) {
+    // 同じ日に重なったものは1つにまとめる
+    if (out.length && Math.abs(h.n - out[out.length - 1].n) < 20) continue;
+    out.push({ n: h.n, date: daysToDate(h.n), slow: h.slow,
+               point: h.point.name, aspect: h.aspect.name });
+    if (out.length >= (count || 2)) break;
+  }
+  return out;
+}
+
+/* いちばん近い1件だけ */
+function nextTurning(natal, hasTime, todayN) {
+  return nextTurnings(natal, hasTime, todayN, 1)[0] || null;
 }
 
 /* 過去にあった、いちばん近いハードな時期（呼びかけに使う） */
