@@ -296,7 +296,7 @@ function progressedMoonPeriods(natal, birthY, birthM, birthD, birthH, birthMi, m
   const birthMs = Date.UTC(birthY, birthM - 1, birthD, birthH, birthMi) - 9 * 3600 * 1000;
   const YEAR = 365.2422;
 
-  const ageToDate = a => new Date(birthMs + a * YEAR * 86400000 + 9 * 3600 * 1000);
+  const ageToDate = a => new Date(birthMs + a * YEAR * 86400000);   // 9時間を足さない（上と同じ理由）
   const houseAt   = a => houseOf(moonLon(n0 + a), natal.cusps).house;
 
   const out = [];
@@ -406,9 +406,11 @@ function scanHits(pts, fromDays, toDays, aspectFilter) {
   return hits;
 }
 
-/* J2000 からの経過日数 → JSTの Date */
+/* J2000 からの経過日数 → Date
+   返すのは「その瞬間」そのもの。日本のPCで表示すれば自動的にJSTになるので、
+   ここで9時間を足してはいけない（足すと二重適用で9時間ずれる）。 */
 function daysToDate(n) {
-  return new Date((n + 10957.5) * 86400000 + 9 * 3600 * 1000);
+  return new Date((n + 10957.5) * 86400000);
 }
 
 /* これから訪れる転機を、近い順に並べて返す */
