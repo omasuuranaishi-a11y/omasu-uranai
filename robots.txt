@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://omasuuranaishi-a11y.github.io/omasu-uranai/sitemap.xml
