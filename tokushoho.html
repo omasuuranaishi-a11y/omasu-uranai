@@ -70,6 +70,32 @@ footer a{color:var(--gold);text-decoration:none;border-bottom:1px solid var(--go
   td{padding:5px 0 14px;border-bottom:1px solid rgba(195,169,108,.3)}
 }
 </style>
+<style id="kintsugi-repair">
+/* ══════════════════════════════════════════════════════════════
+   金継ぎ 追補スタイル — 特定商取引法に基づく表記（tokushoho.html）
+   2026-08-28 ／ <head> の最後に足すだけで効く。
+
+   ① [破れ] 低コントラスト24件 … LPと同じ色・同じ直し方
+   ② [破れ] 極小文字11件 … 12px未満をなくす
+   配置は無変更。
+   ══════════════════════════════════════════════════════════════ */
+
+/* 深緑の地（#3e4b43 と #48544c）の上で床4.5に届くよう、明度だけ上げる。
+   色相は金42°・くすみ色ともにそのまま。LPと同じ値に揃えている。 */
+:root{
+  --gold:#dcc894;
+  --dim:#c3c9bf;
+}
+
+/* 12px未満をなくす */
+header .brand,
+.disclose-note,
+td small,
+footer,
+footer a{
+  font-size:12.5px;
+}
+</style>
 </head>
 <body>
 

@@ -540,12 +540,113 @@ body.demo #demobar{display:flex !important}
   .gate{top:54px;padding:26px 18px}
 }
 </style>
+<style id="kintsugi-repair">
+/* ══════════════════════════════════════════════════════════════
+   金継ぎ 追補スタイル — おますの無料占い LP（uranai-lp）
+   2026-08-28 ／ <head> の最後に足すだけで効く。
+
+   ① [破れ] 低コントラスト12件 … 色相はそのまま、明度だけ動かす
+   ② [破れ] 極小文字32件 … 12px未満をなくす
+   ③ [乱れ] 文字サイズの段数過多 … 役割「その他」を3段へ
+
+   配置は1ミリも動かしません（幅・余白・段組みは無変更）。
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── ① 低コントラスト ───────────────────────────────────────
+   明るい地（クリーム #f1eee4）の上の3色を、色相を保ったまま濃くする。
+     #6f756c → #656b62（色相100°のまま・比4.08→4.72）
+     #8a8578 → #6e6a5e（色相43°のまま・比3.17→4.65）
+     #a09a8d → #6e6a5e（色相41°のまま・比2.41→4.65。上と役割が同じなので1本にまとめる）
+   暗い地（深緑 #3e4b43）の上の2色は、逆に明るい側へ。
+     金   #c3a96c → #d3bc85（色相42°のまま・比4.02→4.93）
+     くすみ #aeb6ab → #c3c9bf（比4.40→5.42） */
+:root{
+  --gold:#d3bc85;
+  --dim:#c3c9bf;
+}
+.card .note,
+label{
+  color:#656b62;
+}
+.theme-note,
+.note2,
+label .opt,
+.form-foot{
+  color:#6e6a5e;
+}
+
+/* ── ② 極小文字（12px未満をなくす）＋ ③ 段数を3段へ ──────────
+   役割「その他」を 12.5px / 14px / 22px の3段に揃える。
+   いちばん小さかった 9.5px の記号ラベルも 12.5px まで上げる。 */
+.hero .brand,
+.stars,
+.ribbon,
+.gets i.f,
+.gets i.p,
+.gets-f,
+.gets span.f,
+.gets span.p,
+.cred-sub,
+.cred-at,
+.card .note,
+label,
+label .opt,
+.theme-note,
+.note2,
+.form-foot{
+  font-size:12.5px;
+}
+.bn-sub,
+.fl-head,
+.hero .sub,
+.cred-line{
+  font-size:14px;
+}
+
+/* ══ 2巡目 ══════════════════════════════════════════════════ */
+
+/* ①のつづき: 暗い地の上に残った3件。金をもう少し明るく。
+   いちばん上の小さな屋号は、車輪の明るいところに重なって届かないので、
+   金をやめて本文と同じ生成りにする（新しい色は足していない）。 */
+:root{ --gold:#dcc894 }
+.hero .brand{ color:#ebe8de }
+
+/* ── ④ 似て非なる色 ─────────────────────────────────────────
+   1巡目で足した色と、元からあった同じ役割の色を1本にまとめる。
+   （地の色＝深緑4種と、生成り／白は役割が違うので統合しない） */
+.theme-note,
+.note2,
+label .opt,
+.form-foot{
+  color:#656b62;              /* 1巡目の #6e6a5e を #656b62 に統合 */
+}
+.freelist > ul > li,
+details.more > summary,
+.fl-head{
+  color:#656b62;              /* #5c6a60・#4a584f も同じ役割なので同じ濃さへ */
+}
+.cred,
+.gets-f{
+  color:#dcc894;              /* 直に書かれていた古い金 #c3a96c を新しい金へ */
+}
+.gets i.p,
+.gets span.p{
+  color:#c3c9bf;              /* 古い #aeb6ab を新しいくすみ色へ */
+}
+details.more,
+.freelist{
+  border-color:#c3c9bf;       /* 罫線の #ddd8c9 を統合 */
+}
+#theme, #name, #y, #m, #d{
+  border-color:#c3c9bf;       /* 入力欄の枠 #cfcabb を統合 */
+}
+</style>
 </head>
 <body>
 
 <!-- ============ ファーストビュー ============ -->
 <div class="hero" id="hero">
-  <div id="wheel"></div>
+  <div id="wheel" aria-hidden="true"></div>
   <span class="corner tl"></span><span class="corner tr"></span>
   <span class="corner bl"></span><span class="corner br"></span>
   <div class="wrap">
