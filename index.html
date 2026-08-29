@@ -414,6 +414,42 @@ td.mark{background:var(--hl2);font-weight:600}
   border-radius:50%;background:var(--gold);color:var(--deep);text-align:center;
   line-height:22px;font-size:11px;font-weight:700;
 }
+.scene-grid{display:grid;gap:11px;margin:16px 0 20px}
+.scene-card{
+  border:1px solid var(--gold-d);background:rgba(255,255,255,.035);
+  padding:15px 16px;border-radius:2px;
+}
+.scene-card b{
+  display:block;color:var(--gold);font-family:system-ui,sans-serif;
+  font-size:12px;letter-spacing:.08em;margin-bottom:7px;
+}
+.scene-card p{margin:0!important;font-size:14px!important;line-height:2!important}
+.qa-block{margin:16px 0}
+.qa-item{border-top:1px solid var(--gold-d);padding:15px 2px 2px}
+.qa-item:last-child{border-bottom:1px solid var(--gold-d);padding-bottom:15px}
+.qa-item>b{
+  display:block;
+  color:var(--paper);font-weight:600;font-size:16px;line-height:1.8;
+  margin:0 0 8px;padding:0;
+}
+.qa-item p{margin:0!important;font-size:14.5px!important}
+.timepath{display:grid;gap:10px;margin:15px 0 20px}
+.time-step{
+  display:grid;grid-template-columns:5.7em 1fr;gap:12px;align-items:start;
+  border-bottom:1px dotted rgba(195,169,108,.45);padding:0 0 12px;
+}
+.time-step b{color:var(--gold);font-family:system-ui,sans-serif;font-size:12px;line-height:1.8}
+.time-step p{margin:0!important;font-size:14px!important;line-height:1.95!important}
+.reading-sheet{
+  border:1px solid var(--gold);background:rgba(195,169,108,.07);
+  margin:16px 0 20px;padding:18px 17px;
+}
+.reading-sheet dl{display:grid;grid-template-columns:6.3em 1fr;gap:9px 10px}
+.reading-sheet dt{
+  color:var(--gold);font-family:system-ui,sans-serif;font-size:11px;
+  letter-spacing:.08em;border-bottom:1px dotted rgba(195,169,108,.35);padding-bottom:7px;
+}
+.reading-sheet dd{font-size:13.5px;line-height:1.85;border-bottom:1px dotted rgba(195,169,108,.35);padding-bottom:7px}
 .astro-evidence{border-top:1px dotted rgba(195,169,108,.45);margin-top:24px;padding-top:12px}
 .astro-evidence summary{
   cursor:pointer;color:var(--dim);font-family:system-ui,sans-serif;
@@ -894,9 +930,11 @@ details.more,
         <div class="price">続きをすべて読む　<strong>¥500</strong>　(税込)</div>
         <ul class="gate-benefits">
           <li>太陽と月を重ねた「今回の結論」</li>
+          <li>性質が現れやすい3つの場面</li>
           <li>いまの追い風・注意点・選び方</li>
+          <li>選んだテーマについての4つの問いと答え</li>
           <li>転機までに今日からできる3つの準備</li>
-          <li>次に見直すタイミングと、迷ったときに戻る言葉</li>
+          <li>転機までの時間の使い方と、保存用まとめ</li>
         </ul>
         <!-- PayPalのノーコード決済ボタン。ここで完結し、ページは移動しない -->
         <div id="paypal-btn"></div>
@@ -925,6 +963,18 @@ details.more,
 
       <div class="ch-teaser">
         <div class="orn"><i>◆</i></div>
+        <div class="sec-title">あなたの性質が出やすい、<br>3つの場面</div>
+        <div class="orn tight"><i>◆</i></div>
+        <div class="body lead" id="ch65lead"></div>
+        <div class="hidepart">
+          <div class="body veil" id="ch65"></div>
+          <div class="fade2"></div>
+          <button class="more-btn">続きを読む</button>
+        </div>
+      </div>
+
+      <div class="ch-teaser">
+        <div class="orn"><i>◆</i></div>
         <div class="sec-title">いまの流れを、<br>生活の言葉で読む</div>
         <div class="orn tight"><i>◆</i></div>
         <div id="aspects"></div>
@@ -937,10 +987,34 @@ details.more,
       </div>
 
       <div class="ch-teaser">
+        <div class="orn"><i>◆</i></div>
+        <div class="sec-title" id="deepDiveTitle">いま、答えておきたい<br>4つの問い</div>
+        <div class="orn tight"><i>◆</i></div>
+        <div class="body lead" id="ch75lead"></div>
+        <div class="hidepart">
+          <div class="body veil" id="ch75"></div>
+          <div class="fade2"></div>
+          <button class="more-btn">続きを読む</button>
+        </div>
+      </div>
+
+      <div class="ch-teaser">
         <div class="band">転機までに、今日からやる3つのこと</div>
         <div class="body lead" id="ch8lead"></div>
         <div class="hidepart">
           <div class="body veil" id="ch8"></div>
+          <div class="fade2"></div>
+          <button class="more-btn">続きを読む</button>
+        </div>
+      </div>
+
+      <div class="ch-teaser">
+        <div class="orn"><i>◆</i></div>
+        <div class="sec-title">転機までの、<br>時間の使い方</div>
+        <div class="orn tight"><i>◆</i></div>
+        <div class="body lead" id="ch82lead"></div>
+        <div class="hidepart">
+          <div class="body veil" id="ch82"></div>
           <div class="fade2"></div>
           <button class="more-btn">続きを読む</button>
         </div>
@@ -959,6 +1033,18 @@ details.more,
         </div>
         <div class="hidepart">
           <div class="body veil" id="ch85"></div>
+          <div class="fade2"></div>
+          <button class="more-btn">続きを読む</button>
+        </div>
+      </div>
+
+      <div class="ch-teaser">
+        <div class="orn"><i>◆</i></div>
+        <div class="sec-title">今回の読みを、<br>1枚にまとめる</div>
+        <div class="orn tight"><i>◆</i></div>
+        <div class="body lead" id="ch88lead"></div>
+        <div class="hidepart">
+          <div class="body veil" id="ch88"></div>
           <div class="fade2"></div>
           <button class="more-btn">続きを読む</button>
         </div>
@@ -1259,6 +1345,13 @@ function fmt(x){return x.toFixed(2);}
 
 function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   const TH=THEMES[themeKey]||THEMES.shigoto;
+  const deepDiveLabels={
+    shigoto:"仕事について、いま答えておきたい4つの問い",
+    seishitsu:"これからの生き方について、4つの問い",
+    renai:"人との関係について、4つの問い",
+    jiki:"この先の流れについて、4つの問い"
+  };
+  const deepDiveLabel=deepDiveLabels[themeKey]||deepDiveLabels.seishitsu;
   document.getElementById("resultTitle").textContent=TH.title;
   document.getElementById("secTitle1").innerHTML=TH.sec1;
 
@@ -1273,9 +1366,13 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     ["この先いちばん近い、あなたの<strong>転機の日</strong>", 1],
     [TH.band,                                    0],
     ["先に、今回の結論",                           0],
+    ["あなたの性質が出やすい、3つの場面",            0],
     ["いまの流れを、生活の言葉で読む",              0],
+    [deepDiveLabel,                              0],
     ["転機までに、今日からやる3つのこと",            0],
+    ["転機までの、時間の使い方",                    0],
     ["次に、流れを見直すタイミング",                 0],
+    ["今回の読みを、1枚にまとめる",                  0],
     ["迷ったときに戻ってきてほしい言葉",             0]
   ];
   document.getElementById("tocList").innerHTML=
@@ -1541,12 +1638,42 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   const asState=x=>x.endsWith("とき")?x.slice(0,-2)+"状態":x;
   const moonNeed=asState(mo.a), moonDrain=asState(mo.b);
   const decisionLine=`「${moonNeed}」をつくれるか。「${moonDrain}」を増やさないか。`;
+  const decisionPair=`「${moonNeed}」をつくれるか／「${moonDrain}」を増やさないか`;
   split("ch6",`
     <p class="pull">いまの${you}に必要なのは、${TH.field}を急いで変えることより、<strong>${mo.a}</strong>という心の条件を先に整えることです。</p>
     <p>${you}の太陽は${sun.sign}。外では<span class="uline">${s.k}</span>力を使っています。一方、月は${moon.sign}。ひとりになると<span class="uline">${mo.k}</span>人です。この二つが、今回の読みの中心です。</p>
     <p>外ではうまくやれているのに、帰ると急に疲れが出る。人からは問題なく見えているのに、自分の中では納得できない。そんな食い違いがあるなら、能力不足ではなく、<strong>外で使う力と内側が求める条件が別だから</strong>かもしれません。</p>
     <p>月が満たされるのは、<strong>${mo.a}</strong>。反対に消耗しやすいのは、<strong>${mo.b}</strong>です。${TH.field}で迷ったときは、正解探しの前にこの条件を確かめてください。</p>
     <div class="decision-box">今回の判断軸は、これです。<br><strong>${decisionLine}</strong></div>`,1);
+
+  const sceneSets={
+    shigoto:[
+      {t:"依頼を受けるとき",a:`${you}は「${s.k}」力を先に使います。頼られると応えようとしますが、返事の前に、その仕事が「${moonNeed}」をつくれるかまで見てください。条件を確認せず引き受けると、あとから「${moonDrain}」が表に出やすくなります。`},
+      {t:"予定が崩れたとき",a:`外側の${you}は、${s.a}タイプです。けれど内側は、「${mo.a}」という条件をつくることで立て直します。予定を元に戻すことより、まず月が落ち着く小さな条件を一つ回復させるほうが、その後の判断が速くなります。`},
+      {t:"評価されるとき",a:`${you}は社会で「${MCS[mcSign].k}」と見られやすい傾向があります。評価を受け取るときは、足りない点を探す前に、何を任されたからその評価になったのかを言葉にしてください。そこに、次も再現できる強みがあります。`}
+    ],
+    seishitsu:[
+      {t:"人前で役割を担うとき",a:`${you}は自然に「${s.k}」力を使います。周囲から見える${you}と、本人が感じている負担は同じとは限りません。うまくできた日ほど、帰宅後に何が必要だったかを月の条件から確かめてください。`},
+      {t:"ひとりに戻ったとき",a:`月が${moon.sign}の${you}は、ひとりになると「${mo.k}」人です。これは昼間の自分と矛盾しているのではなく、力を回復するための別の顔です。「${mo.a}」に近い時間を、余った時間ではなく先に確保してください。`},
+      {t:"大きな決断の前",a:`迷いが長くなるときは、正解が足りないのではなく「${moonDrain}」の中で決めようとしている可能性があります。決断の前に環境を整え、${decisionPair}の二点で候補を見直してください。`}
+    ],
+    renai:[
+      {t:"距離が縮まり始めたとき",a:`${you}は人との距離を「${VEN[ven.sign].k}」という形で縮めます。相手に合わせることより、${you}が自然に続けられる速さかどうかを見てください。最初の無理は、関係が深まるほど大きくなります。`},
+      {t:"本音を伝えるとき",a:`外では「${s.k}」力を使う一方、内側は「${mo.a}」という条件があると安心します。本音は結論だけでなく、「私はこうだと安心する」という条件として伝えると、相手を責めずに希望を置けます。`},
+      {t:"続けるか迷うとき",a:`相手の長所より先に、関係の中で「${moonDrain}」が常態化していないかを見てください。好きかどうかと、安心して続けられるかは別の問いです。${decisionPair}を関係の判断軸にします。`}
+    ],
+    jiki:[
+      {t:"新しい話が来たとき",a:`今は話が進みやすくても、すべてを受け取る時期とは限りません。${you}は「${s.k}」という形で動く人です。勢いの前に、今回増やすものを一つに絞ると、追い風を散らさずに使えます。`},
+      {t:"予定が増えたとき",a:`予定の多さより、月の条件が守られているかを見ます。「${moonNeed}」が残るなら広げても大丈夫です。「${moonDrain}」が続くなら、良い話でも量を減らす合図です。`},
+      {t:"思うように進まないとき",a:`停滞を失敗と決める前に、整えるべき条件が残っていないか確認してください。いま必要なのは全部を動かすことではなく、${you}が力を戻せる場所を一つ確保することです。`}
+    ]
+  };
+  const scenes=sceneSets[themeKey]||sceneSets.seishitsu;
+  split("ch65",`
+    <p>太陽と月の組み合わせは、抽象的な性格ではなく、日常の具体的な場面に出ます。</p>
+    <p>${you}の場合、とくに次の三つで「外ではできるのに、内側では苦しい」という差が起きやすくなります。</p>
+    <div class="scene-grid">${scenes.map((x,i)=>`<div class="scene-card"><b>${i+1}. ${x.t}</b><p>${x.a}</p></div>`).join("")}</div>
+    <p>三つに共通するのは、外側の力を弱めることではありません。<strong>力を使ったあとに、月が戻れる条件まで予定に入れること</strong>です。そこまで含めて、${you}に合う選択と考えてください。</p>`,1);
 
   const allAsp=findAspects(natal.bodies,transit.bodies,false).sort((a,b)=>a.orb-b.orb);
   // テーマに関係する天体が絡むものを優先して拾う
@@ -1585,6 +1712,39 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     <p>${TH.field}で今すぐ答えを出す必要はありません。話が進みやすいことと、その選択が${you}に合うことは別です。<span class="uline">進みやすさは追い風で確認し、続けられるかは月の条件で決める</span>。この二段階で考えてください。</p>
     <details class="astro-evidence"><summary>読みの根拠となった星の配置を見る</summary>${evidenceHtml}<p class="evidence-note">アスペクト名やオーブは結論そのものではなく、上の読みを組み立てるために使った参考情報です。</p></details>`,1);
 
+  document.getElementById("deepDiveTitle").innerHTML=deepDiveLabel.replace("、", "、<br>");
+  const questionSets={
+    shigoto:[
+      {q:"今の仕事を続けるべき？",a:`続ける・辞めるの二択より先に、今の仕事の中で「${moonNeed}」をつくれる余地があるかを見ます。業務量、担当、働く場所のどれか一つを調整して月の消耗が減るなら、仕事そのものより条件の問題です。調整しても「${moonDrain}」が続くなら、環境を変える検討に進んでください。`},
+      {q:"評価を上げるには？",a:`${you}は社会から「${MCS[mcSign].k}」と見られやすく、「${MCS[mcSign].a}」にあたる場面で持ち味が伝わります。新しい能力を足す前に、すでに頼まれていること、感謝されたこと、繰り返し任されることを三つ書き出してください。周囲が買っている強みを、自分の言葉で説明できることが評価の土台になります。`},
+      {q:"副業や転職を選ぶ基準は？",a:`職種名より、役割と環境で選びます。「${MCS[mcSign].a}」が求められ、同時に「${moonNeed}」を守れる働き方か。この二つがそろう候補を優先してください。収入や肩書きだけで決めると、始められても月の消耗で続きにくくなります。`},
+      {q:"仕事の人間関係で気をつけることは？",a:`${you}には「${s.b}」癖があります。忙しいときほど一人で処理せず、期限・担当・完成の基準を短く確認してください。相手の期待を推測するより、認識を一つ合わせるほうが、${you}の力を本来の仕事に戻せます。`}
+    ],
+    seishitsu:[
+      {q:"自分らしさがわからないときは？",a:`人前の太陽と、ひとりの月の両方が${you}です。外で「${s.k}」力を使う自分だけを本物にしなくて大丈夫です。ひとりで「${mo.k}」状態になる時間も含めて一つの性質だと捉えると、矛盾ではなく使い分けとして見えてきます。`},
+      {q:"いま、何を手放すべき？",a:`嫌なもの全部ではなく、続けても「${moonDrain}」だけが増える役割からです。やめる前に、頻度を減らす、人に渡す、期限を決めるの三段階で小さく離れてください。手放したあとに何を置くかまで決めると、空白を不安で埋めずに済みます。`},
+      {q:"決断を先延ばしにするときは？",a:`候補が多いからではなく、疲れた状態で正解を出そうとしている可能性があります。まず「${mo.a}」に近い時間を取り、そのあとで${decisionPair}の二問だけに答えてください。答えが割れるなら、完全な決定ではなく一週間試せる選択にします。`},
+      {q:"これから育てたい力は？",a:`新しい性格を足すより、すでにある「${s.k}」力を、消耗せず使う技術です。力を出す時間と戻る時間を一組にして予定へ入れてください。続けられる形に変わったとき、長所は一時的な頑張りではなく、頼れる力になります。`}
+    ],
+    renai:[
+      {q:"どんな距離なら長く続く？",a:`${you}は「${VEN[ven.sign].k}」という形の関係を自然に好みます。そこに月の安心である「${moonNeed}」が保てる距離を加えてください。連絡頻度や会う回数の正解は二人の外にはありません。会ったあと、自分に戻れているかが大切な手がかりです。`},
+      {q:"本音はどう伝える？",a:`相手の問題としてではなく、自分の条件として短く伝えます。「あなたが悪い」ではなく「私はこうだと安心する」と置く形です。${you}が「${s.b}」状態になる前の、小さな違和感の段階で言葉にすると、関係を壊さず調整しやすくなります。`},
+      {q:"相手を選ぶ基準は？",a:`強く惹かれるかに加えて、意見が違うときに話し合えるか、${you}の一人の時間を尊重できるかを見ます。とくに「${moonDrain}」が繰り返される関係では、好意だけで不足する条件があります。安心をわがまま扱いしない相手を選んでください。`},
+      {q:"いま、関係を動かすべき？",a:`今すぐ結論を迫るより、希望を一つ伝えたときの反応を見てください。言葉を受け取り、調整しようとするなら動かす余地があります。話すたびに${you}だけが折れるなら、進展より境界線を整える時期です。`}
+    ],
+    jiki:[
+      {q:"いま、何を広げる？",a:`反応が返ってくること、少ない力で前に進むことを一つ選びます。可能性の数ではなく、${you}が「${moonNeed}」を保ったまま続けられるかが基準です。小さく試し、手応えがあったものだけ次の段階へ広げてください。`},
+      {q:"何を減らす？",a:`終わっているのに惰性で続けている予定、返事を曖昧にしたまま抱えている約束からです。とくに「${moonDrain}」をつくるものは、完全にやめなくても回数を減らしてください。空いた時間は新しい予定で埋めず、観察の余白にします。`},
+      {q:"転機の日付をどう使う？",a:`出来事を待つ日ではなく、前後の変化を観察する目印として使います。日付の一週間前に予定を詰めすぎず、当日は結論を急がず、翌週に「何が楽になったか・何が重くなったか」を振り返ってください。`},
+      {q:"今は決めないほうがいいことは？",a:`焦りを消すためだけの大きな契約や、生活の余白をすべて使う約束です。動かないのではなく、取り消せる小ささで試します。${decisionPair}に答えられる材料が集まってから、残すものを決めてください。`}
+    ]
+  };
+  const questions=questionSets[themeKey]||questionSets.seishitsu;
+  split("ch75",`
+    <p>ここからは、星の名称ではなく、${TH.field}で実際に迷いやすい問いに答えます。</p>
+    <p>答えは未来を決めるものではありません。${you}が、自分に合う条件を見落とさないための見方として使ってください。</p>
+    <div class="qa-block">${questions.map(x=>`<div class="qa-item"><b>${x.q}</b><p>${x.a}</p></div>`).join("")}</div>`,1);
+
   const md=turn?`${turn.date.getMonth()+1}月${turn.date.getDate()}日`:"その日";
   const turnText=turn&&TURN[turn.slow]&&TURN[turn.slow][turn.point]
     ? TURN[turn.slow][turn.point] : "";
@@ -1618,6 +1778,35 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     <p><strong>今はやらないこと：</strong>${avoid}</p>
     <p>${sun.sign}の${you}には「${SUN[sun.sign].b}」という癖があります。焦ったときほど、この癖と月の消耗条件が重なっていないかを見てください。気づければ、同じ選び方を繰り返さずに済みます。</p>`,2);
 
+  const timelineSets={
+    shigoto:[
+      {t:"今日から7日",a:"仕事を増やす前に、抱えているものを一覧にします。返事待ち、担当が曖昧なもの、終わりが決まっていないものに印をつけ、確認を一つだけ送ってください。"},
+      {t:`${md}まで`,a:`三つの行動のうち一つを試します。結果より、試したあとに「${moonNeed}」が残るかを記録してください。続けられる形なら、その行動を次の一週間にも残します。`},
+      {t:`${md}の前後1週間`,a:"大きな返事を急がず、依頼・評価・人とのやりとりにどんな変化があったかを観察します。機会が来たら、量を増やす前に条件と期限を確認してください。"}
+    ],
+    seishitsu:[
+      {t:"今日から7日",a:"一日の終わりに、力が戻ったことと消耗したことを一つずつ書きます。正しい分析は要りません。繰り返し出る条件を見つけるための記録です。"},
+      {t:`${md}まで`,a:`「${mo.a}」に近い時間を予定に先に入れ、外で力を使う日と組にします。できた日だけでなく、できなかった日に何が割り込んだかも見てください。`},
+      {t:`${md}の前後1週間`,a:"何かを決めるより、違和感が強くなるものと自然に続くものを分けます。以前なら選んでいたのに、いまは選びたくないものがあれば、それも変化の一つです。"}
+    ],
+    renai:[
+      {t:"今日から7日",a:"相手に求めることを増やす前に、自分が安心できる連絡、距離、ひとりの時間を一文ずつ書きます。希望と我慢を分けるための準備です。"},
+      {t:`${md}まで`,a:"三つの行動から一つを選び、相手の反応だけでなく、伝えたあとの自分の気持ちを見ます。安心が増えたか、説明するほど苦しくなったかを記録してください。"},
+      {t:`${md}の前後1週間`,a:"関係の結論を急がず、話し合ったあとに二人の行動が変わったかを見ます。言葉より、互いに調整する動きがあるかが次の判断材料です。"}
+    ],
+    jiki:[
+      {t:"今日から7日",a:"増やしたいことと減らしたいことを一つずつ決めます。新しい予定を入れるなら、同時に一つ空けて、変化を受け取る余白を作ってください。"},
+      {t:`${md}まで`,a:"取り消せる大きさで一度試します。手応え、疲れ、周囲の反応を三行で残し、期待だけで広げないようにします。"},
+      {t:`${md}の前後1週間`,a:"当日に何かが起こるかを探すのではなく、前後で話が進みやすくなったもの、役目を終えたものを見ます。一週間後に残った変化を材料に次を決めてください。"}
+    ]
+  };
+  const timeline=timelineSets[themeKey]||timelineSets.seishitsu;
+  split("ch82",`
+    <p>転機は、一日だけを待つより、そこまでの時間を三つに分けると使いやすくなります。</p>
+    <p>${md}を「答えが出る日」ではなく、準備と観察の区切りにします。</p>
+    <div class="timepath">${timeline.map(x=>`<div class="time-step"><b>${x.t}</b><p>${x.a}</p></div>`).join("")}</div>
+    <p>前へ進む合図は、予定が増えることだけではありません。<strong>以前より返事がしやすい、無理なものを断れる、終わったことに気づける</strong>。こうした小さな変化も、流れが動いた証拠として数えてください。</p>`,1);
+
   /* ===== 2つ目の転機。日付そのものを伏せる ===== */
   const turns=nextTurnings(natal,hasTime,todayN,2);
   const t2=turns[1]||null;
@@ -1638,6 +1827,22 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       <p>この先2年ほどを見たかぎり、${md}のあとに続く大きな転機は見当たりません。</p>
       <p>裏を返せば、${md}の一度きりということです。ここを逃すと次までは間があきます。</p>`,1);
   }
+
+  const summaryRows=[
+    ["外で使う力",`「${s.k}」力`],
+    ["内側が必要とする条件",moonNeed],
+    ["消耗のサイン",moonDrain],
+    ["いまの追い風",helpful?plain(helpful):"外側を急いで動かすより、足元を整える時間"],
+    ["注意したいこと",careful?plain(careful):flowTip.care],
+    ["今回の判断軸",decisionLine],
+    ["流れを見直す目安",md],
+    ["最初の一歩",actions[0]]
+  ];
+  split("ch88",`
+    <p>最後に、今回の読みを、迷ったときに見返せる形へまとめます。</p>
+    <p>全部を覚える必要はありません。次の八つが、${you}の今回の読みの骨組みです。</p>
+    <div class="reading-sheet"><dl>${summaryRows.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl></div>
+    <p>この一枚は、${TH.field}で迷いが出たときに見返してください。状況が変わっても、<strong>月の条件と今回の判断軸</strong>は、選択肢を小さく整理するために使えます。</p>`,1);
 
   split("ch9",`
     <p>ここまで読んでくださって、ありがとうございました。</p>
