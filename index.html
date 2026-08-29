@@ -846,7 +846,7 @@ details.more,
       <div class="field">
         <label>何について読みますか <span class="opt">（必須）</span></label>
         <select id="theme"></select>
-        <div class="theme-note">前半に読める内容はどれも同じです。<br>後半の切り口だけが変わります。</div>
+        <div class="theme-note">選んだテーマに合わせて、<br>無料部分から読み方が変わります。</div>
       </div>
 
       <div class="field">
@@ -902,8 +902,8 @@ details.more,
     <div class="speak">
       <div class="from">O M A S U</div>
       <span id="greet"></span>
-      ここから、<b>生まれたときの空</b>と<b>いま動いている空</b>を重ねて見ていきます。
-      まずは、その二つを一枚に描いたところから。
+      <span id="chartIntro">ここから、<b>生まれたときの空</b>と<b>いま動いている空</b>を重ねて見ていきます。
+      まずは、その二つを一枚に描いたところから。</span>
     </div>
 
     <div class="subject" id="subject"></div>
@@ -911,7 +911,7 @@ details.more,
     <div class="chartbox" id="chart"></div>
     <div class="legend">
       <span><b style="color:#2f3a33;background:#f1eee4;padding:1px 5px;border-radius:2px">内側</b>　生まれたときの空（ネイタル）</span>
-      <span><b style="color:#a07a3c;background:#f1eee4;padding:1px 5px;border-radius:2px">外側</b>　いまの空（トランジット）</span>
+      <span id="transitLegend"><b style="color:#a07a3c;background:#f1eee4;padding:1px 5px;border-radius:2px">外側</b>　いまの空（トランジット）</span>
     </div>
 
     <div class="orn"><i>◆</i></div>
@@ -951,14 +951,14 @@ details.more,
     <div class="tbl-scroll" id="progTable"></div>
     <div class="body" id="ch2c"></div>
 
-    <div class="speak" style="margin-top:34px">
+    <div class="speak" id="flowTransition" style="margin-top:34px">
       <div class="from">O M A S U</div>
       ここまでが、<b>変わらないほうのあなた</b>です。
       ここから、いま空を動いている星の話に移ります。
     </div>
 
     <div class="orn"><i>◆</i></div>
-    <div class="sec-title">いま、あなたの上を動いている星</div>
+    <div class="sec-title" id="flowSectionTitle">いま、あなたの上を動いている星</div>
     <div class="orn tight"><i>◆</i></div>
     <div class="body" id="ch3"></div>
 
@@ -1035,7 +1035,7 @@ details.more,
 
       <div class="ch-teaser">
         <div class="orn"><i>◆</i></div>
-        <div class="sec-title">いまの追い風と、<br>気をつけたいこと</div>
+        <div class="sec-title" id="flowAdviceTitle">いまの追い風と、<br>気をつけたいこと</div>
         <div class="orn tight"><i>◆</i></div>
         <div id="aspects"></div>
         <div class="body lead" id="ch7lead"></div>
@@ -1081,14 +1081,14 @@ details.more,
       </div>
 
       <!-- 2つ目の転機。日付そのものを伏せる -->
-      <div class="ch-teaser">
+      <div class="ch-teaser" id="secondTurningSection">
         <div class="orn"><i>◆</i></div>
         <div class="sec-title">次に、流れを<br>見直すタイミング</div>
         <div class="orn tight"><i>◆</i></div>
         <div class="body lead" id="ch85lead"></div>
         <div class="bigdate second">
           <div class="bd-lead">その日付は</div>
-          <span id="bigdate2">2026年◯◯月◯◯日</span>
+          <span id="bigdate2">◯◯年◯◯月◯◯日</span>
           <div class="bd-note" id="bigdate2note"></div>
         </div>
         <div class="hidepart">
@@ -1355,7 +1355,7 @@ function drawChart(natal,transit){
 /* ===========================================================
    組み立て
    =========================================================== */
-/* テーマ。前半は共通で、後半（有料）の切り口だけが変わる */
+/* テーマ。選択したテーマに合わせて無料部分から読み方を変える */
 const THEMES={
  shigoto:{label:"【仕事】ホロスコープで読む、この先の働き方と転機",
    title:"この先、あなたの仕事はどう動くか",
@@ -1381,13 +1381,13 @@ const THEMES={
    sec2:"あなたが人との距離を、<br>どうやって縮める人か", use:"金星",
    houses:[7,5,11], sec3:"あなたと相手のあいだに<br>何が置かれているか",
    focus:["金星","火星","月","木星","天王星"]},
- jiki:{label:"【2026年下半期】あなたの運勢と、次の転機が来る日",
-   title:"あなたの次の転機は、いつ来るか",
-   band:"その日、何が起きるか",
-   field:"これからの流れ", place:"動きどき",
-   sec1:"この半年を迎える、<br>あなたの土台",
-   sec2:"この半年、あなたに<br>枠を作っている星", use:"時期",
-   houses:[], sec3:"いま、あなたのどこに<br>星が入ってきているか",
+ jiki:{label:"【2027年先読み】来年の流れと、最初の転機",
+   title:"2027年の流れと、最初の転機",
+   band:"最初の転機で、何が動き始めるか",
+   field:"2027年の流れ", place:"来年の動きどき",
+   sec1:"2027年を迎える、<br>あなたの土台",
+   sec2:"2027年の入口で、あなたに<br>枠を作っている星", use:"時期",
+   houses:[], sec3:"2027年の入口で、あなたのどこに<br>星が入ってくるか",
    focus:["木星","土星","天王星","海王星","冥王星"]}
 };
 
@@ -1415,11 +1415,12 @@ function fmt(x){return x.toFixed(2);}
 
 function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   const TH=THEMES[themeKey]||THEMES.shigoto;
+  const FORECAST_YEAR=2027;
   const deepDiveLabels={
     shigoto:"仕事について、いま答えておきたい4つの問い",
     seishitsu:"これからの生き方について、4つの問い",
     renai:"人との関係について、4つの問い",
-    jiki:"この先の流れについて、4つの問い"
+    jiki:"2027年を迎える前に、答えておきたい4つの問い"
   };
   const deepDiveLabel=deepDiveLabels[themeKey]||deepDiveLabels.seishitsu;
   document.getElementById("resultTitle").textContent=TH.title;
@@ -1432,7 +1433,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     [flat(TH.sec2),                              1],
     [flat(TH.sec3),                              1],
     ["あなたの人生を区切る、心のテーマの移り変わり", 1],
-    ["いま、あなたの上を動いている星",              1],
+    [themeKey==="jiki"?"2027年の入口に動く星":"いま、あなたの上を動いている星",1],
     ["この先いちばん近い、あなたの<strong>転機の日</strong>", 1],
     [TH.band,                                    0],
     ["先に、今回の結論",                           0],
@@ -1441,18 +1442,25 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     [deepDiveLabel,                              0],
     ["転機までに、今日からやる3つのこと",            0],
     ["転機までの、時間の使い方",                    0],
-    ["次に、流れを見直すタイミング",                 0],
+    ...(themeKey==="jiki"?[]:[["次に、流れを見直すタイミング",0]]),
     ["今回の読みを、1枚にまとめる",                  0],
     ["迷ったときに戻ってきてほしい言葉",             0]
   ];
   document.getElementById("tocList").innerHTML=
     toc.map(([t,free])=>`<li class="${free?"":"lk"}">${t}</li>`).join("");
+  document.getElementById("secondTurningSection").style.display=
+    themeKey==="jiki"?"none":"";
   document.getElementById("cutBand").textContent=TH.band;
   const [lat,lon]=PREFS[prefName]||PREFS["東京都"];
   const natal=buildChart(y,m,d,hasTime?h:12,hasTime?mi:0,lat,lon);
   const now=new Date();
-  const transit=buildChart(now.getFullYear(),now.getMonth()+1,now.getDate(),
-                           now.getHours(),now.getMinutes(),lat,lon);
+  // 年運の先読みだけは、2027年の入口に空を固定する。
+  // ほかのテーマは、これまで通り鑑定時点の空を使う。
+  const transitAt=themeKey==="jiki"
+    ? new Date(FORECAST_YEAR,0,1,12,0)
+    : now;
+  const transit=buildChart(transitAt.getFullYear(),transitAt.getMonth()+1,transitAt.getDate(),
+                           transitAt.getHours(),transitAt.getMinutes(),lat,lon);
   const you=name?name+"さん":"あなた";
   const B=Object.fromEntries(natal.bodies.map(b=>[b.name,b]));
   const sun=B.太陽,mer=B.水星,moon=B.月;
@@ -1473,8 +1481,24 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   document.getElementById("subject").innerHTML=
     `<b>${name||"あなた"}</b>　${y}年${m}月${d}日生まれ`
     +(hasTime?`　${h}時${String(mi).padStart(2,"0")}分`:"　（出生時間 不明）")
-    +`　${prefName||"出生地 不明"}<br><span class="now">現在時：${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 `
-    +`${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}</span>`;
+    +`　${prefName||"出生地 不明"}<br><span class="now">`
+    +(themeKey==="jiki"
+      ?`先読みの基準日：${FORECAST_YEAR}年1月1日（年の入口）`
+      :`現在時：${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`)
+    +`</span>`;
+
+  const isAnnual=themeKey==="jiki";
+  document.getElementById("chartIntro").innerHTML=isAnnual
+    ?`ここから、<b>生まれたときの空</b>と<b>2027年の入口の空</b>を重ねて見ていきます。まずは、その二つを一枚に描いたところから。`
+    :`ここから、<b>生まれたときの空</b>と<b>いま動いている空</b>を重ねて見ていきます。まずは、その二つを一枚に描いたところから。`;
+  document.getElementById("transitLegend").innerHTML=
+    `<b style="color:#a07a3c;background:#f1eee4;padding:1px 5px;border-radius:2px">外側</b>　${isAnnual?"2027年の入口の空":"いまの空"}（トランジット）`;
+  document.getElementById("flowTransition").innerHTML=
+    `<div class="from">O M A S U</div>ここまでが、<b>変わらないほうのあなた</b>です。ここから、${isAnnual?"2027年の入口に空を動く星":"いま空を動いている星"}の話に移ります。`;
+  document.getElementById("flowSectionTitle").innerHTML=
+    isAnnual?"2027年の入口に、<br>あなたの上を動く星":"いま、あなたの上を動いている星";
+  document.getElementById("flowAdviceTitle").innerHTML=
+    isAnnual?"2027年の追い風と、<br>気をつけたいこと":"いまの追い風と、<br>気をつけたいこと";
 
   document.getElementById("chart").innerHTML=drawChart(natal,transit);
 
@@ -1534,7 +1558,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       <p>うまくいくのは、<strong>${t.a}</strong>とき。逆に苦しくなるのは、${t.b}という場面です。</p>
       <p>ここは相手によって変えられる部分ではありません。相手に合わせて無理にやり方を変えると、続いても${you}のほうが持ちません。<span class="uline">合う相手を選ぶほうが早い</span>、というのがこの配置の結論です。</p>`;
 
-  }else if(TH.use==="時期"){                           // 2026年下半期
+  }else if(TH.use==="時期"){                           // 2027年先読み
     const tj=transit.bodies.find(b=>b.name==="木星"),
           ts=transit.bodies.find(b=>b.name==="土星");
     document.getElementById("secTitle2").innerHTML=TH.sec2;
@@ -1542,10 +1566,11 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       `<div class="k">${tj.glyph} 木星</div><div class="k">${tj.signGlyph} ${tj.sign}</div>`
       +`<div>${ts.glyph} 土星</div><div>${ts.signGlyph} ${ts.sign}</div>`;
     document.getElementById("ch2").innerHTML=`
-      <p>いま空を大きく動いているのは、<span class="mk">${tj.sign}の木星</span>と<span class="mk">${ts.sign}の土星</span>です。この二つが、${you}を含めた全員にこの半年の枠を作っています。</p>
-      <p>木星は広げる星で、いま${tj.sign}の領域を押し広げています。土星は形にする星で、${ts.sign}の領域に輪郭を与えています。<strong>広がる場所と、締まる場所が別々にある</strong>のがこの時期の特徴です。</p>
-      <p>${you}の出生図のどこにこの二つが当たるかで、体感はまったく変わります。同じ半年でも「追い風だった」と言う人と「動けなかった」と言う人に分かれるのは、そのためです。</p>
-      <p>${you}にとってそれがどこに当たるのかは、このあと転機の日付として出てきます。</p>`;
+      <p>2027年の入口で空を大きく動かしているのは、<span class="mk">${tj.sign}の木星</span>と<span class="mk">${ts.sign}の土星</span>です。この二つが、${you}を含めた全員に来年の大きな枠を作っています。</p>
+      <p>木星は広げる星で、${tj.sign}の領域を押し広げます。土星は形にする星で、${ts.sign}の領域に輪郭を与えます。<strong>広がる場所と、整え直す場所が別々にある</strong>のが、2027年を迎えるときの特徴です。</p>
+      <p>${you}の出生図のどこにこの二つが当たるかで、体感はまったく変わります。同じ一年でも「追い風だった」と言う人と「足場を作る年だった」と言う人に分かれるのは、そのためです。</p>
+      <p>${you}にとってそれがどこに当たるのかは、このあと転機の日付として出てきます。</p>
+      <p><strong>この先読みで扱うのは、2026年末に整えることから、2027年最初の転機まで。</strong>一年分を広く並べるのではなく、来年の最初の一歩に絞って見ていきます。</p>`;
 
   }else{                                               // 人生（水星）
     pick("pickMer",mer);
@@ -1634,35 +1659,41 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
         ? `そしていま、<span class="mk">${slowIn.map(s=>`${s.h}ハウスに${s.t}`).join("、")}</span>が入ってきています。ゆっくり動く星なので、しばらくこの部屋に居座ります。${TH.field}まわりで感じている変化の出どころは、ここです。`
         : `いまのところ、この部屋にゆっくり動く星は入っていません。${TH.field}については、大きく揺れるより現状が続く時期です。動かすなら、向こうから来るのを待つより<strong>${you}から動いたほうが早い</strong>時期でもあります。`}</p>`;
   }else{
-    /* 2026年下半期テーマ：木星・土星がいまどのハウスに来ているかを読む */
+    /* 2027年先読みテーマ：年の入口で木星・土星がどのハウスに来るかを読む */
     const slow=transit.bodies.filter(b=>["木星","土星"].includes(b.name))
                  .map(b=>({b,h:houseOfLon(b.lon,natal)}));
     hc.innerHTML=slow.map(s=>{
       const inf=houseInfo(natal,transit,s.h);
       return `<div class="hcard">
-        <div class="hh"><b>${s.b.name}</b>いま ${s.h}ハウス ― ${HOUSEMEAN[s.h]}</div>
+        <div class="hh"><b>${s.b.name}</b>2027年の入口は ${s.h}ハウス ― ${HOUSEMEAN[s.h]}</div>
         <dl>
-          <dt>いまのサイン</dt><dd><em>${s.b.signGlyph} ${s.b.sign} ${fmt(s.b.deg)}</em></dd>
+          <dt>年の入口のサイン</dt><dd><em>${s.b.signGlyph} ${s.b.sign} ${fmt(s.b.deg)}</em></dd>
           <dt>入口のサイン</dt><dd>${inf.cuspGlyph} ${inf.cuspSign} ― ${SIGNKEY[inf.cuspSign]}</dd>
           <dt>在住の天体</dt>
           <dd>${inf.occupants.length?inf.occupants.map(o=>`${o.glyph} ${o.name}`).join("、"):`<span class="none">なし</span>`}</dd>
         </dl></div>`;}).join("");
     const j=slow.find(s=>s.b.name==="木星"), s2=slow.find(s=>s.b.name==="土星");
     document.getElementById("ch2b").innerHTML=`
-      <p>この半年、${you}にとっていちばん効いているのは<strong>星がどのサインにいるか</strong>ではなく、<strong>${you}の出生図のどの部屋に入ってきているか</strong>です。同じ星が空を回っていても、当たる場所が人によって違うので、体感がまるで変わります。</p>
-      <p>${j?`広げる星である<span class="mk">木星</span>は、いま${you}の<strong>${j.h}ハウス</strong>にいます。${HOUSEMEAN[j.h]}を扱う部屋です。この領域が、いま${you}にとって<span class="uline">いちばん開きやすい場所</span>になっています。`:""}</p>
-      <p>${s2?`一方、形にする星である<span class="mk">土星</span>は<strong>${s2.h}ハウス</strong>――${HOUSEMEAN[s2.h]}のところにいます。ここは締まります。うまくいかないと感じるなら、それは${you}の力の問題ではなく、<strong>いまこの部屋が絞られている時期</strong>だからです。`:""}</p>
-      <p>${j&&s2?`${j.h}ハウスで広げて、${s2.h}ハウスで締める。この半年、${you}の生活はこの二方向で動きます。両方に同じだけ力を入れようとすると、どちらも中途半端になります。<strong>広がるほうに乗って、締まるほうは守りに徹する</strong>のが、この配置での正解です。`:""}</p>`;
+      <p>2027年の入口で${you}にとって大切なのは、<strong>星がどのサインにいるか</strong>だけでなく、<strong>${you}の出生図のどの部屋に入ってくるか</strong>です。同じ星が空を回っていても、当たる場所が人によって違うので、来年の課題も変わります。</p>
+      <p>${j?`広げる星である<span class="mk">木星</span>は、年の入口で${you}の<strong>${j.h}ハウス</strong>にいます。${HOUSEMEAN[j.h]}を扱う部屋です。ここが、2027年に向けて<span class="uline">先に開き始める場所</span>です。`:""}</p>
+      <p>${s2?`一方、形にする星である<span class="mk">土星</span>は<strong>${s2.h}ハウス</strong>――${HOUSEMEAN[s2.h]}のところにいます。ここは急いで広げるより、土台から整える場所です。思うように進まなくても、${you}の力の問題ではなく、<strong>来年に向けて形を作り直している途中</strong>だと考えてください。`:""}</p>
+      <p>${j&&s2?`${j.h}ハウスで広げて、${s2.h}ハウスで整える。2027年の入口で、${you}の生活はこの二方向から動き始めます。両方を一度に完成させるのではなく、<strong>2026年末までは整える場所を決め、年明けから開くほうへ力を移す</strong>のが、この先読みの結論です。`:""}</p>`;
   }
 
-  document.getElementById("ch3").innerHTML=`
-    <p>ここからは、いま空を動いている星の話です。2026年後半、${you}の上には大きく二つの流れが来ています。ひとつは広げる方向に働く星、もうひとつは削る方向に働く星。</p>
+  document.getElementById("ch3").innerHTML=themeKey==="jiki"?`
+    <p>ここからは、2027年の入口に空を動いている星の話です。${you}の上には大きく二つの流れが来ます。ひとつは広げる方向に働く星、もうひとつは形を整える方向に働く星です。</p>
     <p>この二つは同時に来ます。だからこの時期は「調子がいいのか悪いのかよくわからない」という感覚になりやすい。実際、両方本当です。増えているところと減っているところが、並行して起きています。</p>
-    <p>削るほうの星は、${you}が<span class="uline">「もう必要ないのに、続けてしまっているもの」</span>に触れてきます。仕事のやり方、付き合い、引き受けている役割。手放すと決めたわけでもないのに、向こうから離れていくような形をとることもあります。</p>
-    <p>そして広げるほうの星は、その空いたところにだけ入ってきます。<strong>先に空けないと、入る場所がない。</strong>この順番が、2026年後半のいちばん大事なところです。</p>`;
+    <p>整えるほうの星は、${you}が<span class="uline">「もう必要ないのに、続けてしまっているもの」</span>に触れてきます。仕事のやり方、付き合い、引き受けている役割。2026年末までに余白を作るほど、年明けの流れを受け取りやすくなります。</p>
+    <p>そして広げるほうの星は、その空いたところに入ってきます。<strong>先に空けてから、来年広げる。</strong>この順番が、2027年の最初の転機を活かす鍵です。</p>`:`
+    <p>ここからは、いま空を動いている星の話です。${you}の上には大きく二つの流れが来ています。ひとつは広げる方向に働く星、もうひとつは形を整える方向に働く星です。</p>
+    <p>この二つは同時に来ます。だからこの時期は「調子がいいのか悪いのかよくわからない」という感覚になりやすい。実際、両方本当です。増えているところと減っているところが、並行して起きています。</p>
+    <p>整えるほうの星は、${you}が<span class="uline">「もう必要ないのに、続けてしまっているもの」</span>に触れてきます。仕事のやり方、付き合い、引き受けている役割。手放すと決めたわけでもないのに、向こうから離れていくような形をとることもあります。</p>
+    <p>そして広げるほうの星は、その空いたところにだけ入ってきます。<strong>先に空けないと、入る場所がない。</strong>この順番が、いまの流れでいちばん大事なところです。</p>`;
 
   /* --- 転機の日付（無料で出す） --- */
-  const turn=nextTurning(natal,hasTime,todayN);
+  const turnCandidates=nextTurnings(natal,hasTime,todayN,24)
+    .filter(t=>themeKey!=="jiki"||t.date.getFullYear()===FORECAST_YEAR);
+  const turn=turnCandidates[0]||null;
   if(turn){
     const t=turn.date, days=Math.round((t-now)/86400000);
     document.getElementById("bigdateLead").textContent=
@@ -1672,18 +1703,30 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       `${t.getFullYear()}年${t.getMonth()+1}月${t.getDate()}日`;
     document.getElementById("bigdateNote").textContent=`今日から${days}日後`;
     document.getElementById("ch4").innerHTML=`
-      <p>この日を、流れを見直す目安として覚えておいてください。${you}のネイタルの<span class="mk">${turn.point}</span>に対して、いま空を動いている<span class="mk">${turn.slow}</span>が強く角度をつくる日です。</p>
+      <p>この日を、流れを見直す目安として覚えておいてください。${you}のネイタルの<span class="mk">${turn.point}</span>に対して、${themeKey==="jiki"?"2027年の空を動く":"いま空を動いている"}<span class="mk">${turn.slow}</span>が強く角度をつくる日です。</p>
       <p>${turn.slow==="木星"
         ?"木星は、広げる方向に働く星です。この日の前後、それまで閉じていたところが開きます。"
         :"土星は、形にする方向に働く星です。この日の前後、曖昧にしていたものに輪郭がつきます。"}</p>
       <p>その日に出来事が約束されているわけではありません。ただ、この前後に最初に変わる場所がわかると、まだ小さい変化を見落とさずに済みます。</p>`;
-  }else{
+  }else if(!hasTime){
     document.getElementById("bigdateLead").textContent="";
     document.getElementById("bigdate").textContent="——";
     document.getElementById("bigdateNote").textContent=
       "出生時間を入れていただくと、日付まで出せます";
     document.getElementById("ch4").innerHTML=
       `<p>転機の日付は、出生時間がわかると計算できます。フォームの「生まれた時間と場所も入れる」から入力してみてください。</p>`;
+  }else if(themeKey==="jiki"){
+    document.getElementById("bigdateLead").textContent="2027年の星の動きを確認した結果";
+    document.getElementById("bigdate").textContent="大きな転機は見当たりません";
+    document.getElementById("bigdateNote").textContent="小さく整えながら進む一年です";
+    document.getElementById("ch4").innerHTML=
+      `<p>2027年の中に、木星や土星が出生図の主要な点へ強く角度をつくる日は見当たりませんでした。大きな出来事がないという意味ではなく、急な方向転換より、続けてきたことを育てる流れです。</p>`;
+  }else{
+    document.getElementById("bigdateLead").textContent="この先の星の動きを確認した結果";
+    document.getElementById("bigdate").textContent="大きな転機は見当たりません";
+    document.getElementById("bigdateNote").textContent="小さな変化を見ながら進む時期です";
+    document.getElementById("ch4").innerHTML=
+      `<p>この先しばらく、木星や土星が出生図の主要な点へ強く角度をつくる日は見当たりませんでした。急いで方向を変えるより、日々の小さな変化を見ながら進む流れです。</p>`;
   }
 
   /* --- 切れ目 ---
@@ -1777,15 +1820,16 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     jiki:{go:"増やしたいことを一つに絞り、予定に小さく入れると流れを使えます。",care:"変化を全部受け取ろうとせず、今は選ばないものも決めてください。"}
   };
   const flowTip=flowTips[themeKey]||flowTips.seishitsu;
+  const flowLabel=themeKey==="jiki"?"2027年":"いま";
   document.getElementById("aspects").innerHTML=`
     <div class="insight-grid">
-      <div class="insight"><b>いまの追い風</b><span>${helpful?plain(helpful):"急いで流れに乗るより、足元を整える時間です。"} ${flowTip.go}</span></div>
+      <div class="insight"><b>${flowLabel}の追い風</b><span>${helpful?plain(helpful):"急いで流れに乗るより、足元を整える時間です。"} ${flowTip.go}</span></div>
       <div class="insight"><b>気をつけたいこと</b><span>${careful?plain(careful):`大きな負荷は目立ちません。ただし、${mo.b}という消耗の形には注意してください。`} ${flowTip.care}</span></div>
-      <div class="insight"><b>今の選び方</b><span>${decisionLine}</span></div>
+      <div class="insight"><b>${flowLabel}の選び方</b><span>${decisionLine}</span></div>
     </div>`;
 
   split("ch7",`
-    <p>いまの流れをひと言でいうと、<strong>${helpful?plain(helpful):"外の動きより、内側を整える時間です。"}</strong></p>
+    <p>${flowLabel}の流れをひと言でいうと、<strong>${helpful?plain(helpful):"外の動きより、内側を整える時間です。"}</strong></p>
     <p>${careful?`同時に、${plain(careful)}追い風だけを見て予定を増やすと、月が苦手な「${mo.b}」へ戻りやすくなります。`:`強い向かい風は目立ちません。だからこそ、できることを増やすより「${mo.a}」を保てる量に絞るほうが、今の流れを活かせます。`}</p>
     <p>${TH.field}で今すぐ答えを出す必要はありません。話が進みやすいことと、その選択が${you}に合うことは別です。<span class="uline">進みやすさは追い風で確認し、続けられるかは月の条件で決める</span>。この二段階で考えてください。</p>
     <details class="astro-evidence"><summary>読みの根拠となった星の配置を見る</summary>${evidenceHtml}<p class="evidence-note">アスペクト名やオーブは結論そのものではなく、上の読みを組み立てるために使った参考情報です。</p></details>`,1);
@@ -1886,7 +1930,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     <p>前へ進む合図は、予定が増えることだけではありません。<strong>以前より返事がしやすい、無理なものを断れる、終わったことに気づける</strong>。こうした小さな変化も、流れが動いた証拠として数えてください。</p>`,1);
 
   /* ===== 2つ目の転機。日付そのものを伏せる ===== */
-  const turns=nextTurnings(natal,hasTime,todayN,2);
+  const turns=turnCandidates;
   const t2=turns[1]||null;
   if(t2){
     const d2=`${t2.date.getFullYear()}年${t2.date.getMonth()+1}月${t2.date.getDate()}日`;
@@ -1910,7 +1954,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     ["外で使う力",`「${s.k}」力`],
     ["内側が必要とする条件",moonNeed],
     ["消耗のサイン",moonDrain],
-    ["いまの追い風",helpful?plain(helpful):"外側を急いで動かすより、足元を整える時間"],
+    [`${flowLabel}の追い風`,helpful?plain(helpful):"外側を急いで動かすより、足元を整える時間"],
     ["注意したいこと",careful?plain(careful):flowTip.care],
     ["今回の判断軸",decisionLine],
     ["流れを見直す目安",md],
