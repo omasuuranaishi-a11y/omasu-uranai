@@ -1,9 +1,8 @@
 /* ===========================================================
-   astro.js ― デモ用の天体計算
-   JPL「Keplerian Elements for Approximate Positions of the
-   Major Planets」(1800-2050) を使った近似計算。
-   誤差は内惑星で±1°程度、外惑星はもっと小さい。
-   本番は swisseph に差し替える前提。
+   astro.js ― 鑑定用の天体計算
+   天体黄経は Astronomy Engine v2.1.19（VSOP87 / NOVAS照合）を使用。
+   読み込みに失敗した場合だけ、下の簡易式へフォールバックする。
+   ASC / MC とプラシーダス・ハウスはこのファイル内で計算する。
    =========================================================== */
 
 const SIGNS = ["牡羊座","牡牛座","双子座","蟹座","獅子座","乙女座",
@@ -168,9 +167,30 @@ const GLYPH = {太陽:"☉"+VS,月:"☾"+VS,水星:"☿"+VS,金星:"♀"+VS,火�
                土星:"♄"+VS,天王星:"♅"+VS,海王星:"♆"+VS,冥王星:"♇"+VS,ASC:"Asc",MC:"MC"};
 
 function lonOf(name, n) {
+  if (typeof Astronomy !== "undefined") {
+    if (name === "太陽") return norm(Astronomy.SunPosition(n).elon);
+    if (name === "月")   return norm(Astronomy.EclipticGeoMoon(n).lon);
+    const body = {
+      水星:Astronomy.Body.Mercury, 金星:Astronomy.Body.Venus,
+      火星:Astronomy.Body.Mars, 木星:Astronomy.Body.Jupiter,
+      土星:Astronomy.Body.Saturn, 天王星:Astronomy.Body.Uranus,
+      海王星:Astronomy.Body.Neptune, 冥王星:Astronomy.Body.Pluto
+    }[name];
+    if (body) {
+      const vec = Astronomy.GeoVector(body, n, true);
+      return norm(Astronomy.Ecliptic(vec).elon);
+    }
+  }
   if (name === "太陽") return sunLon(n);
   if (name === "月")   return moonLon(n);
   return planetLon(name, n);
+}
+
+/* 高精度計算の候補日を絞るためにだけ使う高速な近似黄経 */
+function roughLonOf(name,n){
+  if(name==="太陽") return sunLon(n);
+  if(name==="月") return moonLon(n);
+  return planetLon(name,n);
 }
 
 function buildChart(y, m, d, h, mi, lat, lon) {
@@ -204,7 +224,7 @@ function buildChart(y, m, d, h, mi, lat, lon) {
       houseNext: h.next        // その場合の「寄っている先」
     };
   });
-  return { n, asc, mc, cusps, bodies };
+  return { n, asc, mc, cusps, bodies, lat, lon };
 }
 
 /* ===========================================================
@@ -432,6 +452,250 @@ function nextTurnings(natal, hasTime, todayN, count) {
 /* いちばん近い1件だけ */
 function nextTurning(natal, hasTime, todayN) {
   return nextTurnings(natal, hasTime, todayN, 1)[0] || null;
+}
+
+/* ===========================================================
+   テーマ別の転機判定
+
+   1. 外側の動き   : トランジット（木星〜冥王星）
+   2. 内側の成熟   : セカンダリー・プログレス（1日=1年）
+   3. 長期の方向   : ソーラーアーク（進行太陽の移動量）
+   4. 年間の強調点 : 太陽回帰図（入力された出生地を基準）
+
+   日付を手法ごとに無理に作らず、テーマに関係する点への正確な
+   アスペクトだけを拾う。同じ時期に複数手法が重なるほど優先する。
+   =========================================================== */
+const THEME_TIMING={
+  shigoto:{planets:["太陽","水星","火星","土星","木星"],angles:["MC"],houses:[10,6,2],progressed:["太陽","水星","月"]},
+  tenshoku:{planets:["太陽","火星","天王星","土星"],angles:["MC","ASC"],houses:[10,6,9],progressed:["太陽","月","火星"]},
+  sainou:{planets:["太陽","水星","木星"],angles:["MC"],houses:[2,6,10],progressed:["太陽","水星","月"]},
+  fukugyo:{planets:["水星","金星","木星"],angles:["MC"],houses:[2,6,11],progressed:["水星","金星","月"]},
+  renai:{planets:["金星","月","火星"],angles:["DSC","ASC"],houses:[5,7,8],progressed:["金星","月","火星"]},
+  ningen:{planets:["月","水星","金星"],angles:["ASC","DSC"],houses:[3,7,11],progressed:["月","水星","金星"]},
+  seishitsu:{planets:["太陽","月","水星"],angles:["ASC"],houses:[1,4,9],progressed:["太陽","月","水星"]},
+  jiki:{planets:["太陽","月","水星","金星","火星"],angles:["ASC","MC"],houses:[1,4,7,10],progressed:["太陽","月","金星"]}
+};
+
+const TIMING_ASPECTS=[
+  {name:"コンジャンクション",angle:0,weight:1.00},
+  {name:"スクエア",angle:90,weight:.96},
+  {name:"トライン",angle:120,weight:.78},
+  {name:"オポジション",angle:180,weight:.98},
+  {name:"セクスタイル",angle:60,weight:.66}
+];
+const METHOD_LABEL={transit:"トランジット",progression:"セカンダリー・プログレス",solarArc:"ソーラーアーク",solarReturn:"太陽回帰"};
+const DRIVER_WEIGHT={木星:3.7,土星:4.4,天王星:4.7,海王星:4.1,冥王星:5.0};
+
+function angleDistance(a,b){
+  let d=Math.abs(norm(a-b));
+  return d>180?360-d:d;
+}
+function aspectDistance(a,b,aspect){ return Math.abs(angleDistance(a,b)-aspect.angle); }
+
+function themeTimingConfig(key){ return THEME_TIMING[key]||THEME_TIMING.seishitsu; }
+
+function themeTargets(natal,hasTime,key){
+  const cfg=themeTimingConfig(key), out=[], seen=new Set();
+  const add=(id,name,lon,weight,kind)=>{
+    if(seen.has(id)) return;
+    seen.add(id); out.push({id,name,lon:norm(lon),weight,kind});
+  };
+  cfg.planets.forEach((name,i)=>{
+    const b=natal.bodies.find(x=>x.name===name);
+    if(b) add("P:"+name,name,b.lon,1.18-i*.055,"planet");
+  });
+  if(hasTime){
+    cfg.angles.forEach((name,i)=>{
+      const lon=name==="ASC"?natal.asc:name==="MC"?natal.mc:name==="DSC"?natal.asc+180:natal.mc+180;
+      add("A:"+name,name,lon,1.28-i*.05,"angle");
+    });
+    cfg.houses.forEach((n,i)=>add("H:"+n,`第${n}ハウス`,cuspLon(natal,n),1.12-i*.045,"house"));
+  }
+  return out;
+}
+
+function themeSourcePoints(natal,hasTime,key){
+  return themeTargets(natal,hasTime,key).filter(x=>x.kind!=="house").slice(0,7);
+}
+
+function refineMinimum(driver,target,aspect,fromN,toN){
+  let a=fromN,b=toN;
+  for(let i=0;i<16;i++){
+    const m1=a+(b-a)/3,m2=b-(b-a)/3;
+    const o1=aspectDistance(driver.lonAt(m1),target.lon,aspect);
+    const o2=aspectDistance(driver.lonAt(m2),target.lon,aspect);
+    if(o1<o2) b=m2; else a=m1;
+  }
+  const n=(a+b)/2;
+  return {n,orb:aspectDistance(driver.lonAt(n),target.lon,aspect)};
+}
+
+/* 動く点×テーマ対象点を日ごとに走査し、オーブの極小日だけを拾う */
+function scanDirectedEvents(drivers,targets,fromN,toN,method,aspects,stepDays){
+  const state=new Map(), hits=[], aspList=aspects||TIMING_ASPECTS;
+  const step=stepDays||1,start=Math.floor(fromN)-2*step,end=Math.ceil(toN)+2*step;
+  for(let n=start;n<=end;n+=step){
+    for(const driver of drivers){
+      const moving=driver.roughLonAt?driver.roughLonAt(n):driver.lonAt(n);
+      for(const target of targets){
+        if(driver.skip&&driver.skip(target)) continue;
+        for(const aspect of aspList){
+          const key=driver.id+"/"+target.id+"/"+aspect.name;
+          const arr=state.get(key)||[];
+          arr.push({n,orb:aspectDistance(moving,target.lon,aspect)});
+          if(arr.length>3) arr.shift();
+          state.set(key,arr);
+          if(arr.length!==3) continue;
+          const [p,c,q]=arr;
+          if(c.n<fromN||c.n>toN||c.orb>driver.orb+(driver.roughPad||.12)||c.orb>p.orb||c.orb>=q.orb) continue;
+          const exact=refineMinimum(driver,target,aspect,c.n-step*1.2,c.n+step*1.2);
+          if(exact.n<fromN||exact.n>toN||exact.orb>driver.orb) continue;
+          const precision=1+Math.max(0,1-exact.orb/driver.orb)*.28;
+          hits.push({
+            n:exact.n,method,methodLabel:METHOD_LABEL[method],source:driver.name,
+            target:target.name,targetId:target.id,aspect:aspect.name,orb:exact.orb,
+            score:driver.weight*target.weight*aspect.weight*precision
+          });
+        }
+      }
+    }
+  }
+  return hits.sort((a,b)=>a.n-b.n);
+}
+
+function transitTimingEvents(targets,fromN,toN){
+  const center=(fromN+toN)/2;
+  const drivers=["木星","土星","天王星","海王星","冥王星"].map(name=>{
+    const correction=norm(lonOf(name,center)-roughLonOf(name,center)+180)-180;
+    return {id:"T:"+name,name,weight:DRIVER_WEIGHT[name],orb:name==="木星"?.42:.32,
+      lonAt:n=>lonOf(name,n),roughLonAt:n=>norm(roughLonOf(name,n)+correction),roughPad:.1};
+  });
+  return scanDirectedEvents(drivers,targets,fromN,toN,"transit",null,2);
+}
+
+function progressionTimingEvents(natal,targets,fromN,toN,key){
+  const cfg=themeTimingConfig(key), YEAR=365.2422;
+  const center=(fromN+toN)/2,progCenter=natal.n+(center-natal.n)/YEAR;
+  const drivers=cfg.progressed.map(name=>{
+    const correction=norm(lonOf(name,progCenter)-roughLonOf(name,progCenter)+180)-180;
+    return {id:"P:"+name,name:`進行の${name}`,weight:name==="月"?3.4:3.9,orb:name==="月"?.48:.16,
+      lonAt:n=>lonOf(name,natal.n+(n-natal.n)/YEAR),
+      roughLonAt:n=>norm(roughLonOf(name,natal.n+(n-natal.n)/YEAR)+correction),roughPad:name==="月"?.12:.08};
+  });
+  return scanDirectedEvents(drivers,targets,fromN,toN,"progression",null,4);
+}
+
+function solarArcTimingEvents(natal,hasTime,targets,fromN,toN,key){
+  const YEAR=365.2422, natalSun=natal.bodies.find(b=>b.name==="太陽"), cache=new Map();
+  const roughNatalSun=roughLonOf("太陽",natal.n),roughCache=new Map();
+  const arcAt=n=>{
+    const k=n.toFixed(7);
+    if(!cache.has(k)) cache.set(k,norm(lonOf("太陽",natal.n+(n-natal.n)/YEAR)-natalSun.lon));
+    return cache.get(k);
+  };
+  const roughArcAt=n=>{
+    const k=n.toFixed(7);
+    if(!roughCache.has(k)) roughCache.set(k,norm(roughLonOf("太陽",natal.n+(n-natal.n)/YEAR)-roughNatalSun));
+    return roughCache.get(k);
+  };
+  const drivers=themeSourcePoints(natal,hasTime,key).map((p,i)=>({
+    id:"SA:"+p.id,baseId:p.id,name:`ソーラーアークの${p.name}`,
+    weight:4.15-i*.08,orb:.22,lonAt:n=>norm(p.lon+arcAt(n)),roughLonAt:n=>norm(p.lon+roughArcAt(n)),roughPad:.04,skip:t=>t.id===p.id
+  }));
+  return scanDirectedEvents(drivers,targets,fromN,toN,"solarArc",null,6);
+}
+
+function chartAtN(n,lat,lon){
+  const jst=new Date(daysToDate(n).getTime()+9*3600000);
+  return buildChart(jst.getUTCFullYear(),jst.getUTCMonth()+1,jst.getUTCDate(),jst.getUTCHours(),jst.getUTCMinutes(),lat,lon);
+}
+
+/* 太陽回帰は年間テーマ。単独で転機日にはせず、他手法の候補を補強する */
+function solarReturnContexts(natal,hasTime,fromN,toN,key){
+  const natalSun=natal.bodies.find(b=>b.name==="太陽"), target={id:"N:SUN",name:"出生時の太陽",lon:natalSun.lon,weight:1,kind:"planet"};
+  const center=(fromN+toN)/2,correction=norm(lonOf("太陽",center)-roughLonOf("太陽",center)+180)-180;
+  const driver={id:"SR:SUN",name:"太陽回帰",weight:1,orb:.08,lonAt:n=>lonOf("太陽",n),roughLonAt:n=>norm(roughLonOf("太陽",n)+correction),roughPad:.2};
+  const raw=scanDirectedEvents([driver],[target],fromN-370,toN+10,"solarReturn",[TIMING_ASPECTS[0]],.25);
+  const cfg=themeTimingConfig(key);
+  return raw.map(e=>{
+    const sr=chartAtN(e.n,natal.lat,natal.lon), details=[];
+    let strength=0;
+    if(hasTime){
+      const srSun=sr.bodies.find(b=>b.name==="太陽");
+      if(cfg.houses.includes(srSun.house)){ strength+=1.8; details.push(`太陽が第${srSun.house}ハウス`); }
+      const occupied=sr.bodies.filter(b=>cfg.houses.includes(b.house)&&b.name!=="太陽");
+      if(occupied.length){ strength+=Math.min(2.1,occupied.length*.42); details.push(`${[...new Set(occupied.map(b=>`第${b.house}ハウス`))].join("・")}が活性化`); }
+      const ascHouse=houseOfLon(sr.asc,natal),mcHouse=houseOfLon(sr.mc,natal);
+      if(cfg.houses.includes(ascHouse)){ strength+=1.0; details.push(`回帰ASCが出生図の第${ascHouse}ハウス`); }
+      if(cfg.houses.includes(mcHouse)){ strength+=1.15; details.push(`回帰MCが出生図の第${mcHouse}ハウス`); }
+    }
+    const contacts=[];
+    for(const b of sr.bodies.filter(x=>x.name!=="太陽")){
+      for(const t of themeTargets(natal,hasTime,key)){
+        const a=TIMING_ASPECTS.find(x=>aspectDistance(b.lon,t.lon,x)<=1.0);
+        if(a) contacts.push(`${b.name}→${t.name}`);
+      }
+    }
+    if(contacts.length){ strength+=Math.min(2.0,contacts.length*.32); details.push(`${contacts.slice(0,2).join("・")}が強調`); }
+    return {n:e.n,date:daysToDate(e.n),strength,details:details.slice(0,3)};
+  });
+}
+
+function timingEvidenceText(e){
+  return `${e.methodLabel}：${e.source}が${e.target}に${e.aspect}（誤差${e.orb.toFixed(2)}°）`;
+}
+
+function clusterTimingEvents(events,returns,fromN,toN,key){
+  const sorted=events.slice().sort((a,b)=>a.n-b.n), clusters=[];
+  for(const e of sorted){
+    let c=clusters[clusters.length-1];
+    if(!c||e.n-c.firstN>24){ c={events:[],firstN:e.n,lastN:e.n}; clusters.push(c); }
+    c.events.push(e); c.lastN=e.n;
+  }
+  const evaluated=clusters.map(c=>{
+    const bestByMethod=new Map();
+    for(const e of c.events){
+      const old=bestByMethod.get(e.method);
+      if(!old||e.score>old.score) bestByMethod.set(e.method,e);
+    }
+    const evidence=[...bestByMethod.values()].sort((a,b)=>b.score-a.score);
+    const primary=evidence[0];
+    let score=evidence.reduce((s,e)=>s+e.score,0)+(evidence.length-1)*1.65;
+    const ret=returns.filter(r=>primary.n>=r.n-60&&primary.n<r.n+366).sort((a,b)=>b.strength-a.strength)[0]||null;
+    const methods=evidence.map(e=>e.methodLabel);
+    if(ret&&ret.strength>=2.2){ score+=ret.strength*.55; methods.push(METHOD_LABEL.solarReturn); }
+    const days=Math.max(0,primary.n-fromN);
+    const rank=score-days/365.2422*1.1;
+    return {
+      n:primary.n,date:daysToDate(primary.n),slow:primary.source,point:primary.target,
+      aspect:primary.aspect,method:primary.method,methodLabel:primary.methodLabel,
+      evidence:evidence.slice(0,4),evidenceText:evidence.slice(0,4).map(timingEvidenceText),
+      methods:[...new Set(methods)],score,rank,themeKey:key,
+      returnContext:ret&&ret.strength>=2.2?ret:null,
+      confidence:evidence.length>=3?"3手法以上が重なる時期":evidence.length===2?"2手法が重なる時期":"1手法で強く出る時期"
+    };
+  }).filter(x=>x.n>=fromN&&x.n<=toN);
+  evaluated.sort((a,b)=>b.rank-a.rank);
+  if(!evaluated.length) return [];
+  const first=evaluated[0];
+  const later=evaluated.filter(x=>x.n>first.n+25).sort((a,b)=>a.n-b.n);
+  return [first,...later];
+}
+
+function themeTurnings(natal,hasTime,todayN,key,count,year){
+  let fromN=Math.floor(todayN)+1,toN=fromN+900;
+  if(year){
+    fromN=jdays(year,1,1,0,0);
+    toN=jdays(year,12,31,23,59);
+  }
+  const targets=themeTargets(natal,hasTime,key);
+  const events=[
+    ...transitTimingEvents(targets,fromN,toN),
+    ...progressionTimingEvents(natal,targets,fromN,toN,key),
+    ...solarArcTimingEvents(natal,hasTime,targets,fromN,toN,key)
+  ];
+  const returns=solarReturnContexts(natal,hasTime,fromN,toN,key);
+  return clusterTimingEvents(events,returns,fromN,toN,key).slice(0,count||2);
 }
 
 /* 過去にあった、いちばん近いハードな時期（呼びかけに使う） */

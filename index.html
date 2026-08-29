@@ -52,7 +52,7 @@
     { "@type": "Question", "name": "生まれた時間がわからなくても使えますか？",
       "acceptedAnswer": { "@type": "Answer", "text": "生年月日だけでも読めます。出生時間と場所を入力すると、ハウスやASC・MCを含めた、より詳しい読みが追加されます。出生時間は母子手帳に記載されていることが多いです。" } },
     { "@type": "Question", "name": "転機の日付はどうやって出していますか？",
-      "acceptedAnswer": { "@type": "Answer", "text": "いま空を動いている木星と土星が、生まれたときの個人天体や、出生時間がわかる場合はASC・MCと主要な角度をつくるタイミングを、1日単位で計算しています。日付は出来事を保証するものではなく、流れを見直す目安としてお伝えしています。" } }
+      "acceptedAnswer": { "@type": "Answer", "text": "選んだテーマに関係する天体・感受点・ハウスを絞り、トランジット、セカンダリー・プログレス、ソーラーアーク、太陽回帰を照合しています。複数手法の一致度とテーマへの適合度から重要な時期を選びます。日付は出来事を保証するものではなく、前後の流れを見直す目安です。" } }
   ]
 }
 </script>
@@ -819,7 +819,7 @@ details.more,
         <li><i class="f">無料</i>まわりから見えているあなたと、その伝わり方</li>
         <li><i class="f">無料</i>いま、あなたの上で何が起きているか</li>
         <li><i class="f">無料</i>手放すべきものと、これから入ってくるもの</li>
-        <li><i class="f">無料</i>近いうちに訪れる、あなたの<strong>転機の日付</strong></li>
+        <li><i class="f">無料</i>選んだテーマで強く出る、あなたの<strong>転機の日付</strong></li>
         <li><i class="p">続き</i>その日、あなたの生活のどこから動きはじめるか</li>
         <li><i class="p">続き</i>人には見せていない、ひとりのときのあなた</li>
         <li><i class="p">続き</i>あなたが満たされる条件と、消耗してしまうパターン</li>
@@ -841,7 +841,7 @@ details.more,
   <div class="wrap">
     <div class="card">
       <h2>あなたのことを教えてください</h2>
-      <div class="note">生年月日だけでも読みはじめられます。<br>出生時間と出生地がわかると、ハウスまで見られます。</div>
+      <div class="note">生年月日だけでも読みはじめられます。<br>出生時間と出生地がわかると、ハウスとテーマ別の転機をより精密に読めます。</div>
 
       <div class="field">
         <label>何について読みますか <span class="opt">（必須）</span></label>
@@ -860,7 +860,7 @@ details.more,
       <details class="more">
         <summary>生まれた時間と場所も入れる（任意）</summary>
         <div class="more-in">
-          <div class="note2">入れていただくと、ハウスと転機の日付まで見られます。</div>
+          <div class="note2">入れていただくと、ASC・MC・ハウスも含めて転機の日付を絞り込みます。</div>
           <div class="field">
             <label>出生時間</label>
             <div class="row"><select id="h"></select><select id="mi"></select></div>
@@ -883,7 +883,7 @@ details.more,
           <li>あなたが生まれ持った性質と、力が出る場所</li>
           <li>選んだテーマにあわせた、あなたの読み解き</li>
           <li>いまあなたの上を動いている星</li>
-          <li><strong>この先いちばん近い転機の日付</strong></li>
+          <li><strong>選んだテーマで強く出る転機の日付</strong></li>
         </ul>
       </div>
     </div>
@@ -964,7 +964,7 @@ details.more,
 
     <!-- ---------- 転機の日付（無料で出す） ---------- -->
     <div class="orn"><i>◆</i></div>
-    <div class="sec-title">この先いちばん近い、<br>あなたの転機の日</div>
+    <div class="sec-title">このテーマで強く出る、<br>あなたの転機の日</div>
     <div class="orn tight"><i>◆</i></div>
     <div class="bigdate">
       <div class="bd-lead" id="bigdateLead"></div>
@@ -1140,6 +1140,8 @@ details.more,
     <footer>
       <a href="tokushoho.html">特定商取引法に基づく表記</a><br>
       星よみ専門家　おます<br>
+      天体位置計算：Astronomy Engine v2.1.19（<a href="ASTRONOMY-ENGINE-LICENSE.txt">ライセンス</a>）<br>
+      ※ 転機の日付は占星術上の見直し目安であり、特定の出来事を保証するものではありません<br>
       ※ このページは構成確認用のプロトタイプです
     </footer>
   </div>
@@ -1156,7 +1158,8 @@ details.more,
      ※ クライアントIDはページのHTMLに出る前提のもので、公開して問題ない。
         秘密鍵（Secret）のほうは絶対にここへ書かないこと。 -->
 <script src="https://www.paypal.com/sdk/js?client-id=AQDu2ocvL4sCh-hR5MdQGbhjOK2oS-cQJOFJbivdcCOM_q_q_jprsxPoJ9Ro6V2pZy6bbL-xRDTZwdjF&currency=JPY&intent=capture"></script>
-<script src="astro.js?v=12"></script>
+<script src="astronomy.browser.min.js?v=2.1.19"></script>
+<script src="astro.js?v=13"></script>
 <script>
 /* ===========================================================
    解釈文テンプレート
@@ -1470,7 +1473,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     [flat(TH.sec3),                              1],
     ["あなたの人生を区切る、心のテーマの移り変わり", 1],
     [themeKey==="jiki"?"2027年の入口に動く星":"いま、あなたの上を動いている星",1],
-    ["この先いちばん近い、あなたの<strong>転機の日</strong>", 1],
+    ["このテーマで強く出る、あなたの<strong>転機の日</strong>", 1],
     [TH.band,                                    0],
     ["先に、今回の結論",                           0],
     ["あなたの性質が出やすい、3つの場面",            0],
@@ -1727,36 +1730,39 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     <p>そして広げるほうの星は、その空いたところにだけ入ってきます。<strong>先に空けないと、入る場所がない。</strong>この順番が、いまの流れでいちばん大事なところです。</p>`;
 
   /* --- 転機の日付（無料で出す） --- */
-  const turnCandidates=nextTurnings(natal,hasTime,todayN,24)
-    .filter(t=>themeKey!=="jiki"||t.date.getFullYear()===FORECAST_YEAR);
+  const turnCandidates=themeTurnings(
+    natal,hasTime,todayN,themeKey,12,themeKey==="jiki"?FORECAST_YEAR:null
+  );
   const turn=turnCandidates[0]||null;
   if(turn){
     const t=turn.date, days=Math.round((t-now)/86400000);
     document.getElementById("bigdateLead").textContent=
-      `トランジットの${turn.slow}が、あなたの${turn.point}に${turn.aspect}を取る日`;
+      `${turn.methods.join("・")}で照合した、${TH.field}の転機`;
     // 1つ目の日付は完全に公開する（2つ目だけ伏せる）
     document.getElementById("bigdate").textContent=
       `${t.getFullYear()}年${t.getMonth()+1}月${t.getDate()}日`;
     document.getElementById("bigdateNote").textContent=`今日から${days}日後`;
+    const returnProof=turn.returnContext
+      ? `<li>太陽回帰：${turn.returnContext.details.join("／")}（入力した出生地を基準）</li>`:"";
     document.getElementById("ch4").innerHTML=`
-      <p>この日を、流れを見直す目安として覚えておいてください。${you}のネイタルの<span class="mk">${turn.point}</span>に対して、${themeKey==="jiki"?"2027年の空を動く":"いま空を動いている"}<span class="mk">${turn.slow}</span>が強く角度をつくる日です。</p>
-      <p>${turn.slow==="木星"
-        ?"木星は、広げる方向に働く星です。この日の前後、それまで閉じていたところが開きます。"
-        :"土星は、形にする方向に働く星です。この日の前後、曖昧にしていたものに輪郭がつきます。"}</p>
-      <p>その日に出来事が約束されているわけではありません。ただ、この前後に最初に変わる場所がわかると、まだ小さい変化を見落とさずに済みます。</p>`;
+      <p>これは全テーマ共通の日付ではありません。<strong>${TH.field}に関係する天体・感受点・ハウスだけ</strong>を先に選び、トランジット、セカンダリー・プログレス、ソーラーアーク、太陽回帰を照合して、このテーマに最も強く出る時期を選びました。</p>
+      <p>中心にあるのは、<span class="mk">${turn.slow}</span>が<span class="mk">${turn.point}</span>へ${turn.aspect}を作る動きです。${turn.confidence}として判定しています。</p>
+      <div class="decision-box"><strong>この日を選んだ根拠</strong><ul style="margin:8px 0 0 1.2em;text-align:left">${turn.evidenceText.map(x=>`<li>${x}</li>`).join("")}${returnProof}</ul></div>
+      ${hasTime?"":`<p><small>出生時間が未入力のため、ASC・MC・ハウスは判定から外しています。出生時間を入れると、テーマ別の日付をさらに絞り込めます。</small></p>`}
+      <p>その日に出来事が約束されているわけではありません。日付そのものより、前後約3週間を「流れを観察し、選択を見直す期間」として使ってください。</p>`;
   }else if(!hasTime){
     document.getElementById("bigdateLead").textContent="";
     document.getElementById("bigdate").textContent="——";
     document.getElementById("bigdateNote").textContent=
       "出生時間を入れていただくと、日付まで出せます";
     document.getElementById("ch4").innerHTML=
-      `<p>転機の日付は、出生時間がわかると計算できます。フォームの「生まれた時間と場所も入れる」から入力してみてください。</p>`;
+      `<p>出生時間が未入力のため、ASC・MC・ハウスを除いて時期を確認しましたが、このテーマで十分に強い一致は見つかりませんでした。出生時間を入力すると、テーマに関係する感受点を増やして再判定できます。</p>`;
   }else if(themeKey==="jiki"){
     document.getElementById("bigdateLead").textContent="2027年の星の動きを確認した結果";
     document.getElementById("bigdate").textContent="大きな転機は見当たりません";
     document.getElementById("bigdateNote").textContent="小さく整えながら進む一年です";
     document.getElementById("ch4").innerHTML=
-      `<p>2027年の中に、木星や土星が出生図の主要な点へ強く角度をつくる日は見当たりませんでした。大きな出来事がないという意味ではなく、急な方向転換より、続けてきたことを育てる流れです。</p>`;
+      `<p>2027年のトランジット、セカンダリー・プログレス、ソーラーアーク、太陽回帰を照合しましたが、このテーマに関係する感受点へ複数の手法が重なる強い時期は見つかりませんでした。大きな出来事がないという意味ではなく、急な方向転換より、続けてきたことを育てる流れです。</p>`;
   }else{
     document.getElementById("bigdateLead").textContent="この先の星の動きを確認した結果";
     document.getElementById("bigdate").textContent="大きな転機は見当たりません";
@@ -1957,7 +1963,13 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
 
   const md=turn?`${turn.date.getMonth()+1}月${turn.date.getDate()}日`:"その日";
   const turnText=turn&&TURN[turn.slow]&&TURN[turn.slow][turn.point]
-    ? TURN[turn.slow][turn.point] : "";
+    ? TURN[turn.slow][turn.point]
+    : !turn?""
+    : turn.method==="progression"
+      ? `${turn.slow}が${turn.point}を刺激します。外から答えが来るというより、${you}の内側で「もう同じ選び方はできない」という成熟が形になる時期です。`
+    : turn.method==="solarArc"
+      ? `${turn.slow}が${turn.point}へ正確な角度を作ります。長く準備してきた方向が、現実の選択として表に出やすい時期です。`
+    : `${turn.slow}が${turn.point}を刺激します。すぐに結論を出すより、前後に届く話や違和感を、${TH.field}を見直す材料として受け取ってください。`;
   const actionSets={
     shigoto:[
       "予定表に、何も入れない時間をひとつ確保する",
@@ -1997,7 +2009,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     ? "今は、来たものを全部引き受けることはしないでください。広がる時期ほど、選ばないと余白が先になくなります。"
     : "今は、不安だけを理由に全部やめることはしないでください。減らすのは、続けても自分の形に戻らないものからです。";
   split("ch8",`
-    <p>${md}に${you}の${turn?turn.point:""}へ当たるのは<span class="mk">${turn?turn.slow:""}</span>です。この組み合わせが示しているのは、こういうことです。</p>
+    <p>${md}の中心となる動きは、<span class="mk">${turn?turn.methodLabel:""}</span>で読む<span class="mk">${turn?turn.slow:""}</span>と、${you}の<strong>${turn?turn.point:""}</strong>の組み合わせです。</p>
     <p class="pull">${turnText}</p>
     <p>ここからは、読みを生活に移します。${md}までに、次の三つを試してみてください。</p>
     <ol class="action-list">${actions.map(a=>`<li>${a}</li>`).join("")}</ol>
@@ -2060,10 +2072,10 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     const d2=`${t2.date.getFullYear()}年${t2.date.getMonth()+1}月${t2.date.getDate()}日`;
     document.getElementById("bigdate2").textContent=d2;
     document.getElementById("bigdate2note").textContent=
-      `トランジットの${t2.slow}が、あなたの${t2.point}に${t2.aspect}を取る日`;
+      `${t2.methods.join("・")}で見る、${TH.field}の次の節目`;
     split("ch85",`
       <p>${md}のあと、次に流れを見直したい目安が<strong>${d2}</strong>です。</p>
-      <p>今度は<span class="mk">${t2.slow}</span>が${you}の${t2.point}に角度をつくります。出来事を断定する日ではなく、<strong>最初の転機から何が変わったかを確かめる日</strong>として使ってください。</p>
+      <p>今度は<span class="mk">${t2.methodLabel}</span>で読む<span class="mk">${t2.slow}</span>が、${you}の${t2.point}に${t2.aspect}を作ります。出来事を断定する日ではなく、<strong>最初の転機から何が変わったかを確かめる日</strong>として使ってください。</p>
       <p>この日に見るのは三つです。${md}の前に作った余白が残っているか。新しく始まったものが無理なく続いているか。そして、${decisionLine}</p>
       <p>答えが「いいえ」なら失敗ではありません。予定や関係をもう一度小さく調整するタイミングです。星の日付は未来を決めるものではなく、立ち止まるきっかけとして使えます。</p>`,2);
   }else{
