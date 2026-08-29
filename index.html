@@ -50,9 +50,9 @@
     { "@type": "Question", "name": "無料で何が読めますか？",
       "acceptedAnswer": { "@type": "Answer", "text": "出生図といまの空を重ねたホロスコープ、10天体のサインとハウスの一覧、生まれ持った性質、いま動いている星、そして次に訪れる転機の日付までを無料で読めます。登録もメールアドレスも必要ありません。" } },
     { "@type": "Question", "name": "生まれた時間がわからなくても使えますか？",
-      "acceptedAnswer": { "@type": "Answer", "text": "生年月日だけでも読めます。ただしハウスと転機の日付は出生時間から計算するため、時間と場所を入力した場合のみ表示されます。出生時間は母子手帳に記載されていることが多いです。" } },
+      "acceptedAnswer": { "@type": "Answer", "text": "生年月日だけでも読めます。出生時間と場所を入力すると、ハウスやASC・MCを含めた、より詳しい読みが追加されます。出生時間は母子手帳に記載されていることが多いです。" } },
     { "@type": "Question", "name": "転機の日付はどうやって出していますか？",
-      "acceptedAnswer": { "@type": "Answer", "text": "いま空を動いている木星と土星が、生まれたときの天体やASC・MCにぴったり重なる日を、1日単位で計算して求めています。" } }
+      "acceptedAnswer": { "@type": "Answer", "text": "いま空を動いている木星と土星が、生まれたときの個人天体や、出生時間がわかる場合はASC・MCと主要な角度をつくるタイミングを、1日単位で計算しています。日付は出来事を保証するものではなく、流れを見直す目安としてお伝えしています。" } }
   ]
 }
 </script>
@@ -388,6 +388,41 @@ td.mark{background:var(--hl2);font-weight:600}
 .asp .mid .n{font-size:10px;color:var(--dim)}
 .asp .mid .o{font-size:10px;color:var(--gold)}
 
+/* 有料部は占星術用語より、生活に引き寄せた結論を先に見せる */
+.insight-grid{display:grid;gap:10px;margin:16px 0 22px}
+.insight{
+  border:1px solid var(--gold-d);border-radius:2px;padding:14px 15px;
+  background:rgba(255,255,255,.04);font-family:system-ui,sans-serif;
+}
+.insight b{
+  display:block;color:var(--gold);font-size:11px;letter-spacing:.12em;
+  margin-bottom:7px;font-weight:600;
+}
+.insight span{display:block;color:var(--text);font-size:13.5px;line-height:1.9}
+.decision-box{
+  border-left:3px solid var(--gold);background:rgba(195,169,108,.08);
+  margin:18px 0;padding:15px 17px;font-size:16px;line-height:2;
+}
+.action-list{counter-reset:steps;list-style:none;margin:15px 0 20px;padding:0}
+.action-list li{
+  counter-increment:steps;position:relative;margin:0 0 10px;padding:12px 13px 12px 48px;
+  border:1px solid var(--gold-d);background:rgba(255,255,255,.035);
+  font-family:system-ui,sans-serif;font-size:13.5px;line-height:1.8;
+}
+.action-list li::before{
+  content:counter(steps);position:absolute;left:14px;top:13px;width:22px;height:22px;
+  border-radius:50%;background:var(--gold);color:var(--deep);text-align:center;
+  line-height:22px;font-size:11px;font-weight:700;
+}
+.astro-evidence{border-top:1px dotted rgba(195,169,108,.45);margin-top:24px;padding-top:12px}
+.astro-evidence summary{
+  cursor:pointer;color:var(--dim);font-family:system-ui,sans-serif;
+  font-size:11.5px;letter-spacing:.06em;text-align:center;
+}
+.astro-evidence .evidence-note{
+  color:var(--dim);font-family:system-ui,sans-serif;font-size:11px;line-height:1.8;
+}
+
 /* 日付ドカン */
 .bigdate{
   border:1px solid var(--gold);padding:22px 14px;text-align:center;margin:20px 0;
@@ -452,6 +487,15 @@ body.unlocked .bigdate.second span{filter:none;user-select:auto}
   font-family:system-ui,sans-serif;font-size:12.5px;color:#6f756c;margin-bottom:18px;
 }
 .gate .price strong{font-size:28px;color:#33403a;font-weight:500;letter-spacing:0}
+.gate-benefits{
+  list-style:none;text-align:left;margin:0 auto 20px;padding:13px 14px;
+  max-width:420px;background:#f5f2e8;border:1px solid #ddd5bd;
+}
+.gate-benefits li{
+  position:relative;padding:4px 0 4px 20px;color:#4f5c53;
+  font-family:system-ui,sans-serif;font-size:12px;line-height:1.7;
+}
+.gate-benefits li::before{content:"✓";position:absolute;left:1px;color:#8e7c4e;font-weight:700}
 .gate .lead{font-size:16px;line-height:2.0;margin:14px 0 0}
 .gate .sub{
   font-family:system-ui,sans-serif;font-size:12.5px;color:#6f756c;
@@ -687,8 +731,8 @@ details.more,
         <li><i class="p">続き</i>その日、あなたの生活のどこから動きはじめるか</li>
         <li><i class="p">続き</i>人には見せていない、ひとりのときのあなた</li>
         <li><i class="p">続き</i>あなたが満たされる条件と、消耗してしまうパターン</li>
-        <li><i class="p">続き</i>いまあなたが受けている、目に見えない影響のすべて</li>
-        <li><i class="p">続き</i>転機を活かすために、<strong>その日までにしておくこと</strong></li>
+        <li><i class="p">続き</i>いまの追い風と注意点を、生活の言葉で</li>
+        <li><i class="p">続き</i>転機を活かすために、<strong>今日からやる3つのこと</strong></li>
         <li><i class="p">続き</i>おますから、あなたへの手紙</li>
       </ul>
       <div class="gets-f">
@@ -848,6 +892,12 @@ details.more,
     <div class="locked">
       <div class="gate">
         <div class="price">続きをすべて読む　<strong>¥500</strong>　(税込)</div>
+        <ul class="gate-benefits">
+          <li>太陽と月を重ねた「今回の結論」</li>
+          <li>いまの追い風・注意点・選び方</li>
+          <li>転機までに今日からできる3つの準備</li>
+          <li>次に見直すタイミングと、迷ったときに戻る言葉</li>
+        </ul>
         <!-- PayPalのノーコード決済ボタン。ここで完結し、ページは移動しない -->
         <div id="paypal-btn"></div>
         <div class="paynote">お支払い後、このページのまま続きが表示されます</div>
@@ -862,7 +912,7 @@ details.more,
       <!-- 各章、冒頭は読めて、そこから先がぼける -->
       <div class="ch-teaser">
         <div class="orn"><i>◆</i></div>
-        <div class="sec-title">人には見せていない、<br>ひとりのときのあなた</div>
+        <div class="sec-title">先に、今回の結論</div>
         <div class="orn tight"><i>◆</i></div>
         <div class="pick" id="pickMoon"></div>
         <div class="body lead" id="ch6lead"></div>
@@ -875,7 +925,7 @@ details.more,
 
       <div class="ch-teaser">
         <div class="orn"><i>◆</i></div>
-        <div class="sec-title">いまあなたが受けている、<br>目に見えない影響</div>
+        <div class="sec-title">いまの流れを、<br>生活の言葉で読む</div>
         <div class="orn tight"><i>◆</i></div>
         <div id="aspects"></div>
         <div class="body lead" id="ch7lead"></div>
@@ -887,7 +937,7 @@ details.more,
       </div>
 
       <div class="ch-teaser">
-        <div class="band">その日までに、しておくといいこと</div>
+        <div class="band">転機までに、今日からやる3つのこと</div>
         <div class="body lead" id="ch8lead"></div>
         <div class="hidepart">
           <div class="body veil" id="ch8"></div>
@@ -899,7 +949,7 @@ details.more,
       <!-- 2つ目の転機。日付そのものを伏せる -->
       <div class="ch-teaser">
         <div class="orn"><i>◆</i></div>
-        <div class="sec-title">その転機のあと、<br>もう一度大きく動く日</div>
+        <div class="sec-title">次に、流れを<br>見直すタイミング</div>
         <div class="orn tight"><i>◆</i></div>
         <div class="body lead" id="ch85lead"></div>
         <div class="bigdate second">
@@ -916,7 +966,7 @@ details.more,
 
       <div class="ch-teaser">
         <div class="orn"><i>◆</i></div>
-        <div class="sec-title">おますから、あなたへ</div>
+        <div class="sec-title">迷ったときに、<br>戻ってきてほしい言葉</div>
         <div class="orn tight"><i>◆</i></div>
         <div class="body lead" id="ch9lead"></div>
         <div class="hidepart">
@@ -1222,11 +1272,11 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     ["いま、あなたの上を動いている星",              1],
     ["この先いちばん近い、あなたの<strong>転機の日</strong>", 1],
     [TH.band,                                    0],
-    ["人には見せていない、ひとりのときのあなた",     0],
-    ["いまあなたが受けている、目に見えない影響",     0],
-    ["その日までに、しておくといいこと",            0],
-    ["その転機のあと、もう一度大きく動く<strong>日</strong>", 0],
-    ["おますから、あなたへ",                       0]
+    ["先に、今回の結論",                           0],
+    ["いまの流れを、生活の言葉で読む",              0],
+    ["転機までに、今日からやる3つのこと",            0],
+    ["次に、流れを見直すタイミング",                 0],
+    ["迷ったときに戻ってきてほしい言葉",             0]
   ];
   document.getElementById("tocList").innerHTML=
     toc.map(([t,free])=>`<li class="${free?"":"lk"}">${t}</li>`).join("");
@@ -1455,11 +1505,11 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       `${t.getFullYear()}年${t.getMonth()+1}月${t.getDate()}日`;
     document.getElementById("bigdateNote").textContent=`今日から${days}日後`;
     document.getElementById("ch4").innerHTML=`
-      <p>この日を覚えておいてください。${you}のネイタルの<span class="mk">${turn.point}</span>に対して、いま空を動いている<span class="mk">${turn.slow}</span>がぴったり重なる日です。</p>
+      <p>この日を、流れを見直す目安として覚えておいてください。${you}のネイタルの<span class="mk">${turn.point}</span>に対して、いま空を動いている<span class="mk">${turn.slow}</span>が強く角度をつくる日です。</p>
       <p>${turn.slow==="木星"
         ?"木星は、広げる方向に働く星です。この日の前後、それまで閉じていたところが開きます。"
         :"土星は、形にする方向に働く星です。この日の前後、曖昧にしていたものに輪郭がつきます。"}</p>
-      <p>ただし、その日に何かが降ってくるわけではありません。星は<strong>きっかけを置いていくだけ</strong>で、動くのは${you}です。だから、その日までに何をしておくかで結果が変わります。</p>
+      <p>ただし、その日に出来事が約束されているわけではありません。星は<strong>流れを見直す目安</strong>で、選ぶのは${you}です。その日までに何を整えておくかで、機会の受け取り方が変わります。</p>
       <p>この転機が<strong>${TH.field}</strong>にどう出るかは、${you}の${TH.houses.length?`${TH.houses[0]}ハウス`:"出生図"}との関係で決まります。そこを次に見ていきます。</p>`;
   }else{
     document.getElementById("bigdateLead").textContent="";
@@ -1488,18 +1538,21 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   };
 
   const mo=MOON[moon.sign];
+  const asState=x=>x.endsWith("とき")?x.slice(0,-2)+"状態":x;
+  const moonNeed=asState(mo.a), moonDrain=asState(mo.b);
+  const decisionLine=`「${moonNeed}」をつくれるか。「${moonDrain}」を増やさないか。`;
   split("ch6",`
-    <p>${you}の月は<span class="mk">${moon.sign}</span>にあります。太陽が人から見えるあなただとすれば、月はひとりでいるときのあなたです。${TH.field}の悩みは、<strong>ほとんどがこちら側から出てきます。</strong></p>
-    <p>${moon.sign}の月を持つ${you}は、ひとりになると<span class="uline">${mo.k}</span>人です。人前ではそう見えないかもしれません。太陽（${sun.sign}）が外向きの顔なので、まわりが知っているのはそちらのほうです。</p>
-    <p>この月が満たされるのは、<strong>${mo.a}</strong>。反対に消耗するのは、<strong>${mo.b}</strong>です。</p>
-    <p>ここが大事なところで、${you}が${TH.field}について「しんどい」と感じるとき、原因は${TH.field}そのものではなく<span class="uline">この月の条件が満たされていないこと</span>のほうにあります。だから相手や場所を変えても、同じことが起きる、ということが起こります。</p>
-    <p>逆に言えば、${mo.a}という条件さえ確保できていれば、${you}は多少きつい状況でも保ちます。転機を迎えるときに見るべきなのは、新しい${TH.field}の中身より先に、ここです。</p>`,1);
+    <p class="pull">いまの${you}に必要なのは、${TH.field}を急いで変えることより、<strong>${mo.a}</strong>という心の条件を先に整えることです。</p>
+    <p>${you}の太陽は${sun.sign}。外では<span class="uline">${s.k}</span>力を使っています。一方、月は${moon.sign}。ひとりになると<span class="uline">${mo.k}</span>人です。この二つが、今回の読みの中心です。</p>
+    <p>外ではうまくやれているのに、帰ると急に疲れが出る。人からは問題なく見えているのに、自分の中では納得できない。そんな食い違いがあるなら、能力不足ではなく、<strong>外で使う力と内側が求める条件が別だから</strong>かもしれません。</p>
+    <p>月が満たされるのは、<strong>${mo.a}</strong>。反対に消耗しやすいのは、<strong>${mo.b}</strong>です。${TH.field}で迷ったときは、正解探しの前にこの条件を確かめてください。</p>
+    <div class="decision-box">今回の判断軸は、これです。<br><strong>${decisionLine}</strong></div>`,1);
 
   const allAsp=findAspects(natal.bodies,transit.bodies,false).sort((a,b)=>a.orb-b.orb);
   // テーマに関係する天体が絡むものを優先して拾う
   const rel=allAsp.filter(a=>TH.focus.includes(a.a.name)||TH.focus.includes(a.b.name));
   const asp=(rel.length>=3?rel:allAsp).slice(0,5);
-  document.getElementById("aspects").innerHTML=asp.map(a=>
+  const evidenceHtml=asp.map(a=>
     `<div class="asp">
       <div class="p"><sup>N</sup>${a.a.glyph} ${a.a.name}</div>
       <div class="mid"><span class="g">${a.glyph}</span>
@@ -1507,35 +1560,63 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       <div class="p"><sup>T</sup>${a.b.glyph} ${a.b.name}</div>
     </div>`).join("")||`<p style="text-align:center;color:var(--dim)">いま強く効いているアスペクトはありません。</p>`;
 
-  // アスペクトの種類から、いま効いている刺激を説明する
-  const readAsp=a=>{
-    const t=TR[a.b.name];                       // b＝トランジット側の天体
-    const body=a.type==="hard"?t.hard:t.soft;
-    const head=a.type==="hard"
-      ? `${a.b.name}が${a.a.name}に${a.name}で当たっています。負荷のかかる形です。`
-      : a.type==="neutral"
-        ? `${a.b.name}が${a.a.name}にぴったり重なっています。いちばん強く出る形です。`
-        : `${a.b.name}が${a.a.name}に${a.name}で当たっています。流れやすい形です。`;
-    return `<p><strong>${head}</strong>${body}。</p>`;
+  const BODY_AREA={太陽:"自分らしさと意思",月:"気持ちと安心",水星:"考え方と伝え方",金星:"人間関係とお金",火星:"行動力",木星:"広げる力",土星:"責任と継続",天王星:"変化への向き合い方",海王星:"直感と境界線",冥王星:"手放しと再出発",ASC:"人からの見え方",MC:"社会での役割"};
+  const pool=rel.length?rel:allAsp;
+  const helpful=pool.find(a=>a.type==="soft"||a.type==="neutral")||pool[0];
+  const careful=pool.find(a=>a.type==="hard")||null;
+  const plain=a=>a?`${BODY_AREA[a.a.name]||a.a.name}の面で、${a.type==="hard"?TR[a.b.name].hard:TR[a.b.name].soft}。`:"";
+  const flowTips={
+    shigoto:{go:"連絡、提案、着手のような小さな前進に使うと、流れをつかみやすくなります。",care:"期限や担当が曖昧な依頼は、その場で引き受けず確認を一つ増やしてください。"},
+    seishitsu:{go:"考えて終わらせず、気になっていたことを一つ試すところまで進めてください。",care:"周囲の期待より、自分が続けられる量かどうかを先に確かめてください。"},
+    renai:{go:"察してもらうのを待つより、希望を短い言葉で伝えるほうが流れに合います。",care:"相手の反応を急いで結論にせず、自分の安心が保てる距離を残してください。"},
+    jiki:{go:"増やしたいことを一つに絞り、予定に小さく入れると流れを使えます。",care:"変化を全部受け取ろうとせず、今は選ばないものも決めてください。"}
   };
+  const flowTip=flowTips[themeKey]||flowTips.seishitsu;
+  document.getElementById("aspects").innerHTML=`
+    <div class="insight-grid">
+      <div class="insight"><b>いまの追い風</b><span>${helpful?plain(helpful):"急いで流れに乗るより、足元を整える時間です。"} ${flowTip.go}</span></div>
+      <div class="insight"><b>気をつけたいこと</b><span>${careful?plain(careful):`大きな負荷は目立ちません。ただし、${mo.b}という消耗の形には注意してください。`} ${flowTip.care}</span></div>
+      <div class="insight"><b>今の選び方</b><span>${decisionLine}</span></div>
+    </div>`;
+
   split("ch7",`
-    <p>いま${you}のネイタルに対して、トランジットの天体が全部で<strong>${allAsp.length}本</strong>のアスペクトを取っています。そのうち<strong>${TH.field}</strong>に関わるものは<strong>${rel.length}本</strong>。上に出したのは、その中でもオーブの近いものです。オーブとは「ぴったりの角度からどれだけずれているか」で、<span class="uline">数字が小さいほど強く効いています</span>。</p>
-    ${asp.slice(0,3).map(readAsp).join("")}
-    <p>これらは、${you}が意識していないところで受けている刺激です。「なんとなく調子がいい」「理由はわからないが疲れる」といった感覚の正体は、たいていこのあたりにあります。</p>
-    <p>${asp[0]?`いま最も強いのは、オーブ${asp[0].orb.toFixed(2)}°の${asp[0].a.name}と${asp[0].b.name}です。${asp[0].orb<1?"1度を切っているので、体感としてもはっきり出ているはずです。":"まだ少し距離があるので、これから濃くなっていきます。"}`:""}</p>`,2);
+    <p>いまの流れをひと言でいうと、<strong>${helpful?plain(helpful):"外の動きより、内側を整える時間です。"}</strong></p>
+    <p>${careful?`同時に、${plain(careful)}追い風だけを見て予定を増やすと、月が苦手な「${mo.b}」へ戻りやすくなります。`:`強い向かい風は目立ちません。だからこそ、できることを増やすより「${mo.a}」を保てる量に絞るほうが、今の流れを活かせます。`}</p>
+    <p>${TH.field}で今すぐ答えを出す必要はありません。話が進みやすいことと、その選択が${you}に合うことは別です。<span class="uline">進みやすさは追い風で確認し、続けられるかは月の条件で決める</span>。この二段階で考えてください。</p>
+    <details class="astro-evidence"><summary>読みの根拠となった星の配置を見る</summary>${evidenceHtml}<p class="evidence-note">アスペクト名やオーブは結論そのものではなく、上の読みを組み立てるために使った参考情報です。</p></details>`,1);
 
   const md=turn?`${turn.date.getMonth()+1}月${turn.date.getDate()}日`:"その日";
   const turnText=turn&&TURN[turn.slow]&&TURN[turn.slow][turn.point]
     ? TURN[turn.slow][turn.point] : "";
+  const actionSets={
+    shigoto:[
+      "予定表に、何も入れない時間をひとつ確保する",
+      "抱えている仕事を「続ける・終える・人に渡す」の3つに分ける",
+      `新しい依頼は、「${moonNeed}」をつくれるか、「${moonDrain}」を増やさないかの二つで判定する`],
+    seishitsu:[
+      "惰性で続けている役割を、ひとつだけ書き出す",
+      `一日の中に「${mo.a}」を感じられる時間を先に入れる`,
+      "やるべきことではなく、今後も残したいことを一つ選ぶ"],
+    renai:[
+      "相手に合わせる前に、自分が望む距離を一文で書く",
+      "言えていない希望を、責めない言葉でひとつ伝える",
+      `関係を続ける条件に「${mo.a}」を加える`],
+    jiki:[
+      "増やしたいことと減らしたいことを、一つずつ決める",
+      "転機の前後一週間は、予定を詰めきらない",
+      `迷う予定は、「${moonNeed}」をつくれるか、「${moonDrain}」を増やさないかの二つで判定する`]
+  };
+  const actions=actionSets[themeKey]||actionSets.seishitsu;
+  const avoid=turn&&turn.slow==="木星"
+    ? "今は、来たものを全部引き受けることはしないでください。広がる時期ほど、選ばないと余白が先になくなります。"
+    : "今は、不安だけを理由に全部やめることはしないでください。減らすのは、続けても自分の形に戻らないものからです。";
   split("ch8",`
     <p>${md}に${you}の${turn?turn.point:""}へ当たるのは<span class="mk">${turn?turn.slow:""}</span>です。この組み合わせが示しているのは、こういうことです。</p>
     <p class="pull">${turnText}</p>
-    <p>そのうえで、その日までにしておくといいことが<strong>ひとつ</strong>あります。</p>
-    <p>${turn&&turn.slow==="木星"
-      ? `<strong>空きを作っておくことです。</strong>木星は広げる星ですが、広がるのは空いている場所だけです。予定が埋まりきったところに機会が来ても、${you}はそれを断ることになります。実際、${md}前後に来るものを逃す人のほとんどは、内容が合わなかったのではなく<span class="uline">単に手が空いていなかった</span>だけです。`
-      : `<strong>捨てるものを先に決めておくことです。</strong>土星は形にする星ですが、そのために不要なものを削ります。自分で選ばなければ、向こうが勝手に決めます。どちらにしても減るなら、${you}が選んだほうがいい。`}</p>
-    <p>そしてここで、さっきの月の話が効いてきます。${you}の月は${moon.sign}。<span class="uline">${mo.b}</span>と消耗する人です。判断に迷ったら、「これは月の条件を守るほうか、壊すほうか」で決めてください。仕事として正しいかどうかより、こちらのほうが外しません。</p>
-    <p>${sun.sign}の${you}は、${SUN[sun.sign].b}という癖があります。${md}の前後は、そこが一度出ます。出たときに「ああ、これか」と気づけるだけで、対処の速さがまるで変わります。</p>`,2);
+    <p>ここからは、読みを生活に移します。${md}までに、次の三つを試してみてください。</p>
+    <ol class="action-list">${actions.map(a=>`<li>${a}</li>`).join("")}</ol>
+    <p><strong>今はやらないこと：</strong>${avoid}</p>
+    <p>${sun.sign}の${you}には「${SUN[sun.sign].b}」という癖があります。焦ったときほど、この癖と月の消耗条件が重なっていないかを見てください。気づければ、同じ選び方を繰り返さずに済みます。</p>`,2);
 
   /* ===== 2つ目の転機。日付そのものを伏せる ===== */
   const turns=nextTurnings(natal,hasTime,todayN,2);
@@ -1546,10 +1627,10 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     document.getElementById("bigdate2note").textContent=
       `トランジットの${t2.slow}が、あなたの${t2.point}に${t2.aspect}を取る日`;
     split("ch85",`
-      <p>${md}の転機は、${you}にとって入口です。<strong>そのあと、もう一度はっきり動く日が来ます。</strong>そちらのほうが、実は振れ幅は大きい。</p>
-      <p>今度は<span class="mk">${t2.slow}</span>が${you}の${t2.point}に当たります。1回目とは性質が違う星なので、出方も変わります。</p>
-      <p>この日は、1回目で${you}が何を選んだかによって意味が変わります。${md}に空きを作れていれば、この日は受け取る日になります。作れていなければ、同じことをもう一度やり直す日になります。</p>
-      <p>順番として、${md}が問いで、${d2}が答えです。</p>`,2);
+      <p>${md}のあと、次に流れを見直したい目安が<strong>${d2}</strong>です。</p>
+      <p>今度は<span class="mk">${t2.slow}</span>が${you}の${t2.point}に角度をつくります。出来事を断定する日ではなく、<strong>最初の転機から何が変わったかを確かめる日</strong>として使ってください。</p>
+      <p>この日に見るのは三つです。${md}の前に作った余白が残っているか。新しく始まったものが無理なく続いているか。そして、${decisionLine}</p>
+      <p>答えが「いいえ」なら失敗ではありません。予定や関係をもう一度小さく調整するタイミングです。星の日付は未来を決めるものではなく、立ち止まるきっかけとして使えます。</p>`,2);
   }else{
     document.getElementById("bigdate2").textContent="——";
     document.getElementById("bigdate2note").textContent="";
@@ -1560,10 +1641,10 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
 
   split("ch9",`
     <p>ここまで読んでくださって、ありがとうございました。</p>
-    <p>星を読んでいると、「この時期に何が起きるか」より「その人がもともとどういう形をしているか」のほうが、ずっと大事だと感じます。同じ星が同じように来ても、出方は人によってまったく違うからです。</p>
-    <p>${you}は、外では<span class="uline">${SUN[sun.sign].k}</span>人として見られていて、ひとりになると<span class="uline">${mo.k}</span>人です。この二つはよく食い違います。食い違っていること自体は、直すところではありません。ただ、外向きのほうばかりを使い続けると、${mo.b}という形で先に月のほうが音を上げます。</p>
-    <p>${md}のことをお伝えしましたが、日付そのものにはあまり意味がありません。大事なのは、その前後で${you}が<strong>何を手放して、何を空けておくか</strong>のほうです。星は席を用意するだけで、座るかどうかを決めるのは${you}です。</p>
-    <p>もしその日が過ぎて、何も起きなかったように感じても、気にしないでください。表に出るまでに時間がかかるだけで、動きはもう始まっています。半年ほど経ってから振り返ると、あのあたりだったな、と分かる形をとることのほうが多いです。</p>
+    <p>${you}は、外では<span class="uline">${SUN[sun.sign].k}</span>力を使い、ひとりになると<span class="uline">${mo.k}</span>人です。どちらかを直す必要はありません。大事なのは、外の自分を働かせたぶん、内側の自分が戻れる条件も用意することです。</p>
+    <div class="decision-box">迷ったときは、この一文に戻ってください。<br><strong>${decisionLine}</strong></div>
+    <p>${md}は、何かが必ず起きる日ではありません。今の選び方をいったん見直すための目印です。三つの準備が全部できなくても、一つ動かせたなら十分です。</p>
+    <p>星は${you}の代わりに決めません。ただ、自分でも言葉にできなかった違和感や望みを、見つける手がかりにはなります。今回の読みが、${TH.field}を選び直すときの小さな支えになればうれしいです。</p>
     <p>${you}のこの先が、${you}の形のままで進んでいきますように。</p>
     <p style="text-align:right;color:var(--gold)">おます</p>`,2);
 }
