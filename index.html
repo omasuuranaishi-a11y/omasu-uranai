@@ -488,8 +488,32 @@ body.unlocked .gate2{display:none}
 /* ---------- paywall ---------- */
 .cut{position:relative}
 .cut .fade{
-  position:absolute;left:0;right:0;bottom:0;height:130px;
-  background:linear-gradient(180deg,rgba(62,75,67,0),var(--deep) 92%);
+  position:absolute;left:0;right:0;bottom:0;height:96px;
+  background:linear-gradient(180deg,rgba(62,75,67,0),var(--deep) 88%);
+}
+.cliff-card{
+  border:1px solid rgba(195,169,108,.72);
+  background:rgba(195,169,108,.08);
+  margin:20px 0 8px;padding:18px 17px;text-align:left;
+}
+.cliff-card .cliff-label{
+  display:block;color:var(--dim);font-family:system-ui,sans-serif;
+  font-size:11px;letter-spacing:.12em;margin-bottom:10px;
+}
+.cliff-card .cliff-answer{
+  display:block;color:var(--paper);font-size:18px;line-height:1.9;font-weight:400;
+}
+.cliff-mask{
+  display:inline-block;position:relative;filter:blur(5px);opacity:.62;
+  user-select:none;pointer-events:none;
+}
+.cliff-mask::after{
+  content:"";position:absolute;inset:-2px -5px;
+  background:linear-gradient(90deg,rgba(62,75,67,.08),rgba(62,75,67,.52));
+}
+.cliff-note{
+  color:var(--dim);font-family:system-ui,sans-serif;
+  font-size:12px!important;line-height:1.9!important;margin-top:13px!important;
 }
 .locked{position:relative;margin-top:6px}
 /* 章ごとの切れ目。冒頭（lead）は読めて、その先だけぼかす */
@@ -521,6 +545,13 @@ body.unlocked .bigdate.second span{filter:none;user-select:auto}
 }
 .gate .price{
   font-family:system-ui,sans-serif;font-size:12.5px;color:#6f756c;margin-bottom:18px;
+}
+.gate .gate-eyebrow{
+  color:#8e7c4e;font-family:system-ui,sans-serif;font-size:10.5px;
+  letter-spacing:.16em;margin-bottom:8px;
+}
+.gate .gate-hook{
+  color:#33403a;font-size:17px;line-height:1.75;margin:0 auto 16px;max-width:430px;
 }
 .gate .price strong{font-size:28px;color:#33403a;font-weight:500;letter-spacing:0}
 .gate-benefits{
@@ -568,6 +599,8 @@ footer a{color:var(--gold);text-decoration:none;border-bottom:1px solid var(--go
 body.unlocked .hidepart{max-height:none;overflow:visible;margin-bottom:0}
 body.unlocked .hidepart .veil{filter:none;opacity:1;user-select:auto;pointer-events:auto}
 body.unlocked .fade2,body.unlocked .more-btn{display:none}
+body.unlocked .cliff-mask{filter:none;opacity:1;user-select:auto;pointer-events:auto}
+body.unlocked .cliff-mask::after{display:none}
 body.unlocked .gate,body.unlocked .cut .fade{display:none}
 
 /* 目次 */
@@ -927,8 +960,12 @@ details.more,
     <!-- ---------- 有料ゾーン ---------- -->
     <div class="locked">
       <div class="gate">
+        <div class="gate-eyebrow">この先で、核心までお伝えします</div>
+        <div class="gate-hook">転機の日に最初に動く場所と、<br>その変化を味方につける準備</div>
         <div class="price">続きをすべて読む　<strong>¥500</strong>　(税込)</div>
         <ul class="gate-benefits">
+          <li>転機の日に、最初に動く場所と起こりやすい変化</li>
+          <li>その変化が、選んだテーマへどうつながるか</li>
           <li>太陽と月を重ねた「今回の結論」</li>
           <li>性質が現れやすい3つの場面</li>
           <li>いまの追い風・注意点・選び方</li>
@@ -1606,8 +1643,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       <p>${turn.slow==="木星"
         ?"木星は、広げる方向に働く星です。この日の前後、それまで閉じていたところが開きます。"
         :"土星は、形にする方向に働く星です。この日の前後、曖昧にしていたものに輪郭がつきます。"}</p>
-      <p>ただし、その日に出来事が約束されているわけではありません。星は<strong>流れを見直す目安</strong>で、選ぶのは${you}です。その日までに何を整えておくかで、機会の受け取り方が変わります。</p>
-      <p>この転機が<strong>${TH.field}</strong>にどう出るかは、${you}の${TH.houses.length?`${TH.houses[0]}ハウス`:"出生図"}との関係で決まります。そこを次に見ていきます。</p>`;
+      <p>その日に出来事が約束されているわけではありません。ただ、この前後に最初に変わる場所がわかると、まだ小さい変化を見落とさずに済みます。</p>`;
   }else{
     document.getElementById("bigdateLead").textContent="";
     document.getElementById("bigdate").textContent="——";
@@ -1618,13 +1654,22 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   }
 
   /* --- 切れ目 ---
-     前半は最後まで書き切って、読み終えた人が満足して帰れるようにする。
-     切るのは「${you}固有の話」が始まった直後。 */
+     日付と読みの根拠までは無料で渡す。
+     「どこから動くか」は本人固有の答えが見えかけたところで止める。 */
+  const cliffCore={
+    shigoto:`「${MOON[moon.sign].a}」という働く条件`,
+    seishitsu:`「${MOON[moon.sign].a}」という心の条件`,
+    renai:`「${VEN[ven.sign].k}」という距離の取り方`,
+    jiki:`「${MOON[moon.sign].a}」という日々の条件`
+  }[themeKey]||`「${MOON[moon.sign].a}」という心の条件`;
   document.getElementById("ch5").innerHTML=`
-    <p>では、その日、${you}に何が起きるか。</p>
-    <p>まず知っておいてほしいのは、<strong>転機は仕事の場面からは始まらない</strong>ということです。最初に出るのは、もっと手前の些細なところ。今まで平気だったことが急に面倒になる、続けていた習慣がなんとなく途切れる、行き慣れた場所に足が向かなくなる。そういう小さな違和感が先に来ます。</p>
-    <p>ですから、その日を過ぎても何も起きなかったと感じたなら、たぶん見る場所が違っています。仕事ではなく、<span class="uline">生活のほうを見てください</span>。ここまでが、どなたにも共通する話です。</p>
-    <p>そのうえで、${sun.sign}の太陽と、${you}の月の組み合わせで見ると、それがいちばん最初に出てくるのは</p>`;
+    <p>では、その日、${you}のどこから動き始めるのか。</p>
+    <p>大きな出来事より先に、今まで普通に続けていたことへの小さな違和感が出ます。${you}の場合、その違和感が最初に表れるのは——</p>
+    <div class="cliff-card">
+      <span class="cliff-label">最初に動く場所</span>
+      <strong class="cliff-answer">${moon.sign}の月が守ってきた、<span class="cliff-mask">${cliffCore}です。</span></strong>
+      <p class="cliff-note">ここが動いたあと、${TH.field}の選択がどう変わるのか。その順番まで続けて読み解きます。</p>
+    </div>`;
 
   /* --- 有料ゾーン（本番はサーバー側で出し分ける） --- */
   /* 章を「読める冒頭」と「ぼかす続き」に割る */
