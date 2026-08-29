@@ -595,6 +595,29 @@ body.unlocked .bigdate.second span{filter:none;user-select:auto}
   margin-top:12px;line-height:1.9;
 }
 .gate .terms a{color:#6f756c}
+.after-reading{
+  display:none;margin:54px 0 30px;padding:28px 22px;text-align:center;
+  border:1px solid var(--gold-d);background:rgba(195,169,108,.07);
+}
+body.unlocked .after-reading{display:block}
+.after-reading .end-title{
+  color:var(--gold);font-size:20px;line-height:1.7;margin-bottom:10px;
+}
+.after-reading .end-copy{
+  color:var(--paper);font-size:14px;line-height:2;margin:0 0 20px;
+}
+.after-reading .end-note{
+  color:var(--dim);font-family:system-ui,sans-serif;
+  font-size:10.5px;line-height:1.8;margin:14px 0 0;
+}
+.end-actions{display:grid;gap:10px;max-width:420px;margin:0 auto}
+.end-btn{
+  display:block;width:100%;padding:15px 16px;border-radius:2px;cursor:pointer;
+  font-family:system-ui,sans-serif;font-size:13.5px;letter-spacing:.08em;
+}
+.end-btn.primary{border:1px solid var(--gold);background:var(--paper);color:#33403a}
+.end-btn.secondary{border:1px solid var(--gold-d);background:transparent;color:var(--paper)}
+.end-btn:hover{filter:brightness(1.05)}
 footer a{color:var(--gold);text-decoration:none;border-bottom:1px solid var(--gold-d)}
 body.unlocked .hidepart{max-height:none;overflow:visible;margin-bottom:0}
 body.unlocked .hidepart .veil{filter:none;opacity:1;user-select:auto;pointer-events:auto}
@@ -962,7 +985,7 @@ details.more,
       <div class="gate">
         <div class="gate-eyebrow">この先で、核心までお伝えします</div>
         <div class="gate-hook">転機の日に最初に動く場所と、<br>その変化を味方につける準備</div>
-        <div class="price">続きをすべて読む　<strong>¥500</strong>　(税込)</div>
+        <div class="price">このテーマの続きをすべて読む　<strong>¥500</strong>　(税込)</div>
         <ul class="gate-benefits">
           <li>転機の日に、最初に動く場所と起こりやすい変化</li>
           <li>その変化が、選んだテーマへどうつながるか</li>
@@ -1012,7 +1035,7 @@ details.more,
 
       <div class="ch-teaser">
         <div class="orn"><i>◆</i></div>
-        <div class="sec-title">いまの流れを、<br>生活の言葉で読む</div>
+        <div class="sec-title">いまの追い風と、<br>気をつけたいこと</div>
         <div class="orn tight"><i>◆</i></div>
         <div id="aspects"></div>
         <div class="body lead" id="ch7lead"></div>
@@ -1097,6 +1120,16 @@ details.more,
           <div class="fade2"></div>
           <button class="more-btn">続きを読む</button>
         </div>
+      </div>
+
+      <div class="after-reading" id="afterReading">
+        <div class="end-title">別のテーマも、見てみますか？</div>
+        <p class="end-copy">生年月日などの入力はそのまま。<br>テーマだけを選び直して、もう一度占えます。</p>
+        <div class="end-actions">
+          <button class="end-btn primary" id="anotherReading">別のテーマも無料で占う</button>
+          <button class="end-btn secondary" id="backToTop">無料占いTOPへ戻る</button>
+        </div>
+        <p class="end-note">別テーマも無料部分までお読みいただけます。<br>続きを読む場合は、テーマごとに ¥500（税込）です。</p>
       </div>
 
       <div class="gate2" id="gate2">
@@ -1404,7 +1437,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     [TH.band,                                    0],
     ["先に、今回の結論",                           0],
     ["あなたの性質が出やすい、3つの場面",            0],
-    ["いまの流れを、生活の言葉で読む",              0],
+    ["いまの追い風と、気をつけたいこと",             0],
     [deepDiveLabel,                              0],
     ["転機までに、今日からやる3つのこと",            0],
     ["転機までの、時間の使い方",                    0],
@@ -1973,6 +2006,7 @@ function run(){
         document.getElementById("pref").value,
         document.getElementById("theme").value];
   render.apply(null,last);
+  syncAccess(last[8]);
   return true;
 }
 document.getElementById("go").onclick=()=>{
@@ -1993,16 +2027,33 @@ document.getElementById("toggle").onclick=e=>{
    本番では client-id を自分のものに差し替えること。
    =========================================================== */
 const PRICE="500";
+const PAID_PREFIX="omasu_paid_";
+const currentTheme=()=>last&&last[8]
+  ? last[8]
+  : (document.getElementById("theme").value||"shigoto");
+
+function hasThemeAccess(themeKey){
+  try{
+    // 旧版で購入済みの方は、そのまますべて読める状態を維持する。
+    return localStorage.getItem(PAID_PREFIX+themeKey)==="1"
+      || localStorage.getItem("omasu_paid")==="1";
+  }catch(e){ return false; }
+}
+
+function syncAccess(themeKey){
+  document.body.classList.toggle("unlocked",hasThemeAccess(themeKey));
+  const t=document.getElementById("toggle");
+  if(t)t.textContent=document.body.classList.contains("unlocked")
+    ? "無料版の見え方に戻す" : "有料版の見え方を確認";
+}
 
 function unlock(){
   document.body.classList.add("unlocked");
   const t=document.getElementById("toggle");
   if(t)t.textContent="無料版の見え方に戻す";
-  try{ localStorage.setItem("omasu_paid","1"); }catch(e){}
+  try{ localStorage.setItem(PAID_PREFIX+currentTheme(),"1"); }catch(e){}
   document.querySelector(".locked").scrollIntoView({block:"start"});
 }
-// 一度買った人は、次に来たときそのまま読める
-try{ if(localStorage.getItem("omasu_paid")==="1") document.body.classList.add("unlocked"); }catch(e){}
 
 function renderPayPal(){
   if(!window.paypal||!paypal.Buttons){
@@ -2014,7 +2065,7 @@ function renderPayPal(){
     style:{layout:"vertical",color:"gold",shape:"rect",label:"pay",height:46},
     createOrder:(data,actions)=>actions.order.create({
       purchase_units:[{
-        description:"星よみ専門家 おます｜自動鑑定（続き）",
+        description:`星よみ専門家 おます｜${THEMES[currentTheme()].label}`,
         amount:{value:PRICE,currency_code:"JPY"}
       }]
     }),
@@ -2039,17 +2090,32 @@ document.getElementById("buy2").onclick=toGate;
 // 決済を通さない解除は、確認モードのときだけ
 document.getElementById("buy").onclick=()=>{ if(DEMO)unlock(); };
 document.getElementById("clearPaid").onclick=()=>{
-  try{ localStorage.removeItem("omasu_paid"); }catch(e){}
+  try{
+    localStorage.removeItem("omasu_paid");
+    Object.keys(THEMES).forEach(k=>localStorage.removeItem(PAID_PREFIX+k));
+  }catch(e){}
   document.body.classList.remove("unlocked");
   document.getElementById("toggle").textContent="有料版の見え方を確認";
   alert("未購入の状態に戻しました。");
 };
-document.getElementById("reset").onclick=()=>{
+function showTop(){
   document.getElementById("result").style.display="none";
   document.getElementById("hero").style.display="block";
   document.getElementById("formsec").style.display="block";
+  document.body.classList.remove("unlocked");
   window.scrollTo(0,0);
-};
+}
+function showThemeForm(){
+  document.getElementById("result").style.display="none";
+  document.getElementById("hero").style.display="none";
+  document.getElementById("formsec").style.display="block";
+  document.body.classList.remove("unlocked");
+  document.getElementById("formsec").scrollIntoView({block:"start"});
+  setTimeout(()=>document.getElementById("theme").focus(),0);
+}
+document.getElementById("anotherReading").onclick=showThemeForm;
+document.getElementById("backToTop").onclick=showTop;
+document.getElementById("reset").onclick=showTop;
 </script>
 </body>
 </html>
