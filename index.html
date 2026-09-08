@@ -1305,10 +1305,10 @@ const TURN={
 /* ===========================================================
    ホロスコープ描画
    =========================================================== */
-function drawChart(natal,transit){
+function drawChart(natal,transit,hasAngles=true){
   const C=170,R1=166,R2=146,rT=132,rN=104,rIn=88;
   const pt=(lon,r)=>{
-    const a=rad(180+(lon-natal.asc));
+    const a=rad(180+(lon-(hasAngles?natal.asc:0)));
     return [C+r*Math.cos(a), C-r*Math.sin(a)];
   };
   let s=`<svg viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg">`;
@@ -1325,7 +1325,7 @@ function drawChart(natal,transit){
     s+=`<text x="${gx}" y="${gy+5}" font-size="14" fill="#e8dfc4" text-anchor="middle">${SIGN_GLYPH[i]}</text>`;
   }
   // ハウス境界（イコールハウス）＋番号
-  for(let i=0;i<12;i++){
+  if(hasAngles) for(let i=0;i<12;i++){
     const b=natal.asc+i*30, [x1,y1]=pt(b,0), [x2,y2]=pt(b,R2);
     s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ddd8c9" stroke-width=".7"/>`;
     const [nx,ny]=pt(b+15,32);
@@ -1336,7 +1336,7 @@ function drawChart(natal,transit){
     const [x1,y1]=pt(lon,rIn), [x2,y2]=pt(lon,R2);
     return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#7e8f80" stroke-width="1.6"/>`;
   };
-  s+=mark(natal.asc)+mark(natal.mc);
+  if(hasAngles) s+=mark(natal.asc)+mark(natal.mc);
 
   // 天体（重なりを避けて少しずらす）
   const place=(list,r,fill)=>{
@@ -1449,6 +1449,8 @@ const PREFS={
 function fmt(x){return x.toFixed(2);}
 
 function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
+  const hasAngles=hasTime && Object.hasOwn(PREFS,prefName);
+  const missingAngles="出生時間と出生地がそろっていないため、ASC・MC・ハウスを使う解説は表示していません。両方を入力すると、この部分も確認できます。";
   const TH=THEMES[themeKey]||THEMES.shigoto;
   const FORECAST_YEAR=2027;
   const deepDiveLabels={
@@ -1539,7 +1541,9 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   document.getElementById("flowAdviceTitle").innerHTML=
     isAnnual?"2027年の追い風と、<br>気をつけたいこと":"いまの追い風と、<br>気をつけたいこと";
 
-  document.getElementById("chart").innerHTML=drawChart(natal,transit);
+  document.getElementById("chart").innerHTML=drawChart(natal,transit,hasAngles);
+
+  if(!hasAngles) document.getElementById("chartIntro").innerHTML+=`<p class="note">${missingAngles}${hasTime?"":" 天体位置は日本時間の正午を仮の基準にしています。月などの位置は出生時刻によって変わるため、参考としてご覧ください。"}</p>`;
 
   /* --- 天体テーブル --- */
   const hot=["太陽","水星","月"];
@@ -1551,17 +1555,15 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       `<tr class="${hot.includes(b.name)?"on":""}">`
       +`<td class="nm"><span class="glyph">${b.glyph}</span>${b.name}</td>`
       +`<td><span class="glyph">${b.signGlyph}</span>${b.sign}</td>`
-      +`<td>${fmt(b.deg)}</td><td>${hasTime
-          ? b.house+"ハウス"+(b.houseMoved?`<span class="r5">5°前</span>`:"")
+      +`<td>${fmt(b.deg)}</td><td>${hasAngles? b.house+"ハウス"+(b.houseMoved?`<span class="r5">5°前</span>`:"")
           : "—"}</td></tr>`).join("")
-    +`<tr><td class="nm"><span class="glyph">Asc</span>ASC</td><td><span class="glyph">${SIGN_GLYPH[Math.floor(natal.asc/30)]}</span>${SIGNS[Math.floor(natal.asc/30)]}</td><td>${fmt(natal.asc%30)}</td><td>1ハウス</td></tr>`
-    +`<tr><td class="nm"><span class="glyph">MC</span>MC</td><td><span class="glyph">${SIGN_GLYPH[Math.floor(natal.mc/30)]}</span>${SIGNS[Math.floor(natal.mc/30)]}</td><td>${fmt(natal.mc%30)}</td><td>—</td></tr>`
+    +(hasAngles?`<tr><td class="nm"><span class="glyph">Asc</span>ASC</td><td><span class="glyph">${SIGN_GLYPH[Math.floor(natal.asc/30)]}</span>${SIGNS[Math.floor(natal.asc/30)]}</td><td>${fmt(natal.asc%30)}</td><td>1ハウス</td></tr>`
+    +`<tr><td class="nm"><span class="glyph">MC</span>MC</td><td><span class="glyph">${SIGN_GLYPH[Math.floor(natal.mc/30)]}</span>${SIGNS[Math.floor(natal.mc/30)]}</td><td>${fmt(natal.mc%30)}</td><td>—</td></tr>`:"")
     +`</tbody></table>`;
 
   const pick=(el,b)=>document.getElementById(el).innerHTML=
     `<div class="k">${b.glyph} ${b.name}</div><div class="k">${b.signGlyph} ${b.sign}</div>`
-    +`<div>${fmt(b.deg)}</div><div>${hasTime
-        ? b.house+"ハウス"+(b.houseMoved?`<span class="r5">5°前</span>`:"")
+    +`<div>${fmt(b.deg)}</div><div>${hasAngles? b.house+"ハウス"+(b.houseMoved?`<span class="r5">5°前</span>`:"")
         : "—"}</div>`;
   pick("pickSun",sun); pick("pickMer",mer); pick("pickMoon",moon);
 
@@ -1578,12 +1580,15 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   const mcSign=SIGNS[Math.floor(natal.mc/30)];
   const ven=B.金星;
 
-  if(TH.use==="MC"){                                   // 仕事
+  if(TH.use==="MC" && !hasAngles){
+    document.getElementById("pickMer").innerHTML="";
+    document.getElementById("ch2").innerHTML=`<p>${missingAngles}</p>`;
+  }else if(TH.use==="MC"){                                   // 仕事
     const t=MCS[mcSign];
     pick("pickMer",{glyph:"MC",name:"MC",signGlyph:SIGN_GLYPH[Math.floor(natal.mc/30)],
                     sign:mcSign,deg:natal.mc%30,house:10,houseMoved:false});
     document.getElementById("ch2").innerHTML=`
-      <p>${hasTime?"":"<em style=\"color:var(--gold);font-style:normal\">※ 出生時間を入れていただくと、この章はさらに正確になります。</em></p><p>"}${you}が社会に対して向けている面は<span class="mk">${mcSign}</span>の性質を持っています。ここは、まわりが仕事上の${you}をどう見ているか、そして最終的にどこへ向かうかを示すところです。</p>
+      <p>${hasAngles?"":"<em style=\"color:var(--gold);font-style:normal\">※ 出生時間を入れていただくと、この章はさらに正確になります。</em></p><p>"}${you}が社会に対して向けている面は<span class="mk">${mcSign}</span>の性質を持っています。ここは、まわりが仕事上の${you}をどう見ているか、そして最終的にどこへ向かうかを示すところです。</p>
       <p>${you}は、まわりから<span class="uline">「${t.k}」</span>として見られています。自分ではそう思っていなくても、そう扱われる場面が多かったはずです。</p>
       <p>向いているのは、<strong>${t.a}</strong>です。反対に、${t.b}という傾向があります。</p>
       <p>太陽（${sun.sign}）が「何をしているときが自然か」だとすれば、こちらは「社会からどう使われるか」。この二つが噛み合っていると仕事は楽になり、ずれていると、実力があるのに評価されないという状態が続きます。</p>`;
@@ -1622,7 +1627,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   /* ===== 進行の月：人生をハウスごとの時期に区切る ===== */
   const ageNow=(now-new Date(y,m-1,d))/(365.2422*86400000);
   const pt=document.getElementById("progTable");
-  if(hasTime){
+  if(hasAngles){
     const periods=progressedMoonPeriods(natal,y,m,d,h,mi,78);
     const cur=currentProgPeriod(periods,ageNow);
     const ci=periods.indexOf(cur);
@@ -1645,7 +1650,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       <p>次に部屋が変わるのは<strong>${ymd(cur.to)}</strong>。そこから${PROGTHEME[periods[ci+1]?periods[ci+1].house:cur.house]}という段階に入ります。いまの時期にやり残したことは、そこから先はやりにくくなります。</p>`;
   }else{
     pt.innerHTML=`<p style="color:var(--dim);font-family:system-ui,sans-serif;font-size:12.5px;line-height:1.9">
-      この表は出生時間から計算します。フォームの「生まれた時間と場所も入れる」にご記入ください。</p>`;
+      この表は出生時間と出生地から計算します。フォームの「生まれた時間と場所も入れる」にご記入ください。</p>`;
     document.getElementById("ch2c").innerHTML="";
   }
 
@@ -1653,9 +1658,9 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   document.getElementById("secTitle3").innerHTML=TH.sec3;
   const hc=document.getElementById("houseCards");
 
-  if(!hasTime){
+  if(!hasAngles){
     hc.innerHTML=`<p style="color:var(--dim);font-family:system-ui,sans-serif;font-size:12.5px;line-height:1.9">
-      ハウスは出生時間から計算します。フォームの「生まれた時間と場所も入れる」にご記入いただくと、この章が読めるようになります。</p>`;
+      ハウスは出生時間と出生地から計算します。フォームの「生まれた時間と場所も入れる」にご記入いただくと、この章が読めるようになります。</p>`;
     document.getElementById("ch2b").innerHTML="";
   }else if(TH.houses.length){
     const infos=TH.houses.map(n=>houseInfo(natal,transit,n));
@@ -1731,7 +1736,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
 
   /* --- 転機の日付（無料で出す） --- */
   const turnCandidates=themeTurnings(
-    natal,hasTime,todayN,themeKey,12,themeKey==="jiki"?FORECAST_YEAR:null
+    natal,hasAngles,todayN,themeKey,12,themeKey==="jiki"?FORECAST_YEAR:null
   );
   const turn=turnCandidates[0]||null;
   if(turn){
@@ -1748,15 +1753,15 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       <p>これは全テーマ共通の日付ではありません。<strong>${TH.field}に関係する天体・感受点・ハウスだけ</strong>を先に選び、トランジット、セカンダリー・プログレス、ソーラーアーク、太陽回帰を照合して、このテーマに最も強く出る時期を選びました。</p>
       <p>中心にあるのは、<span class="mk">${turn.slow}</span>が<span class="mk">${turn.point}</span>へ${turn.aspect}を作る動きです。${turn.confidence}として判定しています。</p>
       <div class="decision-box"><strong>この日を選んだ根拠</strong><ul style="margin:8px 0 0 1.2em;text-align:left">${turn.evidenceText.map(x=>`<li>${x}</li>`).join("")}${returnProof}</ul></div>
-      ${hasTime?"":`<p><small>出生時間が未入力のため、ASC・MC・ハウスは判定から外しています。出生時間を入れると、テーマ別の日付をさらに絞り込めます。</small></p>`}
+      ${hasAngles?"":`<p><small>出生時間と出生地がそろっていないため、ASC・MC・ハウスは判定から外しています。出生時間と出生地を入れると、テーマ別の日付をさらに絞り込めます。</small></p>`}
       <p>その日に出来事が約束されているわけではありません。日付そのものより、前後約3週間を「流れを観察し、選択を見直す期間」として使ってください。</p>`;
-  }else if(!hasTime){
+  }else if(!hasAngles){
     document.getElementById("bigdateLead").textContent="";
     document.getElementById("bigdate").textContent="——";
     document.getElementById("bigdateNote").textContent=
-      "出生時間を入れていただくと、日付まで出せます";
+      "出生時間と出生地を入力して、もう一度確認できます";
     document.getElementById("ch4").innerHTML=
-      `<p>出生時間が未入力のため、ASC・MC・ハウスを除いて時期を確認しましたが、このテーマで十分に強い一致は見つかりませんでした。出生時間を入力すると、テーマに関係する感受点を増やして再判定できます。</p>`;
+      `<p>出生時間と出生地がそろっていないため、ASC・MC・ハウスを除いて時期を確認しましたが、このテーマで十分に強い一致は見つかりませんでした。出生時間と出生地を入力すると、テーマに関係する感受点を増やして再判定できます。</p>`;
   }else if(themeKey==="jiki"){
     document.getElementById("bigdateLead").textContent="2027年の星の動きを確認した結果";
     document.getElementById("bigdate").textContent="大きな転機は見当たりません";
@@ -1776,9 +1781,9 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
      「どこから動くか」は本人固有の答えが見えかけたところで止める。 */
   const cliffCore={
     shigoto:`「${MOON[moon.sign].a}」という働く条件`,
-    tenshoku:`「${MCS[mcSign].a}」という次の役割`,
+    tenshoku:hasAngles?`「${MCS[mcSign].a}」という次の役割`:"これまでの経験と、無理なく続けられる働き方",
     sainou:`「${mm.a}」という考え方と伝え方`,
-    fukugyo:`「${MCS[mcSign].a}」という価値の出し方`,
+    fukugyo:hasAngles?`「${MCS[mcSign].a}」という価値の出し方`:"これまでの経験と、無理なく続けられる働き方",
     renai:`「${VEN[ven.sign].k}」という距離の取り方`,
     ningen:`「${VEN[ven.sign].k}」という人との距離`,
     seishitsu:`「${MOON[moon.sign].a}」という心の条件`,
@@ -1817,12 +1822,12 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
     shigoto:[
       {t:"依頼を受けるとき",a:`${you}は「${s.k}」力を先に使います。頼られると応えようとしますが、返事の前に、その仕事が「${moonNeed}」をつくれるかまで見てください。条件を確認せず引き受けると、あとから「${moonDrain}」が表に出やすくなります。`},
       {t:"予定が崩れたとき",a:`外側の${you}は、${s.a}タイプです。けれど内側は、「${mo.a}」という条件をつくることで立て直します。予定を元に戻すことより、まず月が落ち着く小さな条件を一つ回復させるほうが、その後の判断が速くなります。`},
-      {t:"評価されるとき",a:`${you}は社会で「${MCS[mcSign].k}」と見られやすい傾向があります。評価を受け取るときは、足りない点を探す前に、何を任されたからその評価になったのかを言葉にしてください。そこに、次も再現できる強みがあります。`}
+      {t:"評価されるとき",a:hasAngles?`${you}は社会で「${MCS[mcSign].k}」と見られやすい傾向があります。評価を受け取るときは、足りない点を探す前に、何を任されたからその評価になったのかを言葉にしてください。そこに、次も再現できる強みがあります。`:missingAngles+" いまは、これまで任されてきたことや感謝されたことを書き出し、役割を選ぶ手がかりにしてください。"}
     ],
     tenshoku:[
-      {t:"求人を見るとき",a:`職種名の印象より、その職場で「${MCS[mcSign].a}」という役割を使えるかを見てください。さらに「${moonNeed}」を守れる勤務条件かを確認すると、入ってからのミスマッチを減らせます。`},
+      {t:"求人を見るとき",a:hasAngles?`職種名の印象より、その職場で「${MCS[mcSign].a}」という役割を使えるかを見てください。さらに「${moonNeed}」を守れる勤務条件かを確認すると、入ってからのミスマッチを減らせます。`:missingAngles+" いまは、これまで任されてきたことや感謝されたことを書き出し、役割を選ぶ手がかりにしてください。"},
       {t:"今の仕事が苦しいとき",a:`苦しさが仕事内容から来るのか、「${moonDrain}」が続く環境から来るのかを分けます。担当・時間・人間関係のどれを変えると軽くなるか、一つずつ確かめてください。`},
-      {t:"二つの条件を比べるとき",a:`給与や肩書きだけでなく、半年後も力を出せる条件を比べます。「${MCS[mcSign].k}」と評価される役割と、月が安心できる環境の両方がある候補を残してください。`}
+      {t:"二つの条件を比べるとき",a:hasAngles?`給与や肩書きだけでなく、半年後も力を出せる条件を比べます。「${MCS[mcSign].k}」と評価される役割と、月が安心できる環境の両方がある候補を残してください。`:missingAngles+" いまは、これまで任されてきたことや感謝されたことを書き出し、役割を選ぶ手がかりにしてください。"}
     ],
     sainou:[
       {t:"人から頼まれたとき",a:`繰り返し頼まれることには、本人が当たり前だと思っている才能が隠れています。${you}の場合は「${mm.k}」という考え方や伝え方が、周囲には助けとして届きやすいでしょう。`},
@@ -1830,7 +1835,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       {t:"自分の強みを説明するとき",a:`性格の言葉だけで終えず、「誰の、どんな困りごとを、どう変えられるか」まで言います。${s.k}力と「${mm.k}」という知性を、過去の具体例一つに結びつけてください。`}
     ],
     fukugyo:[
-      {t:"副業候補を選ぶとき",a:`流行より、${you}が「${MCS[mcSign].a}」という価値を出せるかを見ます。本業後でも「${moonNeed}」を失わず続けられる作業量かも、同じ重さで確認してください。`},
+      {t:"副業候補を選ぶとき",a:hasAngles?`流行より、${you}が「${MCS[mcSign].a}」という価値を出せるかを見ます。本業後でも「${moonNeed}」を失わず続けられる作業量かも、同じ重さで確認してください。`:missingAngles+" いまは、これまで任されてきたことや感謝されたことを書き出し、役割を選ぶ手がかりにしてください。"},
       {t:"最初の価格を決めるとき",a:`作業時間だけでなく、相手が受け取る変化まで言葉にします。安くして不安を消す前に、含める範囲と含めない範囲を決め、少人数に試せる価格から始めてください。`},
       {t:"本業と両立するとき",a:`空いた時間を全部使うのではなく、週に使える時間の上限を先に決めます。「${moonDrain}」が続くなら努力不足ではなく設計過多です。商品数か募集数を減らしてください。`}
     ],
@@ -1908,13 +1913,13 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
   const questionSets={
     shigoto:[
       {q:"今の仕事を続けるべき？",a:`続ける・辞めるの二択より先に、今の仕事の中で「${moonNeed}」をつくれる余地があるかを見ます。業務量、担当、働く場所のどれか一つを調整して月の消耗が減るなら、仕事そのものより条件の問題です。調整しても「${moonDrain}」が続くなら、環境を変える検討に進んでください。`},
-      {q:"評価を上げるには？",a:`${you}は社会から「${MCS[mcSign].k}」と見られやすく、「${MCS[mcSign].a}」にあたる場面で持ち味が伝わります。新しい能力を足す前に、すでに頼まれていること、感謝されたこと、繰り返し任されることを三つ書き出してください。周囲が買っている強みを、自分の言葉で説明できることが評価の土台になります。`},
-      {q:"副業や転職を選ぶ基準は？",a:`職種名より、役割と環境で選びます。「${MCS[mcSign].a}」が求められ、同時に「${moonNeed}」を守れる働き方か。この二つがそろう候補を優先してください。収入や肩書きだけで決めると、始められても月の消耗で続きにくくなります。`},
+      {q:"評価を上げるには？",a:hasAngles?`${you}は社会から「${MCS[mcSign].k}」と見られやすく、「${MCS[mcSign].a}」にあたる場面で持ち味が伝わります。新しい能力を足す前に、すでに頼まれていること、感謝されたこと、繰り返し任されることを三つ書き出してください。周囲が買っている強みを、自分の言葉で説明できることが評価の土台になります。`:missingAngles+" いまは、これまで任されてきたことや感謝されたことを書き出し、役割を選ぶ手がかりにしてください。"},
+      {q:"副業や転職を選ぶ基準は？",a:hasAngles?`職種名より、役割と環境で選びます。「${MCS[mcSign].a}」が求められ、同時に「${moonNeed}」を守れる働き方か。この二つがそろう候補を優先してください。収入や肩書きだけで決めると、始められても月の消耗で続きにくくなります。`:missingAngles+" いまは、これまで任されてきたことや感謝されたことを書き出し、役割を選ぶ手がかりにしてください。"},
       {q:"仕事の人間関係で気をつけることは？",a:`${you}には「${s.b}」癖があります。忙しいときほど一人で処理せず、期限・担当・完成の基準を短く確認してください。相手の期待を推測するより、認識を一つ合わせるほうが、${you}の力を本来の仕事に戻せます。`}
     ],
     tenshoku:[
       {q:"今の仕事を辞めるべき？",a:`退職の結論より先に、仕事内容・勤務条件・人間関係のどこで「${moonDrain}」が起きているかを分けます。担当や時間を調整しても消耗が変わらず、「${moonNeed}」を守れないなら、環境を変える検討に進む根拠になります。`},
-      {q:"転職先を選ぶ基準は？",a:`${you}が「${MCS[mcSign].k}」と評価される役割があり、同時に月の安心を守れることです。求人票では、仕事内容、裁量、勤務時間、評価方法を確認し、面接では一日の流れと繁忙期の働き方を聞いてください。`},
+      {q:"転職先を選ぶ基準は？",a:hasAngles?`${you}が「${MCS[mcSign].k}」と評価される役割があり、同時に月の安心を守れることです。求人票では、仕事内容、裁量、勤務時間、評価方法を確認し、面接では一日の流れと繁忙期の働き方を聞いてください。`:missingAngles+" いまは、これまで任されてきたことや感謝されたことを書き出し、役割を選ぶ手がかりにしてください。"},
       {q:"動く前に何を準備する？",a:`辞める理由だけでなく、次で再現したい強みを三つ書き出します。繰り返し任されたこと、感謝されたこと、苦労せず続けられたことです。そのうえで生活費と活動時間を確認し、焦りだけで選ばない余白を作ってください。`},
       {q:"転職のタイミングをどう見る？",a:`日付だけで決めず、情報が集まる、相談相手が現れる、今の役割の区切りが見えるという現実の動きと重ねます。転機の前は応募や面談など取り消せる行動を進め、退職の確定は条件がそろってからにしてください。`}
     ],
@@ -1925,7 +1930,7 @@ function render(name,y,m,d,h,mi,hasTime,prefName,themeKey){
       {q:"足りないスキルを増やすべき？",a:`必要ですが、強みの証明より先に資格集めへ逃げないことです。まず既存の力で一つ試し、できなかった工程だけを学びます。使い道が決まった学びは、知識のまま眠らず適職につながります。`}
     ],
     fukugyo:[
-      {q:"どんな副業が向いている？",a:`${you}が「${MCS[mcSign].a}」という価値を出せて、週に無理なく繰り返せるものです。作る・教える・相談に乗る・紹介するなど、すでに経験がある形から一つ選び、最初は一商品に絞ってください。`},
+      {q:"どんな副業が向いている？",a:hasAngles?`${you}が「${MCS[mcSign].a}」という価値を出せて、週に無理なく繰り返せるものです。作る・教える・相談に乗る・紹介するなど、すでに経験がある形から一つ選び、最初は一商品に絞ってください。`:missingAngles+" いまは、これまで任されてきたことや感謝されたことを書き出し、役割を選ぶ手がかりにしてください。"},
       {q:"最初の商品は何にする？",a:`広い知識の詰め合わせより、一人の小さな困りごとを一つ終わらせる商品です。「誰が、何に迷い、受け取ったあと何が決められるか」を一文にし、その答えに必要な範囲だけを入れてください。`},
       {q:"価格をどう決める？",a:`作業時間だけでなく、相手が得る判断や時間短縮も含めます。最初は提供範囲を狭くして試し、安さではなく内容が伝わる説明を整えてください。売れた数と負担を見て、継続できる価格へ調整します。`},
       {q:"本業とどう両立する？",a:`週の作業時間と募集件数に上限を作ります。「${moonDrain}」が二週続いたら、気合いを足すのではなく、納期・商品数・対応方法のどれかを減らしてください。続けられる設計そのものが副業の力です。`}
